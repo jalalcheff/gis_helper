@@ -1,0 +1,130 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gis_helper/data/repository/api_srevice.dart';
+import 'package:gis_helper/data/repository/database_service.dart';
+import 'package:gis_helper/data/resource/result_pattern.dart';
+import 'package:gis_helper/data/resource/transformer_resource.dart';
+import 'package:gis_helper/domain/transformer_repository.dart';
+
+class TransformerRepositoryImp implements TransformerRepository {
+  final ApiService _apiService;
+  final DatabaseService _databaseService;
+
+  TransformerRepositoryImp(
+      {required ApiService apiService,
+      required DatabaseService databaseService})
+      : _apiService = apiService,
+        _databaseService = databaseService;
+
+  @override
+  Future<Result<List<TransformerResource>>> getAllTransformers() async {
+//    print("database data is ${database.value}");
+    final transformers = await _apiService.getAllTransformers();
+    switch (transformers) {
+      case Ok<List<Map<String, dynamic>>>():
+        {
+          final Set feeders = {};
+          int counter = 0;
+          List<TransformerResource> tempTransformers = [];
+          transformers.value.forEach((transformer) {
+            tempTransformers.add(TransformerResource.fromJson(transformer));
+            feeders.add(tempTransformers[counter].feederName);
+            counter++;
+          });
+          //print("feeders no is ${feeders.length} which are : ${feeders.toList()} and ${feeders.toList()[0]}");
+          print("feeder num are ${feeders.length}");
+          feeders.toList().forEach((feeder) {
+            print("this is feeder $feeder");
+          });
+          print("inside repository ${tempTransformers[0].mahlaOrSector}");
+          await _databaseService.saveDataIntoDatabase(tempTransformers);
+          final databaseData = await _databaseService.getAllTransformers();
+          print(
+              "inside repository database ${(databaseData as Ok<List<TransformerResource>>).value[0].mahlaOrSector}");
+          return Result.ok(
+              (databaseData as Ok<List<TransformerResource>>).value);
+        }
+      case ErrorValue<List<Map<String, dynamic>>>():
+        {
+          //  print("transformer repo imp is : ${transformers.e}");
+          final database = await _databaseService.getAllTransformers()
+              as Ok<List<TransformerResource>>;
+          if (database.value.toString() == "empty") {
+            print("transform repo empty database : ${database.value}");
+            return Result.error(transformers.e);
+          } else {
+            database.value[0].printAllData();
+            return database;
+          }
+        }
+    }
+  }
+
+  @override
+  Future<Result<List<TransformerResource>>> getAllTransformersLocally() async {
+    final databaseData = await _databaseService.getAllTransformers();
+    print(
+        "inside repository database ${(databaseData as Ok<List<TransformerResource>>).value[0].mahlaOrSector}");
+    return Result.ok((databaseData as Ok<List<TransformerResource>>).value);
+  }
+
+  @override
+  Future<Result<List<TransformerResource>>> getLastChangesTransformers() async {
+    final transformers = await _apiService.getLatestChanges();
+    final List<TransformerResource> tempTransformers = [];
+    switch (transformers) {
+      case ErrorValue<List>():
+        {
+          final latestTransformerDatabase =
+              await _databaseService.getLatestTransformers();
+          print("error and that is list ");
+          switch (latestTransformerDatabase) {
+            case Ok<List<TransformerResource>>():
+              {
+                print("latest transformer locally");
+                printDataOfResult(latestTransformerDatabase);
+              }
+            case ErrorValue<List<TransformerResource>>():
+              {
+                print("تاكد من الاتصال بالانترنت");
+              }
+          }
+          //printDataOfResult(latestTransformerDatabase);
+          return latestTransformerDatabase;
+        }
+      case Ok<List<Map<String, dynamic>>>():
+        {
+          transformers.value.forEach((transformer) {
+            Map<String, dynamic> tempTransformer =
+                transformer as Map<String, dynamic>;
+            tempTransformers.add(TransformerResource.fromJson(tempTransformer));
+            print("inside latest changes repo : ${tempTransformer.values}");
+          });
+        }
+        final isSuccess = await _databaseService
+            .saveLatestTransformersDataIntoDatabase(tempTransformers);
+        print("is it success inside transofmer repo save $isSuccess");
+        final latestTransformerDatabase =
+            await _databaseService.getLatestTransformers();
+        switch(latestTransformerDatabase){
+
+          case Ok<List<TransformerResource>>():
+            {
+              print("data from database repository");
+            printDataOfResult(latestTransformerDatabase);
+            }
+          case ErrorValue<List<TransformerResource>>():
+            print("لا يوجد بيانات تاكد من الاتصال بالانترنت");
+        }
+      //  printDataOfResult(latestTransformerDatabase);
+        return latestTransformerDatabase;
+    }
+  }
+
+  saveDataToDatabase() {}
+
+  printDataOfResult(Result<List<TransformerResource>> transformer) {
+    (transformer as Ok<List<TransformerResource>>).value.forEach((transformer) {
+      transformer.printAllData();
+    });
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "129034660407",
+    "project_id": "gis-helper-8be7e",
+    "storage_bucket": "gis-helper-8be7e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:129034660407:android:9d9ed29ce0f0556d332db2",
+        "android_client_info": {
+          "package_name": "com.example.gis_helper"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBODQL73J1YgD-Sxh7EvNDx927dmvaBAU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
