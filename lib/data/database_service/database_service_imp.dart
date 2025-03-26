@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:gis_helper/data/repository/database_service.dart';
 import 'package:gis_helper/data/resource/result_pattern.dart';
 import 'package:gis_helper/data/resource/transformer_resource.dart';
@@ -7,15 +9,24 @@ class DatabaseServiceImp extends DatabaseService {
   @override
   Future<Result<List<TransformerResource>>> getAllTransformers() async {
     final box = Hive.box("transformer");
+    final Result<List<TransformerResource>> finalResult;
     final transformers = await box.get(
-        "transformer", defaultValue: "no data found") as List;
+        "transformer", defaultValue: [""]) as List;
     List<TransformerResource> finalTransformerResult = [];
-    transformers.forEach((element){
-      finalTransformerResult.add(element);
-    });
-    print(
-        "inside data base service read ${finalTransformerResult[0].yCoordinates}");
-    return Result.ok(finalTransformerResult);
+    switch(transformers){
+      case List<TransformerResource>():{
+        transformers.forEach((element) {
+          finalTransformerResult.add(element);
+        });
+        finalResult = Ok(finalTransformerResult);
+      }
+      default : {
+        finalResult = ErrorValue("error");
+      }
+    }
+  /*  print(
+        "inside data base service read ${finalTransformerResult[0].yCoordinates}");*/
+    return finalResult;
   }
 
   @override

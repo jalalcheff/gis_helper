@@ -1,25 +1,25 @@
 class TransformerResource {
-  final String feederName;
+   String feederName;
 
-  final bool isItOverhead;
+   bool isItOverhead;
 
-  final bool isItPrivate;
+   bool isItPrivate;
 
-  final String mahlaOrSector;
+   String mahlaOrSector;
 
-  final String substationName;
+   String substationName;
 
-  final String transformerCapacity;
+   String transformerCapacity;
 
-  final String transformerName;
+   String transformerName;
 
-  final String transformerSerialNumber;
+   String transformerSerialNumber;
 
-  final String xCoordinates;
+   String xCoordinates;
 
-  final String yCoordinates;
+   String yCoordinates;
 
-  final String zuqaqOrBlock;
+   String zuqaqOrBlock;
 
   factory TransformerResource.fromJson(Map<String, dynamic> data) {
     return TransformerResource(

@@ -9,8 +9,9 @@ class FeedersRepositoryImp implements FeedersRepository{
   FeedersRepositoryImp({required this.localDatabaseTransformers});
   @override
   Future<Result<dynamic>> getAllFeeders() async{
-    final transformers = await localDatabaseTransformers.getAllTransformers();
+    final Result<List<TransformerResource>> transformers = await localDatabaseTransformers.getAllTransformers();
     final Set feeders = {};
+  //  print("inside feeders repository : ${(transformers as Ok<List<TransformerResource>>).value[0].feederName}");
     final Result finalResult;
     switch(transformers){
 

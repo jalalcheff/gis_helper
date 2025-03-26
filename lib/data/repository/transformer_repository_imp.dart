@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gis_helper/data/repository/api_srevice.dart';
 import 'package:gis_helper/data/repository/database_service.dart';
 import 'package:gis_helper/data/resource/result_pattern.dart';
@@ -18,7 +17,9 @@ class TransformerRepositoryImp implements TransformerRepository {
   @override
   Future<Result<List<TransformerResource>>> getAllTransformers() async {
 //    print("database data is ${database.value}");
+    final Result<List<TransformerResource>> finalResult;
     final transformers = await _apiService.getAllTransformers();
+    print("inside get all transformer repository ${(transformers as Ok<List<Map<String,dynamic>>>).value}");
     switch (transformers) {
       case Ok<List<Map<String, dynamic>>>():
         {
@@ -26,6 +27,7 @@ class TransformerRepositoryImp implements TransformerRepository {
           int counter = 0;
           List<TransformerResource> tempTransformers = [];
           transformers.value.forEach((transformer) {
+            print("inside transformer repository ${transformer.values}");
             tempTransformers.add(TransformerResource.fromJson(transformer));
             feeders.add(tempTransformers[counter].feederName);
             counter++;
@@ -46,15 +48,19 @@ class TransformerRepositoryImp implements TransformerRepository {
       case ErrorValue<List<Map<String, dynamic>>>():
         {
           //  print("transformer repo imp is : ${transformers.e}");
-          final database = await _databaseService.getAllTransformers()
-              as Ok<List<TransformerResource>>;
-          if (database.value.toString() == "empty") {
-            print("transform repo empty database : ${database.value}");
-            return Result.error(transformers.e);
-          } else {
-            database.value[0].printAllData();
-            return database;
+          final database = await _databaseService.getAllTransformers();
+          switch(database){
+
+            case Ok<List<TransformerResource>>():
+              {
+                finalResult = Ok(database.value);
+              }
+            case ErrorValue<List<TransformerResource>>():
+              {
+                finalResult = ErrorValue(database.e);
+              }
           }
+          return finalResult;
         }
     }
   }

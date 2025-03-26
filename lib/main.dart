@@ -10,8 +10,10 @@ import 'package:gis_helper/data/repository/feeders_repository_imp.dart';
 import 'package:gis_helper/data/repository/transformer_repository_imp.dart';
 import 'package:gis_helper/data/resource/transformer_resource.dart';
 import 'package:gis_helper/data/service/api_service_imp.dart';
+import 'package:gis_helper/domain/feeders_repository.dart';
 import 'package:gis_helper/domain/get_all_feeders_usecase.dart';
 import 'package:gis_helper/domain/get_all_transformers_locally.dart';
+import 'package:gis_helper/domain/get_all_transformers_number_usecase.dart';
 import 'package:gis_helper/domain/transformer_repository.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -29,13 +31,15 @@ void main() async {
   await Hive.openBox("transformer");
   await Hive.openBox("latest transformers");
   //((box.values.last as List)[0] as TransformerResource).printAllData();
-  //GetAllFeedersUsecase(feedersRepository: FeedersRepositoryImp(localDatabaseTransformers: DatabaseServiceImp())).getAllFeeders();
+  GetAllFeedersUsecase(feedersRepository: FeedersRepositoryImp(localDatabaseTransformers: DatabaseServiceImp())).getAllFeeders();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   TransformerRepositoryImp(databaseService: DatabaseServiceImp(),apiService: ApiServiceImp()).getLastChangesTransformers();
-
+  FeedersRepositoryImp(localDatabaseTransformers: DatabaseServiceImp()).getAllFeeders();
+  GetAllFeedersUsecase(feedersRepository: FeedersRepositoryImp(localDatabaseTransformers: DatabaseServiceImp())).getAllFeeders();
+  TransformerRepositoryImp(databaseService: DatabaseServiceImp(), apiService: ApiServiceImp()).getAllTransformers();
   runApp(const MyApp());
 }
 
@@ -96,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _incrementCounter() {
     //ApiServiceImp().getLatestChanges();
     TransformerRepositoryImp(apiService: ApiServiceImp(), databaseService: DatabaseServiceImp()).getAllTransformers();
-    ApiServiceImp().addTransformer(
+   /* ApiServiceImp().addTransformer(
         TransformerResource(
             feederName: "$countمثنى ",
             isItOverhead: false,
@@ -111,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
             zuqaqOrBlock: "11"
         ),
       count.toString()
-    );
+    );*/
     count++;
     setState(() {
       // This call to setState tells the Flutter framework that something has
