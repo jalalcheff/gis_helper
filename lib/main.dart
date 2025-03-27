@@ -31,15 +31,26 @@ void main() async {
   await Hive.openBox("transformer");
   await Hive.openBox("latest transformers");
   //((box.values.last as List)[0] as TransformerResource).printAllData();
-  GetAllFeedersUsecase(feedersRepository: FeedersRepositoryImp(localDatabaseTransformers: DatabaseServiceImp())).getAllFeeders();
+  GetAllFeedersUsecase(
+          feedersRepository: FeedersRepositoryImp(
+              localDatabaseTransformers: DatabaseServiceImp()))
+      .getAllFeeders();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  TransformerRepositoryImp(databaseService: DatabaseServiceImp(),apiService: ApiServiceImp()).getLastChangesTransformers();
-  FeedersRepositoryImp(localDatabaseTransformers: DatabaseServiceImp()).getAllFeeders();
-  GetAllFeedersUsecase(feedersRepository: FeedersRepositoryImp(localDatabaseTransformers: DatabaseServiceImp())).getAllFeeders();
-  TransformerRepositoryImp(databaseService: DatabaseServiceImp(), apiService: ApiServiceImp()).getAllTransformers();
+  TransformerRepositoryImp(
+          databaseService: DatabaseServiceImp(), apiService: ApiServiceImp())
+      .getLastChangesTransformers();
+  FeedersRepositoryImp(localDatabaseTransformers: DatabaseServiceImp())
+      .getAllFeeders();
+  GetAllFeedersUsecase(
+          feedersRepository: FeedersRepositoryImp(
+              localDatabaseTransformers: DatabaseServiceImp()))
+      .getAllFeeders();
+  TransformerRepositoryImp(
+          databaseService: DatabaseServiceImp(), apiService: ApiServiceImp())
+      .getAllTransformers();
   runApp(const MyApp());
 }
 
@@ -52,6 +63,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
+        /*dark theme properties
+         Primary background: Deep gray (#121212)
+
+Secondary background: Slightly lighter gray (#1E1E1E)
+
+Accent color: Purple (#BB86FC)
+
+Error color: Soft red (#CF6679)
+
+Text: White (#FFFFFF) and light gray (#B3B3B3)*/
         // This is the theme of your application.
         //
         // TRY THIS: Try running your application with "flutter run". You'll see
@@ -99,8 +120,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     //ApiServiceImp().getLatestChanges();
-    TransformerRepositoryImp(apiService: ApiServiceImp(), databaseService: DatabaseServiceImp()).getAllTransformers();
-   /* ApiServiceImp().addTransformer(
+    TransformerRepositoryImp(
+            apiService: ApiServiceImp(), databaseService: DatabaseServiceImp())
+        .getAllTransformers();
+    /* ApiServiceImp().addTransformer(
         TransformerResource(
             feederName: "$countمثنى ",
             isItOverhead: false,
@@ -140,10 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // TRY THIS: Try changing the color here to a specific color (to
         // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
         // change color while the other colors stay the same.
-        backgroundColor: Theme
-            .of(context)
-            .colorScheme
-            .inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
@@ -172,10 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .headlineMedium,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],
         ),
