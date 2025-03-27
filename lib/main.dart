@@ -82,14 +82,14 @@ class MyApp extends StatelessWidget {
               fontWeight: FontWeight.w600,
               fontFamily: 'Roboto',
             ),
-            titleSmall: TextStyle(
+            titleMedium: TextStyle(
               color: Color(styleConstants.colorBlack),
               fontSize: styleConstants.bodyFont,
               fontWeight: FontWeight.w500,
               fontFamily: 'Roboto',
             ),
 
-            titleMedium: TextStyle(
+            titleSmall: TextStyle(
               color: Color(styleConstants.colorGrey),
               fontSize: styleConstants.captionFont,
               fontWeight: FontWeight.w400,
@@ -99,7 +99,7 @@ class MyApp extends StatelessWidget {
           appBarTheme: AppBarTheme(
             backgroundColor: Color(styleConstants.colorWhite),
           )),
-      home: const HomeScreen(),
+      home:  HomeScreen(),
     );
   }
 }

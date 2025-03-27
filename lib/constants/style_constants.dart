@@ -20,9 +20,9 @@ class StyleConstants{
   int colorBlueBackgroundSecondary = 0xFFDBEAFE;
   int colorGreenBackgroundSecondary = 0xFFDCFCE7;
   int colorRedBackgroundSecondary = 0xFFFEE2E2;
-  int colorBlueBackgroundNormal = 0xFF3261FF;
-  int colorGreenBackgroundNormal = 0xFF17D077;
-  int colorRedBackgroundNormal = 0xFFFA4323;
+  int colorBlueBackgroundNormal = 0xFFDBEAFE;
+  int colorGreenBackgroundNormal = 0xFFDCFCE7;
+  int colorRedBackgroundNormal = 0XFFFEE2E2;
   int colorBlack = 0x00000000;
   int colorWhite = 0xFFFFFFFF;
   int colorGrey = 0xFF6B7280;
@@ -32,5 +32,8 @@ class StyleConstants{
   Shadow smallShadow = Shadow(xOffset: 0, yOffset: 1, blur: 2, spread: 0, color: "000000", opacity: 5);
   Shadow mediumShadow = Shadow(xOffset: 0, yOffset: 1, blur: 4, spread: 0, color: "000000", opacity: 15);
   Shadow largeShadow = Shadow(xOffset: 0, yOffset: 1, blur: 8, spread: 0, color: "000000", opacity: 25);
-
+  double smallDp = 2;
+  double mediumDp = 4;
+  double largeDp = 8;
+  double extraLargeDp = 16;
 }
