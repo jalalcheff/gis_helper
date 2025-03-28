@@ -111,14 +111,14 @@ class HomeScreenLatestChangesWidget {
                       title,
                       style: Theme.of(context)
                           .textTheme
-                          .titleMedium
-                          ?.copyWith(color: Colors.black),
+                          .titleLarge
+                          ?.copyWith(color: Colors.black, fontSize: styleConstants.headLine3),
                     ),
                     Text(
                       subtitle,
                       style: Theme.of(context)
                           .textTheme
-                          .titleSmall
+                          .titleMedium
                           ?.copyWith(color: Colors.grey),
                     )
                   ],

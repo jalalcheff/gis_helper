@@ -91,9 +91,9 @@ class _HomeBodyState extends State<HomeBody> {
           height: styleConstants.extraLargeDp,
         ),
         Center(
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: Container(
+          child: Container(
+              width: mediaQuery.size.width,
+              margin: EdgeInsets.all(styleConstants.largeDp),
               padding: EdgeInsets.all(styleConstants.extraLargeDp),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(
@@ -110,8 +110,10 @@ class _HomeBodyState extends State<HomeBody> {
                               .textTheme
                               .titleLarge
                               ?.copyWith(color: Colors.black, fontSize: styleConstants.headLine3))),
-                  AspectRatio(
-                    aspectRatio: 1.1,
+                  SizedBox(height: styleConstants.extraLargeDp,),
+                  SizedBox(
+                    height: 300,
+                    width: mediaQuery.size.width,
                     child: PieChart(
                       PieChartData(
                           sectionsSpace: 0,
@@ -141,7 +143,6 @@ class _HomeBodyState extends State<HomeBody> {
                 ],
               ),
             ),
-          ),
         ),
         SizedBox(
           height: styleConstants.extraLargeDp,
