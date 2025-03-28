@@ -5,6 +5,7 @@ class StyleConstants{
   int mediumRadius = 4;
   int largeRadius = 8;
   int extraLargeRadius = 16;
+  double headLineLess2 = 24;
   double headLine1 = 32; //primary
   double headLine2 = 30; //secondary
   double headLine3 = 20; //tertiary
