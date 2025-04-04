@@ -4,13 +4,14 @@ import 'package:gis_helper/data/resource/result_pattern.dart';
 import 'package:gis_helper/data/resource/transformer_resource.dart';
 import 'package:gis_helper/domain/transformer_repository.dart';
 
+import '../../domain/model/transformer_model.dart';
+
 class TransformerRepositoryImp implements TransformerRepository {
   final ApiService _apiService;
   final DatabaseService _databaseService;
 
-  TransformerRepositoryImp(
-      {required ApiService apiService,
-      required DatabaseService databaseService})
+  TransformerRepositoryImp({required ApiService apiService,
+    required DatabaseService databaseService})
       : _apiService = apiService,
         _databaseService = databaseService;
 
@@ -19,7 +20,8 @@ class TransformerRepositoryImp implements TransformerRepository {
 //    print("database data is ${database.value}");
     final Result<List<TransformerResource>> finalResult;
     final transformers = await _apiService.getAllTransformers();
-    print("inside get all transformer repository ${(transformers as Ok<List<Map<String,dynamic>>>).value}");
+    print("inside get all transformer repository ${(transformers as Ok<
+        List<Map<String, dynamic>>>).value}");
     switch (transformers) {
       case Ok<List<Map<String, dynamic>>>():
         {
@@ -41,7 +43,8 @@ class TransformerRepositoryImp implements TransformerRepository {
           await _databaseService.saveDataIntoDatabase(tempTransformers);
           final databaseData = await _databaseService.getAllTransformers();
           print(
-              "inside repository database ${(databaseData as Ok<List<TransformerResource>>).value[0].mahlaOrSector}");
+              "inside repository database ${(databaseData as Ok<
+                  List<TransformerResource>>).value[0].mahlaOrSector}");
           return Result.ok(
               (databaseData as Ok<List<TransformerResource>>).value);
         }
@@ -49,8 +52,7 @@ class TransformerRepositoryImp implements TransformerRepository {
         {
           //  print("transformer repo imp is : ${transformers.e}");
           final database = await _databaseService.getAllTransformers();
-          switch(database){
-
+          switch (database) {
             case Ok<List<TransformerResource>>():
               {
                 finalResult = Ok(database.value);
@@ -69,7 +71,8 @@ class TransformerRepositoryImp implements TransformerRepository {
   Future<Result<List<TransformerResource>>> getAllTransformersLocally() async {
     final databaseData = await _databaseService.getAllTransformers();
     print(
-        "inside repository database ${(databaseData as Ok<List<TransformerResource>>).value[0].mahlaOrSector}");
+        "inside repository database ${(databaseData as Ok<
+            List<TransformerResource>>).value[0].mahlaOrSector}");
     return Result.ok((databaseData as Ok<List<TransformerResource>>).value);
   }
 
@@ -81,7 +84,7 @@ class TransformerRepositoryImp implements TransformerRepository {
       case ErrorValue<List>():
         {
           final latestTransformerDatabase =
-              await _databaseService.getLatestTransformers();
+          await _databaseService.getLatestTransformers();
           print("error and that is list ");
           switch (latestTransformerDatabase) {
             case Ok<List<TransformerResource>>():
@@ -101,7 +104,7 @@ class TransformerRepositoryImp implements TransformerRepository {
         {
           transformers.value.forEach((transformer) {
             Map<String, dynamic> tempTransformer =
-                transformer as Map<String, dynamic>;
+            transformer as Map<String, dynamic>;
             tempTransformers.add(TransformerResource.fromJson(tempTransformer));
             print("inside latest changes repo : ${tempTransformer.values}");
           });
@@ -110,18 +113,17 @@ class TransformerRepositoryImp implements TransformerRepository {
             .saveLatestTransformersDataIntoDatabase(tempTransformers);
         print("is it success inside transofmer repo save $isSuccess");
         final latestTransformerDatabase =
-            await _databaseService.getLatestTransformers();
-        switch(latestTransformerDatabase){
-
+        await _databaseService.getLatestTransformers();
+        switch (latestTransformerDatabase) {
           case Ok<List<TransformerResource>>():
             {
               print("data from database repository");
-            printDataOfResult(latestTransformerDatabase);
+              printDataOfResult(latestTransformerDatabase);
             }
           case ErrorValue<List<TransformerResource>>():
             print("لا يوجد بيانات تاكد من الاتصال بالانترنت");
         }
-      //  printDataOfResult(latestTransformerDatabase);
+        //  printDataOfResult(latestTransformerDatabase);
         return latestTransformerDatabase;
     }
   }
@@ -132,5 +134,24 @@ class TransformerRepositoryImp implements TransformerRepository {
     (transformer as Ok<List<TransformerResource>>).value.forEach((transformer) {
       transformer.printAllData();
     });
+  }
+
+  @override
+  Future<Result<dynamic>> addTransformerData (TransformerModel transformer,
+      String path) async{
+    final transformerResource = TransformerResource(
+        feederName: transformer.feederName,
+        isItOverhead: transformer.isItOverhead,
+        isItPrivate: transformer.isItPrivate,
+        mahlaOrSector: transformer.mahlaOrSector,
+        substationName: transformer.substationName,
+        transformerCapacity: transformer.transformerCapacity,
+        transformerName: transformer.transformerName,
+        transformerSerialNumber: transformer.transformerSerialNumber,
+        xCoordinates: transformer.xCoordinates,
+        yCoordinates: transformer.yCoordinates,
+        zuqaqOrBlock: transformer.zuqaqOrBlock);
+    final data = await _apiService.addTransformer(transformerResource, path);
+    return data;
   }
 }

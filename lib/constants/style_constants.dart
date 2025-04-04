@@ -27,6 +27,7 @@ class StyleConstants{
   int colorBlack = 0x00000000;
   int colorWhite = 0xFFFFFFFF;
   int colorGrey = 0xFF6B7280;
+  int colorLightGrey = 0xFFD1D5DB;
   int thinStroke = 1;
   int regularStroke = 2;
   int thickStroke = 3;

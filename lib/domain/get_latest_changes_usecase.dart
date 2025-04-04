@@ -1,23 +1,26 @@
 import 'package:gis_helper/data/resource/result_pattern.dart';
 import 'package:gis_helper/data/resource/transformer_resource.dart';
-import 'package:gis_helper/domain/model/transformer_model.dart';
 import 'package:gis_helper/domain/transformer_repository.dart';
 
-class GetAllTransformersLocallyUsecase {
+import 'model/transformer_model.dart';
+
+class GetLatestChangesUsecase {
   final TransformerRepository transformerRepository;
 
-  GetAllTransformersLocallyUsecase({required this.transformerRepository});
+  GetLatestChangesUsecase({required this.transformerRepository});
 
-  Future<Result<List<TransformerModel>>> getAllTransformers() async {
-    final transformers = await transformerRepository
-        .getAllTransformersLocally();
-    final List<TransformerModel> transformersModelList = [];
-    switch (transformers) {
+  Future<Result<List<TransformerModel>>> getLatestChanges() async {
+    final Result<
+        List<TransformerResource>> latestChanges = await transformerRepository
+        .getLastChangesTransformers();
+    final List<TransformerModel> latestChangesModel = [];
+    switch (latestChanges) {
       case Ok<List<TransformerResource>>():
         {
-          transformers.value.forEach((element) {
-            transformersModelList.add(
-                TransformerModel(feederName: element.feederName,
+          latestChanges.value.forEach((element) {
+            latestChangesModel.add(
+                TransformerModel(
+                    feederName: element.feederName,
                     isItOverhead: element.isItOverhead,
                     isItPrivate: element.isItPrivate,
                     mahlaOrSector: element.mahlaOrSector,
@@ -30,12 +33,12 @@ class GetAllTransformersLocallyUsecase {
                     zuqaqOrBlock: element.zuqaqOrBlock)
             );
           });
-          return Result.ok(transformersModelList);
+          return Result.ok(latestChangesModel);
         }
       case ErrorValue<List<TransformerResource>>():
-        {
-          return Result.error(transformers.e);
-        }
+      {
+        return Result.error(latestChanges.e);
+      }
     }
   }
 }

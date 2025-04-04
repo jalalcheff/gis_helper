@@ -5,7 +5,11 @@ sealed class AllTransformersState {}
 
 final class AllTransformersInitial extends AllTransformersState {}
 final class AllTransformersLoaded extends AllTransformersState {
-  final List<TransformerResource> transformers;
+  final List<TransformerModel> transformers;
 
   AllTransformersLoaded({required this.transformers});
+}
+final class AllTransformersError extends AllTransformersState {
+  final String error;
+  AllTransformersError({required this.error});
 }

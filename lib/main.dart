@@ -16,6 +16,7 @@ import 'package:gis_helper/domain/get_all_feeders_usecase.dart';
 import 'package:gis_helper/domain/get_all_transformers_locally.dart';
 import 'package:gis_helper/domain/get_all_transformers_number_usecase.dart';
 import 'package:gis_helper/domain/transformer_repository.dart';
+import 'package:gis_helper/presentation/screen/data_entry_screen/data_entry_screen.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -99,7 +100,7 @@ class MyApp extends StatelessWidget {
           appBarTheme: AppBarTheme(
             backgroundColor: Color(styleConstants.colorWhite),
           )),
-      home:  HomeScreen(),
+      home:  DataEntryScreen(),
     );
   }
 }
