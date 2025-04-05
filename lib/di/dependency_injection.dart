@@ -21,17 +21,18 @@ import '../domain/transformer_repository.dart';
 
 final GetIt locator = GetIt.instance;
 Future<void> setUpLocator() async{
-  locator.registerSingleton(ApiServiceImp());
-  locator.registerSingleton(DatabaseServiceImp());
-  locator.registerSingleton(TransformerRepositoryImp(apiService: locator<ApiService>(), databaseService: locator<DatabaseService>()));
-  locator.registerSingleton(FeedersRepositoryImp(localDatabaseTransformers: locator<DatabaseService>()));
-  locator.registerSingleton(AddTransformerUsecase(transformerRepository: locator<TransformerRepository>()));
-  locator.registerSingleton(GetAllFeedersUsecase(feedersRepository: locator<FeedersRepository>()));
-  locator.registerSingleton(GetAllTransformersLocallyUsecase(transformerRepository: locator<TransformerRepository>()));
-  locator.registerSingleton(GetAllTransformersNumberUsecase(databaseService: locator<DatabaseService>()));
-  locator.registerSingleton(GetFeedersNumberUsecase(feedersRepository: locator<FeedersRepository>()));
+  locator.registerSingleton<DatabaseServiceImp>(DatabaseServiceImp());
+  locator.registerSingleton<ApiServiceImp>(ApiServiceImp());
+  locator.registerSingleton<TransformerRepositoryImp>(TransformerRepositoryImp(apiService: locator<ApiServiceImp>(), databaseService: locator<DatabaseServiceImp>()));
+  locator.registerSingleton(FeedersRepositoryImp(localDatabaseTransformers: locator<DatabaseServiceImp>()));
+  locator.registerSingleton<AddTransformerUsecase>(AddTransformerUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
+  locator.registerSingleton(GetAllFeedersUsecase(feedersRepository: locator<FeedersRepositoryImp>()));
+  locator.registerSingleton(GetAllTransformersLocallyUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
+  locator.registerSingleton(GetAllTransformersNumberUsecase(databaseService: locator<DatabaseServiceImp>()));
+  locator.registerSingleton(GetFeedersNumberUsecase(feedersRepository: locator<FeedersRepositoryImp>()));
+  locator.registerSingleton(GetLatestChangesUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
   locator.registerSingleton(AllTransformersCubit(locator<GetAllTransformersLocallyUsecase>()));
-  locator.registerSingleton(AddTransformerCubit(locator<AddTransformerUsecase>()));
+  locator.registerSingleton<AddTransformerCubit>(AddTransformerCubit(locator<AddTransformerUsecase>()));
   locator.registerSingleton(LatestChangesCubit(locator<GetLatestChangesUsecase>()));
 /*  locator.registerFactory(() => SearchForMealByIdRepository(foodApiService: locator<FoodApiService>()));
   locator.registerFactory(() => SearchMealByIdCubit(locator<SearchForMealByIdRepository>()));*/

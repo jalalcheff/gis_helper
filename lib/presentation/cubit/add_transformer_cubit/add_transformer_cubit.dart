@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:gis_helper/data/resource/result_pattern.dart';
 import 'package:gis_helper/domain/model/transformer_model.dart';
 import 'package:meta/meta.dart';
 
@@ -11,9 +12,17 @@ part 'add_transformer_state.dart';
 class AddTransformerCubit extends Cubit<AddTransformerState> {
   final AddTransformerUsecase _addTransformerUsecase;
   AddTransformerCubit(this._addTransformerUsecase) : super(AddTransformerInitial());
-  Future<void> addTransformer(TransformerModel transformer, String path) async {
+  Future<void> addTransformer(TransformerModel transformer , String path) async {
     emit(AddTransformerLoading());
     final data = await _addTransformerUsecase.addTransformer(transformer, path);
-    emit(AddTransformerLoaded("loaded"));
+    switch(data) {
+      case Ok():
+        emit(AddTransformerLoaded("loaded"));
+      case ErrorValue():
+        emit(AddTransformerError("error"));
+    }
+  }
+  emitLoadingState(){
+    emit(AddTransformerLoading());
   }
 }

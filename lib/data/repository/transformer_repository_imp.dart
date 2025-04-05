@@ -139,7 +139,8 @@ class TransformerRepositoryImp implements TransformerRepository {
   @override
   Future<Result<dynamic>> addTransformerData (TransformerModel transformer,
       String path) async{
-    final transformerResource = TransformerResource(
+    print("transformer model data inside transformer repo is ${transformer.feederName}");
+    TransformerResource transformerResource = TransformerResource(
         feederName: transformer.feederName,
         isItOverhead: transformer.isItOverhead,
         isItPrivate: transformer.isItPrivate,
@@ -151,6 +152,8 @@ class TransformerRepositoryImp implements TransformerRepository {
         xCoordinates: transformer.xCoordinates,
         yCoordinates: transformer.yCoordinates,
         zuqaqOrBlock: transformer.zuqaqOrBlock);
+    print("transformer resource data inside transformer repo is ${transformer.feederName}");
+    transformerResource.printAllData();
     final data = await _apiService.addTransformer(transformerResource, path);
     return data;
   }

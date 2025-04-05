@@ -20,11 +20,11 @@ import 'package:gis_helper/presentation/screen/data_entry_screen/data_entry_scre
 import 'package:gis_helper/presentation/screen/home_screen/home_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'di/dependency_injection.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   // Initialize Hive for Flutter
   await Hive.initFlutter();
   Hive.registerAdapter(TransformerResourceAdapter());
@@ -54,6 +54,7 @@ void main() async {
   TransformerRepositoryImp(
           databaseService: DatabaseServiceImp(), apiService: ApiServiceImp())
       .getAllTransformers();*/
+   await setUpLocator();
   runApp(const MyApp());
 }
 
