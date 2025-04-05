@@ -24,7 +24,7 @@ class StyleConstants{
   int colorBlueBackgroundNormal = 0xFFDBEAFE;
   int colorGreenBackgroundNormal = 0xFFDCFCE7;
   int colorRedBackgroundNormal = 0XFFFEE2E2;
-  int colorBlack = 0x00000000;
+  int colorBlack = 0xFF000000;
   int colorWhite = 0xFFFFFFFF;
   int colorGrey = 0xFF6B7280;
   int colorLightGrey = 0xFFD1D5DB;

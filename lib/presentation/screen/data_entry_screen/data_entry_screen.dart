@@ -86,6 +86,23 @@ class _DataEntryScreenState extends State<DataEntryScreen> {
               _textFormField("X الاحداثي"),
               SizedBox(height: styleConstants.mediumDp),
               _textFormField("Y الاحداثي"),
+             // Expanded(child: Container()),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                margin: EdgeInsets.symmetric(vertical: styleConstants.extraLargeDp),
+                alignment: Alignment.bottomCenter,
+                child: MaterialButton(
+                  onPressed: (){
+                }, child: Text("اضافة المحولة", style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Color(styleConstants.colorWhite)),
+                ),
+                  color: Color(styleConstants.colorBlack),
+                  minWidth: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.symmetric(vertical: styleConstants.extraLargeDp),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(styleConstants.extraLargeDp)
+                  ),
+                ),
+                ),
             ],
           ),
         ),
