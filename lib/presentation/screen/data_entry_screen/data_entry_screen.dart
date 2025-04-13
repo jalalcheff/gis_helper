@@ -2,14 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gis_helper/constants/list_and_maps.dart';
 import 'package:gis_helper/constants/style_constants.dart';
-import 'package:gis_helper/data/database_service/database_service_imp.dart';
-import 'package:gis_helper/data/repository/transformer_repository_imp.dart';
-import 'package:gis_helper/data/service/api_service_imp.dart';
 import 'package:gis_helper/di/dependency_injection.dart';
-import 'package:gis_helper/domain/transformer_repository.dart';
 import 'package:gis_helper/presentation/cubit/add_transformer_cubit/add_transformer_cubit.dart';
 
-import '../../../domain/add_transformer_usecase.dart';
+
 import '../../../domain/model/transformer_model.dart';
 
 class DataEntryScreen extends StatefulWidget {

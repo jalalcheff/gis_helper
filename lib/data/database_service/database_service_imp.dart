@@ -63,5 +63,4 @@ class DatabaseServiceImp extends DatabaseService {
     await box.put("latest transformers", transformer);
     return Future.value("success");
   }
-
 }
