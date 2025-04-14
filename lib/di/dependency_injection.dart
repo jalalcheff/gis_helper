@@ -28,11 +28,11 @@ Future<void> setUpLocator() async{
   locator.registerSingleton<DatabaseServiceImp>(DatabaseServiceImp());
   locator.registerSingleton<ApiServiceImp>(ApiServiceImp());
   locator.registerSingleton<TransformerRepositoryImp>(TransformerRepositoryImp(apiService: locator<ApiServiceImp>(), databaseService: locator<DatabaseServiceImp>()));
-  locator.registerSingleton(FeedersRepositoryImp(localDatabaseTransformers: locator<DatabaseServiceImp>()));
+  locator.registerSingleton(FeedersRepositoryImp(localDatabaseTransformers: locator<DatabaseServiceImp>(), apiService: locator<ApiServiceImp>()));
   locator.registerSingleton<AddTransformerUsecase>(AddTransformerUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
   locator.registerSingleton(GetAllFeedersUsecase(feedersRepository: locator<FeedersRepositoryImp>()));
   locator.registerSingleton(GetAllTransformersLocallyUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
-  locator.registerSingleton(GetAllTransformersNumberUsecase(databaseService: locator<DatabaseServiceImp>()));
+  locator.registerSingleton(GetAllTransformersNumberUsecase(databaseService: locator<DatabaseServiceImp>(), transformerRepository: locator<TransformerRepositoryImp>()));
   locator.registerSingleton(GetFeedersNumberUsecase(feedersRepository: locator<FeedersRepositoryImp>()));
   locator.registerSingleton(GetLatestChangesUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
   locator.registerSingleton(AllTransformersCubit(locator<GetAllTransformersLocallyUsecase>()));
