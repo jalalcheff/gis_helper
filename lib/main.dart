@@ -24,8 +24,10 @@ import 'package:gis_helper/presentation/screen/home_screen/home_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'di/dependency_injection.dart';
+import 'domain/get_Number_of_transformers_of_each_sector.dart';
 import 'firebase_options.dart';
 import 'presentation/cubit/transformer_number_cubit/transformer_number_cubit.dart';
+import 'presentation/cubit/transformer_number_of_each_sector_cubit/transformer_number_of_each_sector_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -69,6 +71,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     StyleConstants styleConstants = StyleConstants();
+    GetNumberOfTransformersOfEachSector(transformerRepository: TransformerRepositoryImp(databaseService: DatabaseServiceImp(), apiService: ApiServiceImp())).getNumberOfTransformersOfEachSector();
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -110,27 +113,10 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => locator<FeedersNumberCubit>()),
           BlocProvider(create: (context) => locator<TransformerNumberCubit>()),
           BlocProvider(create: (context) => locator<AllTransformersCubit>()),
+          BlocProvider(create: (context) => locator<TransformerNumberOfEachSectorCubit>()),
         ],
-        child: HomeScreen(transformerNumberCubit: locator<TransformerNumberCubit>(), feedersNumberCubit: locator<FeedersNumberCubit>(),transformersCubit: locator<AllTransformersCubit>()),
+        child: HomeScreen(transformerNumberCubit: locator<TransformerNumberCubit>(), feedersNumberCubit: locator<FeedersNumberCubit>(),transformersCubit: locator<AllTransformersCubit>(), transformerNumberOfEachSectorCubit: locator<TransformerNumberOfEachSectorCubit>()),
       ),
     );
   }
 }
-
-
-/* ApiServiceImp().addTransformer(
-        TransformerResource(
-            feederName: "$countمثنى ",
-            isItOverhead: false,
-            isItPrivate: false,
-            mahlaOrSector: "5",
-            substationName: "المثنى ",
-            transformerCapacity: "1000 kva",
-            transformerName: "T123",
-            transformerSerialNumber: "c3321",
-            xCoordinates: "33.3342",
-            yCoordinates: "44.44322",
-            zuqaqOrBlock: "11"
-        ),
-      count.toString()
-    );*/

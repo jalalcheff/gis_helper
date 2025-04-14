@@ -1,7 +1,11 @@
+import 'dart:math';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gis_helper/constants/list_and_maps.dart';
 import 'package:gis_helper/constants/style_constants.dart';
+import 'package:gis_helper/domain/model/transformer_model.dart';
 import 'package:gis_helper/presentation/cubit/all_transfomers_cubit/all_transformers_cubit.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_ads_widget.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_latest_changes_widget.dart';
@@ -11,48 +15,62 @@ import '../../../di/dependency_injection.dart';
 import '../../cubit/feeders_number_cubit/feeders_number_cubit.dart';
 import '../../cubit/latest_changes_cubit/latest_changes_cubit.dart';
 import '../../cubit/transformer_number_cubit/transformer_number_cubit.dart';
+import '../../cubit/transformer_number_of_each_sector_cubit/transformer_number_of_each_sector_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({super.key, required this.transformerNumberCubit, required this.feedersNumberCubit, required this.transformersCubit});
-final TransformerNumberCubit transformerNumberCubit;
-final FeedersNumberCubit feedersNumberCubit;
-final AllTransformersCubit transformersCubit;
+  HomeScreen(
+      {super.key,
+      required this.transformerNumberCubit,
+      required this.feedersNumberCubit,
+      required this.transformersCubit,
+      required this.transformerNumberOfEachSectorCubit});
+
+  final TransformerNumberCubit transformerNumberCubit;
+  final FeedersNumberCubit feedersNumberCubit;
+  final AllTransformersCubit transformersCubit;
+  final TransformerNumberOfEachSectorCubit transformerNumberOfEachSectorCubit;
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   final StyleConstants styleConstants = StyleConstants();
+
   @override
   Widget build(BuildContext context) {
     MediaQueryData mediaQuery = MediaQuery.of(context);
     return Scaffold(
         appBar: AppBar(
           title: Text("الصفحة الرئيسية",
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: Colors.black, fontSize: styleConstants.headLine3)),
           centerTitle: true,
         ),
         body: SingleChildScrollView(
             child: HomeBody(
-              mediaQuery: mediaQuery,
-              transformerNumberCubit: widget.transformerNumberCubit,
-              feedersNumberCubit: widget.feedersNumberCubit,
-              transformersCubit: widget.transformersCubit,
-            )));
+          mediaQuery: mediaQuery,
+          transformerNumberCubit: widget.transformerNumberCubit,
+          feedersNumberCubit: widget.feedersNumberCubit,
+          transformersCubit: widget.transformersCubit,
+                transformerNumberOfEachSectorCubit: widget.transformerNumberOfEachSectorCubit,
+        )));
   }
 }
 
 class HomeBody extends StatefulWidget {
-  const HomeBody({super.key, required this.mediaQuery, required this.transformerNumberCubit, required this.feedersNumberCubit, required this.transformersCubit});
+  const HomeBody(
+      {super.key,
+      required this.mediaQuery,
+      required this.transformerNumberCubit,
+      required this.feedersNumberCubit,
+      required this.transformersCubit, required this.transformerNumberOfEachSectorCubit});
+
   final TransformerNumberCubit transformerNumberCubit;
   final FeedersNumberCubit feedersNumberCubit;
   final AllTransformersCubit transformersCubit;
   final MediaQueryData mediaQuery;
+  final TransformerNumberOfEachSectorCubit transformerNumberOfEachSectorCubit;
 
   @override
   State<HomeBody> createState() => _HomeBodyState(mediaQuery);
@@ -63,7 +81,9 @@ class _HomeBodyState extends State<HomeBody> {
 
   int? toucnedIndex = 0;
   StyleConstants styleConstants = StyleConstants();
+
   _HomeBodyState(this.mediaQuery);
+
   late LatestChangesCubit _latestChangesTransformerCubit;
 
   @override
@@ -72,6 +92,7 @@ class _HomeBodyState extends State<HomeBody> {
     widget.transformersCubit.loadAllTransformers([]);
     widget.feedersNumberCubit.emitFeedersNumber();
     widget.transformerNumberCubit.emitTransformerNumber();
+    widget.transformerNumberOfEachSectorCubit.emitTransformerNumberOfEachSector();
     super.initState();
   }
 
@@ -87,9 +108,10 @@ class _HomeBodyState extends State<HomeBody> {
           height: styleConstants.mediumDp,
         ),
         BlocProvider(
-  create: (context) => _latestChangesTransformerCubit,
-  child: HomeScreenLatestChangesWidget(latestChangesTransformerCubit: _latestChangesTransformerCubit),
-),
+          create: (context) => _latestChangesTransformerCubit,
+          child: HomeScreenLatestChangesWidget(
+              latestChangesTransformerCubit: _latestChangesTransformerCubit),
+        ),
         SizedBox(
           height: styleConstants.extraLargeDp,
         ),
@@ -99,45 +121,47 @@ class _HomeBodyState extends State<HomeBody> {
             SizedBox(
               width: styleConstants.mediumDp,
             ),
-            Expanded(
-                child: BlocBuilder<FeedersNumberCubit, FeedersNumberState>(
-  builder: (context, state) {
-    if (state is FeedersNumberLoaded) {
-      return HomeScreenTransformerStatisticsCardWidget().transformerStatistics(
-          styleConstants, context, "عدد المغذيات", state.feedersNumber.toString());
-    }
-    else if (state is FeedersNumberError) {
-      print("feeder number error is ${state.error}");
-      return HomeScreenTransformerStatisticsCardWidget().transformerStatistics(
-          styleConstants, context, "اجمالي المغذيات", "خطأ");
-    }
-    else {
-      return HomeScreenTransformerStatisticsCardWidget().transformerStatistics(
-          styleConstants, context, "اجمالي المغذيات", "لودنج");
-    }
-  },
-)
-                   ),
+            Expanded(child: BlocBuilder<FeedersNumberCubit, FeedersNumberState>(
+              builder: (context, state) {
+                if (state is FeedersNumberLoaded) {
+                  return HomeScreenTransformerStatisticsCardWidget()
+                      .transformerStatistics(styleConstants, context,
+                          "عدد المغذيات", state.feedersNumber.toString());
+                } else if (state is FeedersNumberError) {
+                  print("feeder number error is ${state.error}");
+                  return HomeScreenTransformerStatisticsCardWidget()
+                      .transformerStatistics(
+                          styleConstants, context, "اجمالي المغذيات", "خطأ");
+                } else {
+                  return HomeScreenTransformerStatisticsCardWidget()
+                      .transformerStatistics(
+                          styleConstants, context, "اجمالي المغذيات", "لودنج");
+                }
+              },
+            )),
             SizedBox(
               width: styleConstants.extraLargeDp,
             ),
             Expanded(
-                child: BlocBuilder<TransformerNumberCubit, TransformerNumberState>(
-  builder: (context, state) {
-    if (state is TransformerNumberLoaded) {
-      return HomeScreenTransformerStatisticsCardWidget().transformerStatistics(
-          styleConstants, context, "عدد المحولات", state.transformerNumber.toString());
-    }
-    else if (state is TransformerNumberError) {
-      return HomeScreenTransformerStatisticsCardWidget().transformerStatistics(
-          styleConstants, context, "اجمالي المحولات", "خطأ");
-    }
-    else {
-      return HomeScreenTransformerStatisticsCardWidget().transformerStatistics(
-          styleConstants, context, "اجمالي المحولات", "لودنج");
-    }
-  },
-),),
+              child:
+                  BlocBuilder<TransformerNumberCubit, TransformerNumberState>(
+                builder: (context, state) {
+                  if (state is TransformerNumberLoaded) {
+                    return HomeScreenTransformerStatisticsCardWidget()
+                        .transformerStatistics(styleConstants, context,
+                            "عدد المحولات", state.transformerNumber.toString());
+                  } else if (state is TransformerNumberError) {
+                    return HomeScreenTransformerStatisticsCardWidget()
+                        .transformerStatistics(
+                            styleConstants, context, "اجمالي المحولات", "خطأ");
+                  } else {
+                    return HomeScreenTransformerStatisticsCardWidget()
+                        .transformerStatistics(styleConstants, context,
+                            "اجمالي المحولات", "لودنج");
+                  }
+                },
+              ),
+            ),
             SizedBox(
               width: styleConstants.mediumDp,
             ),
@@ -162,40 +186,55 @@ class _HomeBodyState extends State<HomeBody> {
                 Align(
                     alignment: Alignment.topLeft,
                     child: Text("توزيع المحولات",
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(color: Colors.black,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: Colors.black,
                             fontSize: styleConstants.headLine3))),
-                SizedBox(height: styleConstants.extraLargeDp,),
+                SizedBox(
+                  height: styleConstants.extraLargeDp,
+                ),
                 SizedBox(
                   height: 300,
                   width: mediaQuery.size.width,
-                  child: PieChart(
-                    PieChartData(
-                        sectionsSpace: 0,
-                        sections: getPieChartSections(
-                            isTouched, toucnedIndex, context),
-                        pieTouchData: PieTouchData(
-                          enabled: true,
-                          touchCallback: (p0, p1) {
-                            setState(() {
-                              isTouched = !isTouched;
-                              toucnedIndex =
-                                  p1?.touchedSection?.touchedSectionIndex;
-                              //      print("is touch $isTouched");
-                              getPieChartSections(
-                                  isTouched, toucnedIndex, context);
-                            });
-                            /*    print(
-                                    "p0 is ${p0.isInterestedForInteractions} and p1 is ${p1?.touchedSection?.touchedSection?.value}");
-                                isTouched = !isTouched;
-                                toucnedIndex = p1?.touchedSection?.touchedSectionIndex;
-                                print("is touch $isTouched");
-                                getPieChartSections(isTouched, toucnedIndex);*/
-                          },
-                        )),
+                  child:
+                      BlocBuilder<TransformerNumberOfEachSectorCubit, TransformerNumberOfEachSectorState>(
+                    builder: (context, state) {
+                      if (state is TransformerNumberOfEachSectorLoaded) {
+                        return PieChart(
+                          PieChartData(
+                              sectionsSpace: 0,
+                              sections: getPieChartSections(
+                                  isTouched,
+                                  toucnedIndex,
+                                  context,
+                                  _getPieChart(state.transformers),
+                                state.transformers
+                              ),
+                              pieTouchData: PieTouchData(
+                                enabled: true,
+                                touchCallback: (p0, p1) {
+                                  setState(() {
+                                    isTouched = !isTouched;
+                                    toucnedIndex =
+                                        p1?.touchedSection?.touchedSectionIndex;
+                                    //      print("is touch $isTouched");
+                                    getPieChartSections(
+                                        isTouched,
+                                        toucnedIndex,
+                                        context,
+                                        _getPieChart(state.transformers),
+                                      state.transformers
+                                    );
+                                  });
+                                },
+                              ),
+                          ),
+                        );
+                      } else if (state is AllTransformersInitial) {
+                        return const CircularProgressIndicator();
+                      } else {
+                        return Container();
+                      }
+                    },
                   ),
                 ),
               ],
@@ -210,82 +249,9 @@ class _HomeBodyState extends State<HomeBody> {
   }
 }
 
-/*Container _body(BuildContext context, MediaQueryData mediaQuery,
-    StyleConstants styleConstants) {
-  final String pieValue = "50";
-  bool isTouched = false;
-  int? toucnedIndex = 0;
-  final listOfPieData = _getPieChart();
-  return Container(
-    padding: EdgeInsets.all(styleConstants.largeDp),
-    width: mediaQuery.size.width,
-    child: Column(children: [
-      HomeScreenAdsWidget().addsCard(mediaQuery, context, styleConstants),
-      SizedBox(
-        height: styleConstants.mediumDp,
-      ),
-      HomeScreenLatestChangesWidget()
-          .latestChangesCard(mediaQuery, context, styleConstants),
-      SizedBox(
-        height: styleConstants.extraLargeDp,
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-            width: styleConstants.mediumDp,
-          ),
-          Expanded(
-              child: HomeScreenTransformerStatisticsCardWidget()
-                  .transformerStatistics(
-                      styleConstants, context, "عدد المغذيات", "1200")),
-          SizedBox(
-            width: styleConstants.extraLargeDp,
-          ),
-          Expanded(
-              child: HomeScreenTransformerStatisticsCardWidget()
-                  .transformerStatistics(
-                      styleConstants, context, "اجمالي المحولات", "500")),
-          SizedBox(
-            width: styleConstants.mediumDp,
-          ),
-        ],
-      ),
-      SizedBox(
-        height: styleConstants.extraLargeDp,
-      ),
-      Center(
-        child: Container(
-          height: 200,
-          width: 200,
-          child: PieChart(
-            PieChartData(
-                sections: getPieChartSections(isTouched,toucnedIndex),
-                pieTouchData: PieTouchData(
-                  enabled: true,
-                  touchCallback: (p0, p1) {
-                    print(
-                        "p0 is ${p0.isInterestedForInteractions} and p1 is ${p1?.touchedSection?.touchedSection?.value}");
-                    isTouched = !isTouched;
-                    toucnedIndex = p1?.touchedSection?.touchedSectionIndex;
-                    print("is touch $isTouched");
-                    getPieChartSections(isTouched, toucnedIndex);
-                  },
-                )
-            ) ,
-          ),
-        ),
-      ),
-      SizedBox(
-        height: styleConstants.extraLargeDp,
-      ),
-    ]),
-  );
-}*/
-
 List<PieChartSectionData> getPieChartSections(bool isTouched, int? toucnedIndex,
-    BuildContext context) {
-  final List<SinglePieChartData> pieChartData = _getPieChart();
+    BuildContext context, List<SinglePieChartData> pieChartData, List<Map<String, dynamic>> transformersNumber)  {
+//  final List<SinglePieChartData> pieChartData = _getPieChart();
   if (toucnedIndex != null &&
       toucnedIndex >= 0 &&
       toucnedIndex < pieChartData.length)
@@ -297,28 +263,52 @@ List<PieChartSectionData> getPieChartSections(bool isTouched, int? toucnedIndex,
   pieChartData.forEach((element) {
     print("element is ${element.name} and ${element.isTouched}");
   });
-  return [
+  List<PieChartSectionData> pieChartSections = [];
+  int counter = 0;
+  for (var myPieChartData in pieChartData) {
+    pieChartSections.add(PieChartSectionData(
+        color: myPieChartData.color,
+        value: myPieChartData.isTouched ? 20 : myPieChartData.value,
+        radius: !myPieChartData.isTouched ? myPieChartData.radius : 110,
+        title: myPieChartData.name,
+        titleStyle: Theme.of(context)
+            .textTheme
+            .titleMedium
+            ?.copyWith(color: Colors.white),
+        showTitle: !myPieChartData.isTouched ? true : false,
+        badgeWidget: myPieChartData.isTouched
+            ? Visibility(
+                child: Text(
+                transformersNumber[counter].values.toString(),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(color: Colors.white),
+              ))
+            : Container()));
+    counter++;
+  }
+  return pieChartSections;
+  /*return [
     PieChartSectionData(
         color: pieChartData[0].color,
         value: pieChartData[0].isTouched ? 20 : pieChartData[0].value,
         radius: !pieChartData[0].isTouched ? pieChartData[0].radius : 110,
         title: pieChartData[0].name,
-        titleStyle: Theme
-            .of(context)
+        titleStyle: Theme.of(context)
             .textTheme
             .titleMedium
             ?.copyWith(color: Colors.white),
         showTitle: !pieChartData[0].isTouched ? true : false,
         badgeWidget: pieChartData[0].isTouched
             ? Visibility(
-            child: Text(
-              "15 محولة",
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(color: Colors.white),
-            ))
+                child: Text(
+                "15 محولة",
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(color: Colors.white),
+              ))
             : Container()),
     PieChartSectionData(
       color: pieChartData[1].color,
@@ -328,17 +318,15 @@ List<PieChartSectionData> getPieChartSections(bool isTouched, int? toucnedIndex,
       showTitle: !pieChartData[1].isTouched ? true : false,
       badgeWidget: pieChartData[1].isTouched
           ? Visibility(
-          child: Text(
-            " محولة 8",
-            style: Theme
-                .of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(color: Colors.white),
-          ))
+              child: Text(
+              " محولة 8",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: Colors.white),
+            ))
           : Container(),
-      titleStyle: Theme
-          .of(context)
+      titleStyle: Theme.of(context)
           .textTheme
           .titleMedium
           ?.copyWith(color: Colors.white),
@@ -351,17 +339,15 @@ List<PieChartSectionData> getPieChartSections(bool isTouched, int? toucnedIndex,
       showTitle: !pieChartData[2].isTouched ? true : false,
       badgeWidget: pieChartData[2].isTouched
           ? Visibility(
-          child: Text(
-            " محولة 10",
-            style: Theme
-                .of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(color: Colors.white),
-          ))
+              child: Text(
+              " محولة 10",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: Colors.white),
+            ))
           : Container(),
-      titleStyle: Theme
-          .of(context)
+      titleStyle: Theme.of(context)
           .textTheme
           .titleMedium
           ?.copyWith(color: Colors.white),
@@ -374,17 +360,15 @@ List<PieChartSectionData> getPieChartSections(bool isTouched, int? toucnedIndex,
       showTitle: !pieChartData[3].isTouched ? true : false,
       badgeWidget: pieChartData[3].isTouched
           ? Visibility(
-          child: Text(
-            " محولة 12",
-            style: Theme
-                .of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(color: Colors.white),
-          ))
+              child: Text(
+              " محولة 12",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: Colors.white),
+            ))
           : Container(),
-      titleStyle: Theme
-          .of(context)
+      titleStyle: Theme.of(context)
           .textTheme
           .titleMedium
           ?.copyWith(color: Colors.white),
@@ -397,17 +381,15 @@ List<PieChartSectionData> getPieChartSections(bool isTouched, int? toucnedIndex,
       showTitle: !pieChartData[4].isTouched ? true : false,
       badgeWidget: pieChartData[4].isTouched
           ? Visibility(
-          child: Text(
-            " محولة 15",
-            style: Theme
-                .of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(color: Colors.white),
-          ))
+              child: Text(
+              " محولة 15",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: Colors.white),
+            ))
           : Container(),
-      titleStyle: Theme
-          .of(context)
+      titleStyle: Theme.of(context)
           .textTheme
           .titleMedium
           ?.copyWith(color: Colors.white),
@@ -420,17 +402,15 @@ List<PieChartSectionData> getPieChartSections(bool isTouched, int? toucnedIndex,
       showTitle: !pieChartData[5].isTouched ? true : false,
       badgeWidget: pieChartData[5].isTouched
           ? Visibility(
-          child: Text(
-            " محولة 12",
-            style: Theme
-                .of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(color: Colors.white),
-          ))
+              child: Text(
+              " محولة 12",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: Colors.white),
+            ))
           : Container(),
-      titleStyle: Theme
-          .of(context)
+      titleStyle: Theme.of(context)
           .textTheme
           .titleMedium
           ?.copyWith(color: Colors.white),
@@ -443,17 +423,15 @@ List<PieChartSectionData> getPieChartSections(bool isTouched, int? toucnedIndex,
       showTitle: !pieChartData[6].isTouched ? true : false,
       badgeWidget: pieChartData[6].isTouched
           ? Visibility(
-          child: Text(
-            " محولة 10",
-            style: Theme
-                .of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(color: Colors.white),
-          ))
+              child: Text(
+              " محولة 10",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: Colors.white),
+            ))
           : Container(),
-      titleStyle: Theme
-          .of(context)
+      titleStyle: Theme.of(context)
           .textTheme
           .titleMedium
           ?.copyWith(color: Colors.white),
@@ -466,17 +444,15 @@ List<PieChartSectionData> getPieChartSections(bool isTouched, int? toucnedIndex,
       showTitle: !pieChartData[7].isTouched ? true : false,
       badgeWidget: pieChartData[7].isTouched
           ? Visibility(
-          child: Text(
-            " محولة 12",
-            style: Theme
-                .of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(color: Colors.white),
-          ))
+              child: Text(
+              " محولة 12",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: Colors.white),
+            ))
           : Container(),
-      titleStyle: Theme
-          .of(context)
+      titleStyle: Theme.of(context)
           .textTheme
           .titleMedium
           ?.copyWith(color: Colors.white),
@@ -489,17 +465,15 @@ List<PieChartSectionData> getPieChartSections(bool isTouched, int? toucnedIndex,
       showTitle: !pieChartData[8].isTouched ? true : false,
       badgeWidget: pieChartData[8].isTouched
           ? Visibility(
-          child: Text(
-            " محولة 7",
-            style: Theme
-                .of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(color: Colors.white),
-          ))
+              child: Text(
+              " محولة 7",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: Colors.white),
+            ))
           : Container(),
-      titleStyle: Theme
-          .of(context)
+      titleStyle: Theme.of(context)
           .textTheme
           .titleMedium
           ?.copyWith(color: Colors.white),
@@ -512,17 +486,15 @@ List<PieChartSectionData> getPieChartSections(bool isTouched, int? toucnedIndex,
       showTitle: !pieChartData[9].isTouched ? true : false,
       badgeWidget: pieChartData[9].isTouched
           ? Visibility(
-          child: Text(
-            " محولة 22",
-            style: Theme
-                .of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(color: Colors.white),
-          ))
+              child: Text(
+              " محولة 22",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: Colors.white),
+            ))
           : Container(),
-      titleStyle: Theme
-          .of(context)
+      titleStyle: Theme.of(context)
           .textTheme
           .titleMedium
           ?.copyWith(color: Colors.white),
@@ -535,17 +507,15 @@ List<PieChartSectionData> getPieChartSections(bool isTouched, int? toucnedIndex,
       showTitle: !pieChartData[10].isTouched ? true : false,
       badgeWidget: pieChartData[10].isTouched
           ? Visibility(
-          child: Text(
-            " محولة 30",
-            style: Theme
-                .of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(color: Colors.white),
-          ))
+              child: Text(
+              " محولة 30",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: Colors.white),
+            ))
           : Container(),
-      titleStyle: Theme
-          .of(context)
+      titleStyle: Theme.of(context)
           .textTheme
           .titleMedium
           ?.copyWith(color: Colors.white),
@@ -558,100 +528,108 @@ List<PieChartSectionData> getPieChartSections(bool isTouched, int? toucnedIndex,
       showTitle: !pieChartData[11].isTouched ? true : false,
       badgeWidget: pieChartData[11].isTouched
           ? Visibility(
-          child: Text(
-            " محولة 15",
-            style: Theme
-                .of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(color: Colors.white),
-          ))
+              child: Text(
+              " محولة 15",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: Colors.white),
+            ))
           : Container(),
-      titleStyle: Theme
-          .of(context)
+      titleStyle: Theme.of(context)
           .textTheme
           .titleMedium
           ?.copyWith(color: Colors.white),
     ),
-  ];
+  ];*/
 }
 
-List<SinglePieChartData> _getPieChart() {
-  return [
-  SinglePieChartData(
-      name: "قطاع 0",
-      color: Colors.red,
-      value: 10,
-      radius: 100,
-      isTouched: false)
-  ,
-  SinglePieChartData(
-  name: "قطاع 1",
-  color: Colors.green,
-  value: 10,
-  radius: 100,
-  isTouched: false),
-  SinglePieChartData(
-  name: "قطاع 2",
-  color: Colors.brown,
-  value: 10,
-  radius: 100,
-  isTouched: false),
-  SinglePieChartData(
-  name: "قطاع 3",
-  color: Colors.purple,
-  value: 10,
-  radius: 100,
-  isTouched: false),
-  SinglePieChartData(
-  name: "قطاع 4",
-  color: Colors.blue,
-  value: 10,
-  radius: 100,
-  isTouched: false),
-  SinglePieChartData(
-  name: "قطاع 5",
-  color: Colors.orange,
-  value: 10,
-  radius: 100,
-  isTouched: false),
+List<SinglePieChartData> _getPieChart(List<Map<String, dynamic>> transformers) {
+  final List<SinglePieChartData> pieChartData = [];
+  List<Color> listOfColors = ListAndMaps().listOfColors;
+  for (int i = 0; i < transformers.length; i++) {
+    pieChartData.add(SinglePieChartData(
+        name: transformers[i].keys.toString(),
+        color: listOfColors[i],
+        value: 10,
+        radius: 100,
+        isTouched: false));
+  }
+  return pieChartData;
+/*  return [
     SinglePieChartData(
-  name: "قطاع 6",
-  color: Colors.indigo,
-  value: 10,
-  radius: 100,
-  isTouched: false),
+        name: "قطاع 0",
+        color: Colors.red,
+        value: 10,
+        radius: 100,
+        isTouched: false),
     SinglePieChartData(
-  name: "قطاع 7",
-  color: Colors.pink,
-  value: 10,
-  radius: 100,
-  isTouched: false),
+        name: "قطاع 1",
+        color: Colors.green,
+        value: 10,
+        radius: 100,
+        isTouched: false),
     SinglePieChartData(
-  name: "قطاع 8",
-  color: Colors.grey,
-  value: 10,
-  radius: 100,
-  isTouched: false),
+        name: "قطاع 2",
+        color: Colors.brown,
+        value: 10,
+        radius: 100,
+        isTouched: false),
     SinglePieChartData(
-  name: "قطاع 9",
-  color: Colors.black,
-  value: 10,
-  radius: 100,
-  isTouched: false),
+        name: "قطاع 3",
+        color: Colors.purple,
+        value: 10,
+        radius: 100,
+        isTouched: false),
     SinglePieChartData(
-  name: "حي الامانة",
-  color: Colors.teal,
-  value: 10,
-  radius: 100,
-  isTouched: false),
+        name: "قطاع 4",
+        color: Colors.blue,
+        value: 10,
+        radius: 100,
+        isTouched: false),
     SinglePieChartData(
-  name: "نواب الضباط",
-  color: Colors.cyan,
-  value: 10,
-  radius: 100,
-  isTouched: false),
-  ];
+        name: "قطاع 5",
+        color: Colors.orange,
+        value: 10,
+        radius: 100,
+        isTouched: false),
+    SinglePieChartData(
+        name: "قطاع 6",
+        color: Colors.indigo,
+        value: 10,
+        radius: 100,
+        isTouched: false),
+    SinglePieChartData(
+        name: "قطاع 7",
+        color: Colors.pink,
+        value: 10,
+        radius: 100,
+        isTouched: false),
+    SinglePieChartData(
+        name: "قطاع 8",
+        color: Colors.grey,
+        value: 10,
+        radius: 100,
+        isTouched: false),
+    SinglePieChartData(
+        name: "قطاع 9",
+        color: Colors.black,
+        value: 10,
+        radius: 100,
+        isTouched: false),
+    SinglePieChartData(
+        name: "حي الامانة",
+        color: Colors.teal,
+        value: 10,
+        radius: 100,
+        isTouched: false),
+    SinglePieChartData(
+        name: "نواب الضباط",
+        color: Colors.cyan,
+        value: 10,
+        radius: 100,
+        isTouched: false),
+  ];*/
 }
 
 class SinglePieChartData {
@@ -661,9 +639,10 @@ class SinglePieChartData {
   final double value;
   final double radius;
 
-  SinglePieChartData({required this.name,
-    required this.color,
-    required this.value,
-    required this.radius,
-    required this.isTouched});
+  SinglePieChartData(
+      {required this.name,
+      required this.color,
+      required this.value,
+      required this.radius,
+      required this.isTouched});
 }

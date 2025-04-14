@@ -1,3 +1,7 @@
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
+
 class ListAndMaps {
   Map<String,dynamic> feedersName = {
     "1 مثنى" : "1 مثنى",
@@ -177,4 +181,18 @@ class ListAndMaps {
      "104 بلوك" : "104 بلوك",
      "105 بلوك" : "105 بلوك",
    };
+   List<Color> listOfColors = [
+     Colors.red,
+     Colors.green,
+     Colors.brown,
+     Colors.purple,
+     Colors.blue,
+     Colors.orange,
+     Colors.indigo,
+     Colors.pink,
+     Colors.grey,
+     Colors.black,
+     Colors.teal,
+     Colors.cyan,
+  ];
 }
