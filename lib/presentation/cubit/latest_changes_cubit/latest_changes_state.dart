@@ -5,7 +5,12 @@ sealed class LatestChangesState {}
 
 final class LatestChangesInitial extends LatestChangesState {}
 final class LatestChangesLoaded extends LatestChangesState{
-  final Result<List<TransformerModel>> latestTransformers;
+  final List<TransformerModel> latestTransformers;
 
   LatestChangesLoaded({required this.latestTransformers});
+}
+final class LatestChangesError extends LatestChangesState {
+  final String error;
+
+  LatestChangesError({required this.error});
 }

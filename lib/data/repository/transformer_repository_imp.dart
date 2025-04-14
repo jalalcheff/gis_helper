@@ -78,9 +78,9 @@ class TransformerRepositoryImp implements TransformerRepository {
 
   @override
   Future<Result<List<TransformerResource>>> getLastChangesTransformers() async {
-    final transformers = await _apiService.getLatestChanges();
-    final List<TransformerResource> tempTransformers = [];
-    switch (transformers) {
+    // final transformers = await _apiService.getLatestChanges();
+    final transformers = await _databaseService.getLatestTransformers();
+    /*switch (transformers) {
       case ErrorValue<List>():
         {
           final latestTransformerDatabase =
@@ -90,7 +90,6 @@ class TransformerRepositoryImp implements TransformerRepository {
             case Ok<List<TransformerResource>>():
               {
                 print("latest transformer locally");
-                printDataOfResult(latestTransformerDatabase);
               }
             case ErrorValue<List<TransformerResource>>():
               {
@@ -117,44 +116,62 @@ class TransformerRepositoryImp implements TransformerRepository {
         switch (latestTransformerDatabase) {
           case Ok<List<TransformerResource>>():
             {
+              _databaseService.saveLatestTransformersDataIntoDatabase(latestTransformerDatabase.value);
               print("data from database repository");
-              printDataOfResult(latestTransformerDatabase);
             }
           case ErrorValue<List<TransformerResource>>():
-            print("لا يوجد بيانات تاكد من الاتصال بالانترنت");
+            {
+              print("لا يوجد بيانات تاكد من الاتصال بالانترنت");
+              return latestTransformerDatabase;
+            }
+
         }
         //  printDataOfResult(latestTransformerDatabase);
         return latestTransformerDatabase;
+    }*/
+    switch (transformers) {
+      case Ok<List<TransformerResource>>():
+        {
+          return transformers;
+        }
+      case ErrorValue<List<TransformerResource>>():
+        {
+          final apiLatestChangesData = await _apiService.getLatestChanges();
+          final localResult = await _databaseService
+              .saveLatestTransformersDataIntoDatabase(apiLatestChangesData);
+          return localResult;
+        }
     }
   }
 
-  saveDataToDatabase() {}
+    saveDataToDatabase() {}
 
-  printDataOfResult(Result<List<TransformerResource>> transformer) {
-    (transformer as Ok<List<TransformerResource>>).value.forEach((transformer) {
-      transformer.printAllData();
-    });
-  }
+    printDataOfResult(Result<List<TransformerResource>> transformer) {
+      (transformer as Ok<List<TransformerResource>>).value.forEach((
+          transformer) {});
+    }
 
-  @override
-  Future<Result<dynamic>> addTransformerData (TransformerModel transformer,
-      String path) async{
-    print("transformer model data inside transformer repo is ${transformer.feederName}");
-    TransformerResource transformerResource = TransformerResource(
-        feederName: transformer.feederName,
-        isItOverhead: transformer.isItOverhead,
-        isItPrivate: transformer.isItPrivate,
-        mahlaOrSector: transformer.mahlaOrSector,
-        substationName: transformer.substationName,
-        transformerCapacity: transformer.transformerCapacity,
-        transformerName: transformer.transformerName,
-        transformerSerialNumber: transformer.transformerSerialNumber,
-        xCoordinates: transformer.xCoordinates,
-        yCoordinates: transformer.yCoordinates,
-        zuqaqOrBlock: transformer.zuqaqOrBlock);
-    print("transformer resource data inside transformer repo is ${transformer.feederName}");
-    transformerResource.printAllData();
-    final data = await _apiService.addTransformer(transformerResource, path);
-    return data;
+    @override
+    Future<Result<dynamic>> addTransformerData(TransformerModel transformer,
+        String path) async {
+      print("transformer model data inside transformer repo is ${transformer
+          .feederName}");
+      TransformerResource transformerResource = TransformerResource(
+          feederName: transformer.feederName,
+          isItOverhead: transformer.isItOverhead,
+          isItPrivate: transformer.isItPrivate,
+          mahlaOrSector: transformer.mahlaOrSector,
+          substationName: transformer.substationName,
+          transformerCapacity: transformer.transformerCapacity,
+          transformerName: transformer.transformerName,
+          transformerSerialNumber: transformer.transformerSerialNumber,
+          xCoordinates: transformer.xCoordinates,
+          yCoordinates: transformer.yCoordinates,
+          zuqaqOrBlock: transformer.zuqaqOrBlock);
+      print("transformer resource data inside transformer repo is ${transformer
+          .feederName}");
+      transformerResource.printAllData();
+      final data = await _apiService.addTransformer(transformerResource, path);
+      return data;
+    }
   }
-}

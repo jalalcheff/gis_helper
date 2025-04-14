@@ -10,14 +10,13 @@ class GetLatestChangesUsecase {
   GetLatestChangesUsecase({required this.transformerRepository});
 
   Future<Result<List<TransformerModel>>> getLatestChanges() async {
-    final Result<
-        List<TransformerResource>> latestChanges = await transformerRepository
+    final Result<List<TransformerResource>> latestChanges = await transformerRepository
         .getLastChangesTransformers();
     final List<TransformerModel> latestChangesModel = [];
     switch (latestChanges) {
       case Ok<List<TransformerResource>>():
         {
-          latestChanges.value.forEach((element) {
+          for (var element in latestChanges.value) {
             latestChangesModel.add(
                 TransformerModel(
                     feederName: element.feederName,
@@ -32,11 +31,14 @@ class GetLatestChangesUsecase {
                     yCoordinates: element.yCoordinates,
                     zuqaqOrBlock: element.zuqaqOrBlock)
             );
-          });
+          }
+          print("inside use case latest changes");
+        //  latestChangesModel.first.printAllData();
           return Result.ok(latestChangesModel);
         }
       case ErrorValue<List<TransformerResource>>():
       {
+        print("inside use case latest changes error error ${latestChanges.e}");
         return Result.error(latestChanges.e);
       }
     }

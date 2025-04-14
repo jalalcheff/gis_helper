@@ -101,7 +101,7 @@ class MyApp extends StatelessWidget {
           appBarTheme: AppBarTheme(
             backgroundColor: Color(styleConstants.colorWhite),
           )),
-      home:  DataEntryScreen(),
+      home:  HomeScreen(),
     );
   }
 }

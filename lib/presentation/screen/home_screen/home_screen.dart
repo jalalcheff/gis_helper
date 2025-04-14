@@ -1,9 +1,13 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gis_helper/constants/style_constants.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_ads_widget.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_latest_changes_widget.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_transformer_statistics_card_widget.dart';
+
+import '../../../di/dependency_injection.dart';
+import '../../cubit/latest_changes_cubit/latest_changes_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
@@ -14,7 +18,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final StyleConstants styleConstants = StyleConstants();
-
   @override
   Widget build(BuildContext context) {
     MediaQueryData mediaQuery = MediaQuery.of(context);
@@ -50,8 +53,14 @@ class _HomeBodyState extends State<HomeBody> {
 
   int? toucnedIndex = 0;
   StyleConstants styleConstants = StyleConstants();
-
   _HomeBodyState(this.mediaQuery);
+  late LatestChangesCubit _latestChangesTransformerCubit;
+
+  @override
+  void initState() {
+    _latestChangesTransformerCubit = locator<LatestChangesCubit>();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,8 +73,10 @@ class _HomeBodyState extends State<HomeBody> {
         SizedBox(
           height: styleConstants.mediumDp,
         ),
-        HomeScreenLatestChangesWidget()
-            .latestChangesCard(mediaQuery, context, styleConstants),
+        BlocProvider(
+  create: (context) => _latestChangesTransformerCubit,
+  child: HomeScreenLatestChangesWidget(latestChangesTransformerCubit: _latestChangesTransformerCubit),
+),
         SizedBox(
           height: styleConstants.extraLargeDp,
         ),

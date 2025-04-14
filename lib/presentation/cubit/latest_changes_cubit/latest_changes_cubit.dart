@@ -10,7 +10,13 @@ part 'latest_changes_state.dart';
 class LatestChangesCubit extends Cubit<LatestChangesState> {
   final GetLatestChangesUsecase getLatestChangesUsecase;
   LatestChangesCubit(this.getLatestChangesUsecase) : super(LatestChangesInitial());
-  void loadLatestChanges(Result<List<TransformerModel>> latestTransformers){
-    emit(LatestChangesLoaded(latestTransformers: latestTransformers));
+  Future<void> loadLatestChanges() async {
+    Result<List<TransformerModel>> result = await getLatestChangesUsecase.getLatestChanges();
+    switch(result) {
+      case Ok<List<TransformerModel>>():
+        emit(LatestChangesLoaded(latestTransformers: result.value));
+      case ErrorValue<List<TransformerModel>>():
+        emit(LatestChangesError(error: result.e.toString()));
+    }
+    }
   }
-}

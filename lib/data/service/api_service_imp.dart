@@ -33,11 +33,11 @@ class ApiServiceImp implements ApiService {
           .get();
       final List<Map<String,dynamic>> lastChanges = (firebaseData.docs.map((element){
         return element.data();
-      })).toList().sublist(0, 3);
+      })).toList();
       lastChanges.forEach((element) {
         print("last chnges service is : ${element.values}");
       });
-      return Result.ok(lastChanges.sublist(0, 3));
+      return Result.ok(lastChanges);
     } catch (e) {
       print("latest changes servis is : $e");
       return Result.error(e);

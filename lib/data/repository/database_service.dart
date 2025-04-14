@@ -6,5 +6,5 @@ abstract class DatabaseService {
   saveDataIntoDatabase(List<TransformerResource> transform);
 //  Future<Result<List<TransformerResource>>> getAllTransformers();
   Future<Result<List<TransformerResource>>> getLatestTransformers();
-  Future<String> saveLatestTransformersDataIntoDatabase(List<TransformerResource> transformer);
+  Future<Result<List<TransformerResource>>> saveLatestTransformersDataIntoDatabase(Result<List<Map<String,dynamic>>> transformer);
 }

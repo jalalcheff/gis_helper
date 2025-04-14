@@ -15,9 +15,9 @@ class DatabaseServiceImp extends DatabaseService {
     List<TransformerResource> finalTransformerResult = [];
     switch(transformers){
       case List<TransformerResource>():{
-        transformers.forEach((element) {
-          finalTransformerResult.add(element);
-        });
+      for(TransformerResource transformer in transformers){
+        finalTransformerResult.add(transformer);
+      }
         finalResult = Ok(finalTransformerResult);
       }
       default : {
@@ -32,35 +32,49 @@ class DatabaseServiceImp extends DatabaseService {
   @override
   saveDataIntoDatabase(List<TransformerResource> transform) async {
     var box = Hive.box('transformer');
-    print("inside data base service ${transform[0].mahlaOrSector}");
+   // print("inside data base service ${transform[0].mahlaOrSector}");
     await box.put('transformer', transform);
     return "success";
   }
 
   @override
-  Future<Result<List<TransformerResource>>> getLatestTransformers() async{
+  Future<Result<List<TransformerResource>>> getLatestTransformers() async {
     final box = Hive.box("latest transformers");
-    final transformers = await box.get("latest transformers", defaultValue: [Exception("no data")]) as List;
-    if(transformers[0] == "no data found"){
-      print("inside read latest database service error ${transformers[0]}");
-      return Result.error(Exception("no data"));
-    }
-    else {
+    try {
+      final transformers = await box.get("latest transformers", defaultValue: null);
+      if (transformers == null) {
+        return Result.error(Exception("no data"));
+      }
       final List<TransformerResource> tempLatestTransformers = [];
-      transformers.forEach((transformer) {
-        TransformerResource tempTransformer = transformer;
-        print("inside read from latest database service : ");
-        tempTransformer.printAllData();
-        tempLatestTransformers.add(tempTransformer);
-      });
+      for (var transformer in transformers as List) {
+        if (transformer is TransformerResource) {
+          tempLatestTransformers.add(transformer);
+        }
+      }
+      if (tempLatestTransformers.isEmpty) {
+        return Result.error(Exception("no valid transformers found"));
+      }
       return Result.ok(tempLatestTransformers);
+    } catch (e) {
+      return Result.error(Exception("Error reading latest transformers: $e"));
     }
   }
 
   @override
-  Future<String> saveLatestTransformersDataIntoDatabase(List<TransformerResource> transformer) async{
-    final box = Hive.box("latest transformers");
-    await box.put("latest transformers", transformer);
-    return Future.value("success");
+  Future<Result<List<TransformerResource>>> saveLatestTransformersDataIntoDatabase(Result<List<Map<String,dynamic>>> transformer) async{
+    switch(transformer) {
+      case Ok<List<Map<String,dynamic>>>():
+        {
+          List<TransformerResource> tempTransformers = [];
+          for (var transformer in transformer.value) {
+            tempTransformers.add(TransformerResource.fromJson(transformer));
+          }
+          final box = Hive.box("latest transformers");
+          await box.put("latest transformers", tempTransformers);
+          return Ok(tempTransformers);
+        }
+      case ErrorValue<List<Map<String,dynamic>>>():
+        return ErrorValue("cannot save latest chnges locally");
+    }
   }
 }

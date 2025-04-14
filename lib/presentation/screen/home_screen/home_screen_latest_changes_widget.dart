@@ -1,78 +1,109 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gis_helper/data/resource/result_pattern.dart';
 import '../../../constants/style_constants.dart';
+import '../../../di/dependency_injection.dart';
+import '../../../domain/model/transformer_model.dart';
+import '../../cubit/latest_changes_cubit/latest_changes_cubit.dart';
 
-class HomeScreenLatestChangesWidget {
-  Container latestChangesCard(MediaQueryData mediaQuery, BuildContext context,
-      StyleConstants styleConstants) {
-    return Container(
-      margin: EdgeInsets.only(top: styleConstants.largeDp),
-      padding: EdgeInsets.only(top: styleConstants.largeDp),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(
-            Radius.circular(styleConstants.largeDp.toDouble())),
-        color: Colors.white,
-      ),
-      width: mediaQuery.size.width,
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.all(styleConstants.largeDp),
-            alignment: Alignment.topRight,
-            child: Text(
-              "الانشطة الاخيرة",
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(color: Colors.black),
-            ),
-          ),
-          _itemLatestChanges(
-              mediaQuery,
-              context,
-              styleConstants,
-              Color(styleConstants.colorGreenBackgroundTernary),
-              Color(styleConstants.colorSecondaryNormal),
-              Color(styleConstants.colorGreenBackgroundNormal),
-              Colors.green,
-              Icons.add,
-              "اضافة محولة",
-              "تم اضافة محولة 322 الى قطاع 5",
-              "قبل 1 ساعة"),
-          SizedBox(
-            height: styleConstants.smallDp,
-          ),
-          _itemLatestChanges(
-              mediaQuery,
-              context,
-              styleConstants,
-              Color(styleConstants.colorBlueBackgroundTernary),
-              Color(styleConstants.colorSecondaryNormal),
-              Color(styleConstants.colorBlueBackgroundNormal),
-              Colors.blue,
-              Icons.edit_note,
-              "تحديث بيانات",
-              "تم تغيير موقع المحولة 332",
-              "قبل 10 ساعة"),
-          SizedBox(
-            height: styleConstants.smallDp,
-          ),
-          _itemLatestChanges(
-              mediaQuery,
-              context,
-              styleConstants,
-              Color(styleConstants.colorRedBackgroundTernary),
-              Color(styleConstants.colorSecondaryNormal),
-              Color(styleConstants.colorRedBackgroundNormal),
-              Colors.red,
-              Icons.delete,
-              "ازالة محولة",
-              "تم ازالة المحولة 211",
-              "قبل 10 يوم"),
-        ],
-      ),
-    );
+class HomeScreenLatestChangesWidget extends StatefulWidget {
+  final LatestChangesCubit latestChangesTransformerCubit;
+
+
+  const HomeScreenLatestChangesWidget({super.key, required this.latestChangesTransformerCubit});
+
+  @override
+  State<HomeScreenLatestChangesWidget> createState() => _HomeScreenLatestChangesWidgetState();
+}
+
+class _HomeScreenLatestChangesWidgetState extends State<HomeScreenLatestChangesWidget> {
+
+  @override
+  void initState() {
+    widget.latestChangesTransformerCubit.loadLatestChanges();
+    super.initState();
   }
+  @override
+  Widget build(BuildContext context) {
+    MediaQueryData mediaQuery = MediaQuery.of(context);
+    StyleConstants styleConstants = StyleConstants();
+    return BlocBuilder<LatestChangesCubit, LatestChangesState>(
+        builder: (context, state) {
+          return Container(
+            margin: EdgeInsets.only(top: styleConstants.largeDp),
+            padding: EdgeInsets.only(top: styleConstants.largeDp),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(
+                  Radius.circular(styleConstants.largeDp.toDouble())),
+              color: Colors.white,
+            ),
+            width: mediaQuery.size.width,
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(styleConstants.largeDp),
+                  alignment: Alignment.topRight,
+                  child: Text(
+                    "الانشطة الاخيرة",
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: Colors.black),
+                  ),
+                ),
+                if (state is LatestChangesInitial)
+                  const Center(child: CircularProgressIndicator())
+                else if (state is LatestChangesLoaded)
+                  _buildLatestChanges(state.latestTransformers, mediaQuery, context, styleConstants)
+                else if (state is LatestChangesError)
+                  Center(child: Text(state.error.toString()))
+                else
+                  const Center(child: Text('something went wrong')),
+              ],
+            ),
+          );
+        },
+      );
+  }
+
+  Widget _buildLatestChanges(List<TransformerModel> result, MediaQueryData mediaQuery, BuildContext context, StyleConstants styleConstants) {
+    return  Column(
+          children: result.map((transformer) {
+            return Column(
+              children: [
+                _itemLatestChanges(
+                  mediaQuery,
+                  context,
+                  styleConstants,
+                  Color(styleConstants.colorGreenBackgroundTernary),
+                  Color(styleConstants.colorSecondaryNormal),
+                  Color(styleConstants.colorGreenBackgroundNormal),
+                  Colors.green,
+                  Icons.add,
+                  "${transformer.transformerName} اضافة المحولة ",
+                  'رقم المحولة ${transformer.transformerSerialNumber} في ${transformer.mahlaOrSector}',
+                  'Recent',
+                ),
+                SizedBox(height: styleConstants.smallDp),
+              ],
+            );
+          }).toList(),
+        );
+      }
+  }
+
+ /* extension ResultExtension<T> on Result<T> {
+    R when<R>({
+      required R Function(T) ok,
+      required R Function(Object) error,
+    }) {
+      return switch (this) {
+        Ok<T>(value: final v) => ok(v),
+        ErrorValue<T>(e: final e) => error(e),
+      };
+    }
+  }*/
+
 
   Container _itemLatestChanges(
       MediaQueryData mediaQuery,
@@ -141,4 +172,3 @@ class HomeScreenLatestChangesWidget {
           ],
         ));
   }
-}

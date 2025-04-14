@@ -51,7 +51,6 @@ class TransformerResource {
       required this.zuqaqOrBlock});
 
   printAllData() {
-    print(
-        "all data are : \n feederName : ${feederName}\n isItOverhead : ${isItOverhead}\n isItPrivate : ${isItPrivate}\n mahlaOrSector : ${mahlaOrSector}\n substationName : ${substationName}\n transformerCapacity : ${transformerCapacity}\n transformerName : ${transformerName}\n transformerSerialNumber : ${transformerSerialNumber}\n xCoordinates : ${xCoordinates}\n yCoordinates : ${yCoordinates}\n zuqaqOrBlock : ${zuqaqOrBlock}");
   }
+  //    print("all data are : \n feederName : ${feederName}\n isItOverhead : ${isItOverhead}\n isItPrivate : ${isItPrivate}\n mahlaOrSector : ${mahlaOrSector}\n substationName : ${substationName}\n transformerCapacity : ${transformerCapacity}\n transformerName : ${transformerName}\n transformerSerialNumber : ${transformerSerialNumber}\n xCoordinates : ${xCoordinates}\n yCoordinates : ${yCoordinates}\n zuqaqOrBlock : ${zuqaqOrBlock}");
 }
