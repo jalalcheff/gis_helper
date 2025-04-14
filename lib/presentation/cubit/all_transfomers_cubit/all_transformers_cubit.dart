@@ -14,7 +14,6 @@ class AllTransformersCubit extends Cubit<AllTransformersState> {
   void loadAllTransformers(List<TransformerResource> transformers) async{
     final data = await _getAllTransformersLocallyUsecase.getAllTransformers();
     switch(data){
-
       case Ok<List<TransformerModel>>():
         emit(AllTransformersLoaded(transformers: data.value));
       case ErrorValue<List<TransformerModel>>():

@@ -2,16 +2,21 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gis_helper/constants/style_constants.dart';
+import 'package:gis_helper/presentation/cubit/all_transfomers_cubit/all_transformers_cubit.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_ads_widget.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_latest_changes_widget.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_transformer_statistics_card_widget.dart';
 
 import '../../../di/dependency_injection.dart';
+import '../../cubit/feeders_number_cubit/feeders_number_cubit.dart';
 import '../../cubit/latest_changes_cubit/latest_changes_cubit.dart';
+import '../../cubit/transformer_number_cubit/transformer_number_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({super.key});
-
+  HomeScreen({super.key, required this.transformerNumberCubit, required this.feedersNumberCubit, required this.transformersCubit});
+final TransformerNumberCubit transformerNumberCubit;
+final FeedersNumberCubit feedersNumberCubit;
+final AllTransformersCubit transformersCubit;
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -35,13 +40,18 @@ class _HomeScreenState extends State<HomeScreen> {
         body: SingleChildScrollView(
             child: HomeBody(
               mediaQuery: mediaQuery,
+              transformerNumberCubit: widget.transformerNumberCubit,
+              feedersNumberCubit: widget.feedersNumberCubit,
+              transformersCubit: widget.transformersCubit,
             )));
   }
 }
 
 class HomeBody extends StatefulWidget {
-  const HomeBody({super.key, required this.mediaQuery});
-
+  const HomeBody({super.key, required this.mediaQuery, required this.transformerNumberCubit, required this.feedersNumberCubit, required this.transformersCubit});
+  final TransformerNumberCubit transformerNumberCubit;
+  final FeedersNumberCubit feedersNumberCubit;
+  final AllTransformersCubit transformersCubit;
   final MediaQueryData mediaQuery;
 
   @override
@@ -59,6 +69,9 @@ class _HomeBodyState extends State<HomeBody> {
   @override
   void initState() {
     _latestChangesTransformerCubit = locator<LatestChangesCubit>();
+    widget.transformersCubit.loadAllTransformers([]);
+    widget.feedersNumberCubit.emitFeedersNumber();
+    widget.transformerNumberCubit.emitTransformerNumber();
     super.initState();
   }
 
@@ -87,16 +100,44 @@ class _HomeBodyState extends State<HomeBody> {
               width: styleConstants.mediumDp,
             ),
             Expanded(
-                child: HomeScreenTransformerStatisticsCardWidget()
-                    .transformerStatistics(
-                    styleConstants, context, "عدد المغذيات", "1200")),
+                child: BlocBuilder<FeedersNumberCubit, FeedersNumberState>(
+  builder: (context, state) {
+    if (state is FeedersNumberLoaded) {
+      return HomeScreenTransformerStatisticsCardWidget().transformerStatistics(
+          styleConstants, context, "عدد المغذيات", state.feedersNumber.toString());
+    }
+    else if (state is FeedersNumberError) {
+      print("feeder number error is ${state.error}");
+      return HomeScreenTransformerStatisticsCardWidget().transformerStatistics(
+          styleConstants, context, "اجمالي المغذيات", "خطأ");
+    }
+    else {
+      return HomeScreenTransformerStatisticsCardWidget().transformerStatistics(
+          styleConstants, context, "اجمالي المغذيات", "لودنج");
+    }
+  },
+)
+                   ),
             SizedBox(
               width: styleConstants.extraLargeDp,
             ),
             Expanded(
-                child: HomeScreenTransformerStatisticsCardWidget()
-                    .transformerStatistics(
-                    styleConstants, context, "اجمالي المحولات", "500")),
+                child: BlocBuilder<TransformerNumberCubit, TransformerNumberState>(
+  builder: (context, state) {
+    if (state is TransformerNumberLoaded) {
+      return HomeScreenTransformerStatisticsCardWidget().transformerStatistics(
+          styleConstants, context, "عدد المحولات", state.transformerNumber.toString());
+    }
+    else if (state is TransformerNumberError) {
+      return HomeScreenTransformerStatisticsCardWidget().transformerStatistics(
+          styleConstants, context, "اجمالي المحولات", "خطأ");
+    }
+    else {
+      return HomeScreenTransformerStatisticsCardWidget().transformerStatistics(
+          styleConstants, context, "اجمالي المحولات", "لودنج");
+    }
+  },
+),),
             SizedBox(
               width: styleConstants.mediumDp,
             ),

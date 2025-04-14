@@ -10,7 +10,7 @@ class GetAllTransformersLocallyUsecase {
 
   Future<Result<List<TransformerModel>>> getAllTransformers() async {
     final transformers = await transformerRepository
-        .getAllTransformersLocally();
+        .getAllTransformers();
     final List<TransformerModel> transformersModelList = [];
     switch (transformers) {
       case Ok<List<TransformerResource>>():

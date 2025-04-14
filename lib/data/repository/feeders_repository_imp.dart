@@ -8,28 +8,21 @@ class FeedersRepositoryImp implements FeedersRepository{
 
   FeedersRepositoryImp({required this.localDatabaseTransformers});
   @override
-  Future<Result<dynamic>> getAllFeeders() async{
+  Future<Result<List<String>>> getAllFeeders() async{
     final Result<List<TransformerResource>> transformers = await localDatabaseTransformers.getAllTransformers();
-    final Set feeders = {};
-  //  print("inside feeders repository : ${(transformers as Ok<List<TransformerResource>>).value[0].feederName}");
-    final Result finalResult;
-    switch(transformers){
-
+    final Set<String> feeders = {};
+    final Result<List<String>> finalResult;
+    switch(transformers) {
       case Ok<List<TransformerResource>>():
         {
-          (transformers as Ok<List<TransformerResource>>)
-              .value
-              .forEach((transformer) {
+          for (var transformer in transformers.value) {
             feeders.add(transformer.feederName);
-          });
+          }
           finalResult = Ok(feeders.toList());
         }
-      case ErrorValue<List<TransformerResource>>():{
-        finalResult = ErrorValue(" تاكد من الاتصال بالانترنت لا يوجد بيانات");
-      }
-
+      case ErrorValue<List<TransformerResource>>():
+        finalResult = ErrorValue(transformers.e);
     }
-
     return finalResult;
   }
 }

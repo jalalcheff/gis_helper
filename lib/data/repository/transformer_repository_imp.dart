@@ -17,63 +17,33 @@ class TransformerRepositoryImp implements TransformerRepository {
 
   @override
   Future<Result<List<TransformerResource>>> getAllTransformers() async {
-//    print("database data is ${database.value}");
-    final Result<List<TransformerResource>> finalResult;
-    final transformers = await _apiService.getAllTransformers();
-    print("inside get all transformer repository ${(transformers as Ok<
-        List<Map<String, dynamic>>>).value}");
-    switch (transformers) {
-      case Ok<List<Map<String, dynamic>>>():
-        {
-          final Set feeders = {};
-          int counter = 0;
-          List<TransformerResource> tempTransformers = [];
-          transformers.value.forEach((transformer) {
-            print("inside transformer repository ${transformer.values}");
-            tempTransformers.add(TransformerResource.fromJson(transformer));
-            feeders.add(tempTransformers[counter].feederName);
-            counter++;
-          });
-          //print("feeders no is ${feeders.length} which are : ${feeders.toList()} and ${feeders.toList()[0]}");
-          print("feeder num are ${feeders.length}");
-          feeders.toList().forEach((feeder) {
-            print("this is feeder $feeder");
-          });
-          print("inside repository ${tempTransformers[0].mahlaOrSector}");
-          await _databaseService.saveDataIntoDatabase(tempTransformers);
-          final databaseData = await _databaseService.getAllTransformers();
-          print(
-              "inside repository database ${(databaseData as Ok<
-                  List<TransformerResource>>).value[0].mahlaOrSector}");
-          return Result.ok(
-              (databaseData as Ok<List<TransformerResource>>).value);
+  final Result<List<TransformerResource>> databaseTransformers = await _databaseService.getAllTransformers();
+  switch(databaseTransformers) {
+    case Ok<List<TransformerResource>>():
+      return databaseTransformers;
+    case ErrorValue<List<TransformerResource>>():
+      {
+        print("inside transformer repo search for transformer in internet");
+        final Result<List<TransformerResource>> finalResult;
+        final transformers = await _apiService.getAllTransformers();
+        switch (transformers) {
+          case Ok<List<Map<String, dynamic>>>():
+            {
+                final result = _databaseService.saveDataIntoDatabase(transformers);
+                print("inside transformer repo ${result.runtimeType}");
+                return result;
+            }
+            case ErrorValue<List<Map<String, dynamic>>>():
+            return ErrorValue(transformers.e);
         }
-      case ErrorValue<List<Map<String, dynamic>>>():
-        {
-          //  print("transformer repo imp is : ${transformers.e}");
-          final database = await _databaseService.getAllTransformers();
-          switch (database) {
-            case Ok<List<TransformerResource>>():
-              {
-                finalResult = Ok(database.value);
-              }
-            case ErrorValue<List<TransformerResource>>():
-              {
-                finalResult = ErrorValue(database.e);
-              }
-          }
-          return finalResult;
-        }
-    }
+      }
+  }
   }
 
   @override
   Future<Result<List<TransformerResource>>> getAllTransformersLocally() async {
     final databaseData = await _databaseService.getAllTransformers();
-    print(
-        "inside repository database ${(databaseData as Ok<
-            List<TransformerResource>>).value[0].mahlaOrSector}");
-    return Result.ok((databaseData as Ok<List<TransformerResource>>).value);
+    return databaseData;
   }
 
   @override
@@ -152,8 +122,7 @@ class TransformerRepositoryImp implements TransformerRepository {
     }
 
     @override
-    Future<Result<dynamic>> addTransformerData(TransformerModel transformer,
-        String path) async {
+    Future<Result<dynamic>> addTransformerData(TransformerModel transformer, String path) async {
       print("transformer model data inside transformer repo is ${transformer
           .feederName}");
       TransformerResource transformerResource = TransformerResource(

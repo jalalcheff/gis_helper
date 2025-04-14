@@ -11,11 +11,12 @@ class GetAllTransformersNumberUsecase {
   Future<Result<int>> getAllTransformersNumber() async{
     final transformers = await databaseService.getAllTransformers();
     switch(transformers){
-
       case Ok<List<TransformerResource>>():
-       return Ok(transformers.value.length);
+        {
+          return Ok(transformers.value.length);
+        }
       case ErrorValue<List<TransformerResource>>():
-        return ErrorValue("تاكد من الاتصال بالانترنت");
+        return ErrorValue(transformers.e);
     }
   }
 }

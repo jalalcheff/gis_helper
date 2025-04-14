@@ -9,6 +9,26 @@ class DatabaseServiceImp extends DatabaseService {
   @override
   Future<Result<List<TransformerResource>>> getAllTransformers() async {
     final box = Hive.box("transformer");
+    try{
+      final List<TransformerResource> tempTransformer = [];
+      final transformers = await box.get("transformer", defaultValue: null);
+      if(transformers == null){
+        return Result.error(Exception("no data"));
+      }
+      for(var transformer in transformers as List){
+        if(transformer is TransformerResource) {
+          tempTransformer.add(transformer);
+        }
+        }
+      if(tempTransformer.isEmpty){
+        return Result.error(Exception("no valid transformers found"));
+      }
+      return Result.ok(tempTransformer);
+    }
+    catch(e){
+      return ErrorValue(e);
+    }
+
     final Result<List<TransformerResource>> finalResult;
     final transformers = await box.get(
         "transformer", defaultValue: [""]) as List;
@@ -30,11 +50,24 @@ class DatabaseServiceImp extends DatabaseService {
   }
 
   @override
-  saveDataIntoDatabase(List<TransformerResource> transform) async {
-    var box = Hive.box('transformer');
-   // print("inside data base service ${transform[0].mahlaOrSector}");
-    await box.put('transformer', transform);
-    return "success";
+  Future<Result<List<TransformerResource>>> saveDataIntoDatabase(Result<List<Map<String,dynamic>>> transform) async {
+    final List<TransformerResource> tempTransformerList = [];
+    final Result<List<TransformerResource>> finalResult;
+    switch(transform) {
+      case Ok<List<Map<String, dynamic>>>():
+        {
+          for (var transformer in transform.value) {
+            tempTransformerList.add(TransformerResource.fromJson(transformer));
+          }
+          var box = Hive.box('transformer');
+          // print("inside data base service ${transform[0].mahlaOrSector}");
+          await box.put('transformer', tempTransformerList);
+          finalResult = Ok(tempTransformerList);
+        }
+      case ErrorValue<List<Map<String, dynamic>>>():
+        finalResult = ErrorValue(transform.e);
+    }
+    return finalResult;
   }
 
   @override

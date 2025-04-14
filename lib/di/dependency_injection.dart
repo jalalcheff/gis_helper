@@ -18,6 +18,8 @@ import '../data/repository/transformer_repository_imp.dart';
 import '../domain/feeders_repository.dart';
 import '../domain/get_feeders_number_usecase.dart';
 import '../domain/transformer_repository.dart';
+import '../presentation/cubit/feeders_number_cubit/feeders_number_cubit.dart';
+import '../presentation/cubit/transformer_number_cubit/transformer_number_cubit.dart';
 
 final GetIt locator = GetIt.instance;
 Future<void> setUpLocator() async{
@@ -34,6 +36,8 @@ Future<void> setUpLocator() async{
   locator.registerSingleton(AllTransformersCubit(locator<GetAllTransformersLocallyUsecase>()));
   locator.registerSingleton<AddTransformerCubit>(AddTransformerCubit(locator<AddTransformerUsecase>()));
   locator.registerSingleton(LatestChangesCubit(locator<GetLatestChangesUsecase>()));
+  locator.registerSingleton(FeedersNumberCubit(locator<GetFeedersNumberUsecase>()));
+  locator.registerSingleton(TransformerNumberCubit(locator<GetAllTransformersNumberUsecase>()));
 /*  locator.registerFactory(() => SearchForMealByIdRepository(foodApiService: locator<FoodApiService>()));
   locator.registerFactory(() => SearchMealByIdCubit(locator<SearchForMealByIdRepository>()));*/
 }

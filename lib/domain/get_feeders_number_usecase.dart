@@ -9,18 +9,14 @@ class GetFeedersNumberUsecase {
   GetFeedersNumberUsecase({required FeedersRepository feedersRepository}) : _feedersRepository = feedersRepository;
 
   Future<Result<int>> getAllFeeders() async{
-    final Result feeders = await _feedersRepository.getAllFeeders();
-    final List<String> tempFeederList = [];
+    final feeders = await _feedersRepository.getAllFeeders();
     final Result<int> finalResult;
     switch(feeders){
 
       case Ok():
         {
-          (feeders as Ok<List<TransformerResource>>).value.forEach((feeder){
-            tempFeederList.add(feeder.toString());
-            print("feeder inside feeders usecase is : ${feeder}");
-          });
-          finalResult = Ok(tempFeederList.length);
+          print("feeders are ${feeders.value.length}");
+          finalResult = Ok(feeders.value.length);
         }
       case ErrorValue():
         {
