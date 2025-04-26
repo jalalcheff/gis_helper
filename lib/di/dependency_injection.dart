@@ -18,8 +18,10 @@ import '../data/repository/transformer_repository_imp.dart';
 import '../domain/feeders_repository.dart';
 import '../domain/get_Number_of_transformers_of_each_sector.dart';
 import '../domain/get_feeders_number_usecase.dart';
+import '../domain/search_for_transformers.dart';
 import '../domain/transformer_repository.dart';
 import '../presentation/cubit/feeders_number_cubit/feeders_number_cubit.dart';
+import '../presentation/cubit/search_for_transformer_cubit/search_for_transformer_cubit.dart';
 import '../presentation/cubit/transformer_number_cubit/transformer_number_cubit.dart';
 import '../presentation/cubit/transformer_number_of_each_sector_cubit/transformer_number_of_each_sector_cubit.dart';
 
@@ -35,6 +37,7 @@ Future<void> setUpLocator() async{
   locator.registerSingleton(GetAllTransformersNumberUsecase(databaseService: locator<DatabaseServiceImp>(), transformerRepository: locator<TransformerRepositoryImp>()));
   locator.registerSingleton(GetFeedersNumberUsecase(feedersRepository: locator<FeedersRepositoryImp>()));
   locator.registerSingleton(GetLatestChangesUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
+  locator.registerFactory(() => SearchForTransformersUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
   locator.registerSingleton(AllTransformersCubit(locator<GetAllTransformersLocallyUsecase>()));
   locator.registerSingleton<AddTransformerCubit>(AddTransformerCubit(locator<AddTransformerUsecase>()));
   locator.registerSingleton(LatestChangesCubit(locator<GetLatestChangesUsecase>()));
@@ -42,6 +45,8 @@ Future<void> setUpLocator() async{
   locator.registerSingleton(TransformerNumberCubit(locator<GetAllTransformersNumberUsecase>()));
   locator.registerSingleton(GetNumberOfTransformersOfEachSector(transformerRepository: locator<TransformerRepositoryImp>()));
   locator.registerSingleton(TransformerNumberOfEachSectorCubit(locator<GetNumberOfTransformersOfEachSector>()));
+  locator.registerFactory(() => SearchForTransformerCubit(locator<SearchForTransformersUsecase>()));
+
 /*  locator.registerFactory(() => SearchForMealByIdRepository(foodApiService: locator<FoodApiService>()));
   locator.registerFactory(() => SearchMealByIdCubit(locator<SearchForMealByIdRepository>()));*/
 }

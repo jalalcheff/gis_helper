@@ -195,4 +195,15 @@ class ListAndMaps {
      Colors.teal,
      Colors.cyan,
   ];
+  List<String> listOfFilteredText = [
+    "كل الانواع",
+    "محولة خاصة",
+    "محولة حكومية",
+    "محولة ارضية",
+    "محولة هوائية",
+  ];
+  List<String> sortAccordingToCapacity = [
+    "السعة : من الاعلى الى الاقل",
+    "السعة : من الاقل الى الاعلى"
+  ];
 }

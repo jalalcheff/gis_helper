@@ -21,10 +21,13 @@ import 'package:gis_helper/presentation/cubit/all_transfomers_cubit/all_transfor
 import 'package:gis_helper/presentation/cubit/feeders_number_cubit/feeders_number_cubit.dart';
 import 'package:gis_helper/presentation/screen/data_entry_screen/data_entry_screen.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen.dart';
+import 'package:gis_helper/presentation/screen/search_screen/search_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'data/resource/result_pattern.dart';
 import 'di/dependency_injection.dart';
 import 'domain/get_Number_of_transformers_of_each_sector.dart';
+import 'domain/search_for_transformers.dart';
 import 'firebase_options.dart';
 import 'presentation/cubit/transformer_number_cubit/transformer_number_cubit.dart';
 import 'presentation/cubit/transformer_number_of_each_sector_cubit/transformer_number_of_each_sector_cubit.dart';
@@ -108,7 +111,9 @@ class MyApp extends StatelessWidget {
           appBarTheme: AppBarTheme(
             backgroundColor: Color(styleConstants.colorWhite),
           )),
-      home: MultiBlocProvider(
+      home: SearchScreen()
+
+      /*MultiBlocProvider(
         providers: [
           BlocProvider(create: (context) => locator<FeedersNumberCubit>()),
           BlocProvider(create: (context) => locator<TransformerNumberCubit>()),
@@ -116,7 +121,7 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => locator<TransformerNumberOfEachSectorCubit>()),
         ],
         child: HomeScreen(transformerNumberCubit: locator<TransformerNumberCubit>(), feedersNumberCubit: locator<FeedersNumberCubit>(),transformersCubit: locator<AllTransformersCubit>(), transformerNumberOfEachSectorCubit: locator<TransformerNumberOfEachSectorCubit>()),
-      ),
+      )*/,
     );
   }
 }
