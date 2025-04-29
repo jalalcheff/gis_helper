@@ -10,9 +10,9 @@ part 'search_for_transformer_state.dart';
 class SearchForTransformerCubit extends Cubit<SearchForTransformerState> {
   SearchForTransformerCubit(this.searchForTransformersUsecase) : super(SearchForTransformerInitial());
   final SearchForTransformersUsecase searchForTransformersUsecase;
-  void emitSearchForTransformers(String query) async {
+  void emitSearchForTransformers(String query, int sortAccordingToCapacity, int sortAccordingToType) async {
     emit(SearchForTransformerLoading());
-    final result = await searchForTransformersUsecase.searchForTransformers(query);
+    final result = await searchForTransformersUsecase.searchForTransformers(query, sortAccordingToCapacity, sortAccordingToType);
 switch(result) {
   case Ok<List<TransformerResource>>():
     {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gis_helper/constants/general_constants.dart';
 import 'package:gis_helper/constants/style_constants.dart';
 import 'package:gis_helper/data/resource/transformer_resource.dart';
 import 'package:gis_helper/presentation/cubit/search_for_transformer_cubit/search_for_transformer_cubit.dart';
@@ -36,17 +37,19 @@ class SearchScreenBody extends StatefulWidget {
 class _SearchScreenBodyState extends State<SearchScreenBody> {
   late StyleConstants styleConstants;
   late SearchForTransformerCubit _searchForTransformerCubit;
-
+  int capacityFilter = GeneralConstants.SEARCH_FILTER_HIGHER_TO_LOWER;
+  int typeFilter = GeneralConstants.SEARCH_WITHOUT_TYPE_FILTER_TRANSFORMER;
   @override
   void initState() {
     _searchForTransformerCubit = locator<SearchForTransformerCubit>();
     styleConstants = StyleConstants();
-    _searchForTransformerCubit.emitSearchForTransformers("مثنى");
+    _searchForTransformerCubit.emitSearchForTransformers("مثنى", capacityFilter,typeFilter);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    print("capacity is $capacityFilter");
     return Padding(
       padding: EdgeInsets.all(styleConstants.largeDp),
       child: BlocProvider(
@@ -58,11 +61,13 @@ class _SearchScreenBodyState extends State<SearchScreenBody> {
                   color: Colors.white,
                   child: Column(
                     children: [
-                      TransformersSearchBarWidget(searchForTransformerCubit: _searchForTransformerCubit,),
+                      TransformersSearchBarWidget(searchForTransformerCubit: _searchForTransformerCubit, capacityFilter : capacityFilter, typeFilter : typeFilter),
                       SizedBox(
                         height: styleConstants.extraLargeDp,
                       ),
-                      ActionChoiceExample(),
+                      ActionChoiceExample(changeTypeFilter: (int value) { setState(() {
+                        typeFilter = value;
+                      }); },),
                       SizedBox(
                         height: styleConstants.extraLargeDp,
                       )
@@ -80,6 +85,10 @@ class _SearchScreenBodyState extends State<SearchScreenBody> {
                     initialSelection: 0,
                     inputDecorationTheme: const InputDecorationTheme(
                         enabledBorder: InputBorder.none),
+                    onSelected: (value) => setState(() {
+                      capacityFilter = value ?? GeneralConstants.SEARCH_FILTER_HIGHER_TO_LOWER;
+                    }),
+
                   )
                 ],
               ),
@@ -169,8 +178,10 @@ class _SearchScreenBodyState extends State<SearchScreenBody> {
 }
 
 class TransformersSearchBarWidget extends StatefulWidget {
-  const TransformersSearchBarWidget({super.key, required this.searchForTransformerCubit});
+  const TransformersSearchBarWidget({super.key, required this.searchForTransformerCubit, required this.capacityFilter, required this.typeFilter});
   final SearchForTransformerCubit searchForTransformerCubit;
+  final int capacityFilter;
+  final int typeFilter;
   @override
   State<TransformersSearchBarWidget> createState() =>
       _TransformersSearchBarWidgetState();
@@ -186,7 +197,9 @@ class _TransformersSearchBarWidgetState
   }
   @override
   Widget build(BuildContext context) {
+    print("inside build function for new capacity value ${widget.capacityFilter} , ${widget.typeFilter}");
     StyleConstants styleConstants = StyleConstants();
+    widget.searchForTransformerCubit.emitSearchForTransformers(searchController.text, widget.capacityFilter,widget.typeFilter);
     return Column(
       children: [
         Align(
@@ -198,9 +211,7 @@ class _TransformersSearchBarWidgetState
                     ?.copyWith(color: Colors.black))),
         TextField(
           onChanged: ((text){
-             setState(() {
-            widget.searchForTransformerCubit.emitSearchForTransformers(searchController.text);
-             });
+            widget.searchForTransformerCubit.emitSearchForTransformers(searchController.text, widget.capacityFilter,0);
           }),
           textDirection: TextDirection.rtl,
           controller: searchController,
@@ -232,14 +243,14 @@ class _TransformersSearchBarWidgetState
 }
 
 class ActionChoiceExample extends StatefulWidget {
-  const ActionChoiceExample({super.key});
-
+  const ActionChoiceExample({super.key, required this.changeTypeFilter});
+   final void Function(int) changeTypeFilter;
   @override
   State<ActionChoiceExample> createState() => _ActionChoiceExampleState();
 }
 
 class _ActionChoiceExampleState extends State<ActionChoiceExample> {
-  int? _value = 1;
+  int? _value = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -280,6 +291,7 @@ class _ActionChoiceExampleState extends State<ActionChoiceExample> {
                   if (selected) {
                     setState(() {
                       _value = selected ? index : null;
+                      widget.changeTypeFilter(_value ?? 0);
                     });
                   }
                 },
