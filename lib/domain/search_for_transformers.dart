@@ -20,37 +20,41 @@ class SearchForTransformersUsecase {
           }).toList();
           if (sortAccordingToCapacity ==
               GeneralConstants.SEARCH_FILTER_LOWER_TO_HIGHER) {
-            filteredTransformers
-                .sort((a, b) => a.transformerCapacity.compareTo(b.transformerCapacity));
-          } else  {
+            filteredTransformers.sort((a, b) =>
+                a.transformerCapacity.compareTo(b.transformerCapacity));
+          } else {
             filteredTransformers.sort((a, b) =>
                 b.transformerCapacity.compareTo(a.transformerCapacity));
           }
-          switch(sortAccordingToType){
+          switch (sortAccordingToType) {
             case GeneralConstants.SEARCH_FILTER_OVERHEAD_TRANSFORMER:
               {
-                filteredTransformers.removeWhere((element) => !element.isItOverhead);
+                filteredTransformers
+                    .removeWhere((element) => !element.isItOverhead);
                 break;
               }
-              case GeneralConstants.SEARCH_FILTER_KISOK_TRANSFORMER:
+            case GeneralConstants.SEARCH_FILTER_KISOK_TRANSFORMER:
               {
-                filteredTransformers.removeWhere((element) => element.isItOverhead);
+                filteredTransformers
+                    .removeWhere((element) => element.isItOverhead);
                 break;
               }
-              case GeneralConstants.SEARCH_FILTER_GOVERN_TRANSFORMER:
+            case GeneralConstants.SEARCH_FILTER_GOVERN_TRANSFORMER:
               {
-                filteredTransformers.removeWhere((element) => !element.isItPrivate);
+                filteredTransformers
+                    .removeWhere((element) => !element.isItPrivate);
                 break;
               }
-              case GeneralConstants.SEARCH_FILTER_PRIVATE_TRANSFORMER:
+            case GeneralConstants.SEARCH_FILTER_PRIVATE_TRANSFORMER:
               {
-                filteredTransformers.removeWhere((element) => element.isItPrivate);
+                filteredTransformers
+                    .removeWhere((element) => element.isItPrivate);
                 break;
               }
-              default:
-                {
-                  break;
-                }
+            default:
+              {
+                break;
+              }
           }
           print(
               "inside SearchForTransformersUsecase ok list are : ${filteredTransformers.length}");
@@ -73,6 +77,7 @@ class SearchForTransformersUsecase {
         transformer.yCoordinates.contains(query) ||
         transformer.yCoordinates.contains(query) ||
         transformer.isItPrivate.toString().contains(query) ||
-        transformer.isItOverhead.toString().contains(query);
+        transformer.isItOverhead.toString().contains(query) ||
+        transformer.zuqaqOrBlock.contains(query);
   }
 }

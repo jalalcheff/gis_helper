@@ -125,7 +125,7 @@ class _SearchScreenBodyState extends State<SearchScreenBody> {
 
   Container _buildTransformerSearchCard(TransformerResource transformer) {
     return Container(
-        height: MediaQuery.of(context).size.height * 0.5,
+        height: MediaQuery.of(context).size.height * 0.55,
         color: Colors.white,
         margin: EdgeInsets.all(styleConstants.largeDp),
         padding: EdgeInsets.all(styleConstants.extraLargeDp),
@@ -154,6 +154,10 @@ class _SearchScreenBodyState extends State<SearchScreenBody> {
               ),
               alignment: Alignment.centerRight,
             ),
+            SizedBox(height: styleConstants.largeDp),
+            Align(
+                alignment: Alignment.centerRight,
+                child: Text("${getSectorOrMahala(transformer.mahlaOrSector)} / ${getSectorOrMahala(transformer.zuqaqOrBlock)}" , style: Theme.of(context).textTheme.titleSmall, textDirection: TextDirection.rtl,)),
             Expanded(child: Container()),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -174,6 +178,14 @@ class _SearchScreenBodyState extends State<SearchScreenBody> {
             )
           ],
         ));
+  }
+
+  String getSectorOrMahala(String mahlaOrSector) {
+    if(mahlaOrSector.contains("قطاع") || mahlaOrSector.contains("بلوك")) {
+      return mahlaOrSector.split(' ').reversed.join(' ');
+    } else {
+      return mahlaOrSector;
+    }
   }
 }
 
