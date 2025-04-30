@@ -21,7 +21,7 @@ class SearchForTransformersUsecase {
           if (sortAccordingToCapacity ==
               GeneralConstants.SEARCH_FILTER_LOWER_TO_HIGHER) {
             filteredTransformers
-                .sort((a, b) => a.transformerName.compareTo(b.transformerName));
+                .sort((a, b) => a.transformerCapacity.compareTo(b.transformerCapacity));
           } else  {
             filteredTransformers.sort((a, b) =>
                 b.transformerCapacity.compareTo(a.transformerCapacity));
