@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../constants/style_constants.dart';
+import '../../../data/resource/transformer_resource.dart';
 
 class TransformerDetailsScreen extends StatefulWidget {
-  const TransformerDetailsScreen({super.key});
-
+  const TransformerDetailsScreen({super.key, required this.transformerDetails});
+final TransformerResource transformerDetails;
   @override
   State<TransformerDetailsScreen> createState() =>
       _TransformerDetailsScreenState();
@@ -36,7 +37,8 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
           child: Column(
             children: [
               Image.asset(
-                "images/overhead.png",
+                (widget.transformerDetails.isItOverhead) ?
+                "images/overhead.png" : "images/kiosk.png",
                 height: mediaQuery.size.height * 0.35,
               ),
               SizedBox(
@@ -45,7 +47,7 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  "T188 محولة كهربائية",
+                  "${widget.transformerDetails.transformerName} محولة كهربائية",
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Colors.black,
                       fontSize: styleConstants.headLineLess2),
@@ -82,7 +84,7 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
         color: Colors.blue.withOpacity(0.17),
         borderRadius: BorderRadius.circular(styleConstants.extraLargeDp),
       ),
-      child: Text("رقم المحولة : 12231",
+      child: Text("${widget.transformerDetails.transformerSerialNumber} : رقم المحولة",
           style: Theme.of(context)
               .textTheme
               .titleMedium
@@ -91,6 +93,9 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
   }
 
   Container _buildTransformerInformationCards() {
+    String isItOverhead = widget.transformerDetails.isItOverhead ? "محولة هوائية" : "محولة ارضية";
+    String isItPrivate = widget.transformerDetails.isItPrivate ? "خاصة" : "حكومية";
+
     return Container(
       child: Column(
         children: [
@@ -98,9 +103,9 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _buildSingleTransformerInformationCard(
-                  "صنف المحولة", "هوائية", Icons.electric_bolt_sharp),
+                  "صنف المحولة", isItOverhead, Icons.electric_bolt_sharp),
               _buildSingleTransformerInformationCard(
-                  "عائدية المحولة", "حكومية", Icons.electric_bolt_sharp),
+                  "عائدية المحولة", isItPrivate, Icons.electric_bolt_sharp),
             ],
           ),
           SizedBox(
@@ -110,9 +115,9 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _buildSingleTransformerInformationCard(
-                  "سعة المحولة", "400 كي في اي", Icons.electric_bolt_sharp),
+                  "سعة المحولة", widget.transformerDetails.transformerCapacity, Icons.electric_bolt_sharp),
               _buildSingleTransformerInformationCard(
-                  "اسم المغذي", "4 مثنى", Icons.electric_bolt_sharp),
+                  "اسم المغذي", widget.transformerDetails.feederName, Icons.electric_bolt_sharp),
             ],
           ),
           SizedBox(
@@ -131,22 +136,22 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
                   style: Theme.of(context).textTheme.titleLarge)),
           SizedBox(height: styleConstants.extraLargeDp),
           _buildSingleTransformerLocationInformationCard(
-              "اسم المحطة", "المثنى", Icons.electric_bolt_sharp),
+              "اسم المحطة", widget.transformerDetails.substationName, Icons.electric_bolt_sharp),
           SizedBox(
             height: styleConstants.largeDp,
           ),
           _buildSingleTransformerLocationInformationCard(
-              "الموقع", "حي الامانة / زقاق 13", Icons.electric_bolt_sharp),
+              "الموقع", "${getSectorOrMahala(widget.transformerDetails.mahlaOrSector)} / ${getSectorOrMahala(widget.transformerDetails.zuqaqOrBlock)}", Icons.electric_bolt_sharp),
           SizedBox(
             height: styleConstants.largeDp,
           ),
           _buildSingleTransformerLocationInformationCard(
-              "(longitude) x الاحداثي", "44.44113", Icons.electric_bolt_sharp),
+              "(longitude) x الاحداثي", "${widget.transformerDetails.xCoordinates}", Icons.electric_bolt_sharp),
           SizedBox(
             height: styleConstants.largeDp,
           ),
           _buildSingleTransformerLocationInformationCard(
-              "(latiitude) y الاحداثي", "33.33231", Icons.electric_bolt_sharp),
+              "(latiitude) y الاحداثي", "${widget.transformerDetails.yCoordinates}", Icons.electric_bolt_sharp),
           SizedBox(
             height: styleConstants.largeDp,
           ),
@@ -231,5 +236,13 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
             ),
           ],
         ));
+  }
+
+  getSectorOrMahala(String mahlaOrSector) {
+      if(mahlaOrSector.contains("قطاع") || mahlaOrSector.contains("بلوك")) {
+        return mahlaOrSector.split(' ').reversed.join(' ');
+      } else {
+        return mahlaOrSector;
+      }
   }
 }

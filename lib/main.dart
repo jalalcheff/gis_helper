@@ -112,7 +112,7 @@ class MyApp extends StatelessWidget {
           appBarTheme: AppBarTheme(
             backgroundColor: Color(styleConstants.colorWhite),
           )),
-      home: TransformerDetailsScreen(),
+      home: SearchScreen(),
 
       /*MultiBlocProvider(
         providers: [

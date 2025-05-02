@@ -4,6 +4,7 @@ import 'package:gis_helper/constants/general_constants.dart';
 import 'package:gis_helper/constants/style_constants.dart';
 import 'package:gis_helper/data/resource/transformer_resource.dart';
 import 'package:gis_helper/presentation/cubit/search_for_transformer_cubit/search_for_transformer_cubit.dart';
+import 'package:gis_helper/presentation/screen/transformer_details_screen/transformer_details_screen.dart';
 
 import '../../../constants/list_and_maps.dart';
 import '../../../di/dependency_injection.dart';
@@ -99,7 +100,12 @@ class _SearchScreenBodyState extends State<SearchScreenBody> {
         child: ListView.builder(
           itemCount: state.transformers.length,
           itemBuilder: (context, index) =>
-              _buildTransformerSearchCard(state.transformers[index]),
+              InkWell(
+                  child: _buildTransformerSearchCard(state.transformers[index]),
+                onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => TransformerDetailsScreen(transformerDetails: state.transformers[index])));
+                },
+              ),
           scrollDirection: Axis.vertical,
         ),
       );

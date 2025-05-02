@@ -8,6 +8,7 @@ import 'package:gis_helper/domain/get_all_feeders_usecase.dart';
 import 'package:gis_helper/domain/get_all_transformers_locally.dart';
 import 'package:gis_helper/domain/get_all_transformers_number_usecase.dart';
 import 'package:gis_helper/domain/get_latest_changes_usecase.dart';
+import 'package:gis_helper/domain/get_transformer_details_usecase.dart';
 import 'package:gis_helper/presentation/cubit/add_transformer_cubit/add_transformer_cubit.dart';
 import 'package:gis_helper/presentation/cubit/all_transfomers_cubit/all_transformers_cubit.dart';
 import 'package:gis_helper/presentation/cubit/latest_changes_cubit/latest_changes_cubit.dart';
@@ -22,6 +23,7 @@ import '../domain/search_for_transformers.dart';
 import '../domain/transformer_repository.dart';
 import '../presentation/cubit/feeders_number_cubit/feeders_number_cubit.dart';
 import '../presentation/cubit/search_for_transformer_cubit/search_for_transformer_cubit.dart';
+import '../presentation/cubit/transformer_details_cubit/transformer_details_cubit.dart';
 import '../presentation/cubit/transformer_number_cubit/transformer_number_cubit.dart';
 import '../presentation/cubit/transformer_number_of_each_sector_cubit/transformer_number_of_each_sector_cubit.dart';
 
@@ -46,7 +48,8 @@ Future<void> setUpLocator() async{
   locator.registerSingleton(GetNumberOfTransformersOfEachSector(transformerRepository: locator<TransformerRepositoryImp>()));
   locator.registerSingleton(TransformerNumberOfEachSectorCubit(locator<GetNumberOfTransformersOfEachSector>()));
   locator.registerFactory(() => SearchForTransformerCubit(locator<SearchForTransformersUsecase>()));
-
+  locator.registerFactory(() => GetTransformerDetailsUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
+  locator.registerSingleton(TransformerDetailsCubit(locator<GetTransformerDetailsUsecase>()));
 /*  locator.registerFactory(() => SearchForMealByIdRepository(foodApiService: locator<FoodApiService>()));
   locator.registerFactory(() => SearchMealByIdCubit(locator<SearchForMealByIdRepository>()));*/
 }
