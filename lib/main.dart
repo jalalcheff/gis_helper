@@ -31,6 +31,7 @@ import 'domain/search_for_transformers.dart';
 import 'firebase_options.dart';
 import 'presentation/cubit/transformer_number_cubit/transformer_number_cubit.dart';
 import 'presentation/cubit/transformer_number_of_each_sector_cubit/transformer_number_of_each_sector_cubit.dart';
+import 'presentation/screen/transformer_details_screen/transformer_details_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -111,7 +112,7 @@ class MyApp extends StatelessWidget {
           appBarTheme: AppBarTheme(
             backgroundColor: Color(styleConstants.colorWhite),
           )),
-      home: SearchScreen()
+      home: TransformerDetailsScreen(),
 
       /*MultiBlocProvider(
         providers: [
@@ -121,7 +122,7 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => locator<TransformerNumberOfEachSectorCubit>()),
         ],
         child: HomeScreen(transformerNumberCubit: locator<TransformerNumberCubit>(), feedersNumberCubit: locator<FeedersNumberCubit>(),transformersCubit: locator<AllTransformersCubit>(), transformerNumberOfEachSectorCubit: locator<TransformerNumberOfEachSectorCubit>()),
-      )*/,
+      )*/
     );
   }
 }
