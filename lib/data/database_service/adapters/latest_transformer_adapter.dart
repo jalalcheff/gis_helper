@@ -16,7 +16,7 @@ class LatestTransformerAdapter extends TypeAdapter<TransformerResource>{
         xCoordinates: reader.read() ?? "",
         yCoordinates: reader.read() ?? "",
         zuqaqOrBlock: reader.read() ?? "");
-    // Removed debug print statement
+    print("inside read adapter get latest transformers ${transformer.mahlaOrSector}");
     return transformer;
   }
 
@@ -25,7 +25,7 @@ class LatestTransformerAdapter extends TypeAdapter<TransformerResource>{
 
   @override
   void write(BinaryWriter writer, TransformerResource obj) {
-    // Removed debug print statement
+    print("inside latest transformer adapter write latest transformers ${obj.mahlaOrSector}");
     writer.write(obj.feederName);
     writer.write(obj.isItOverhead);
     writer.write(obj.isItPrivate);

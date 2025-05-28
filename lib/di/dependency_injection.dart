@@ -1,8 +1,10 @@
 
 import 'package:get_it/get_it.dart';
+import 'package:gis_helper/data/repository/account_repository_imp.dart';
 import 'package:gis_helper/data/repository/database_service.dart';
 import 'package:gis_helper/data/repository/feeders_repository_imp.dart';
 import 'package:gis_helper/data/service/api_service_imp.dart';
+import 'package:gis_helper/domain/account_repository.dart';
 import 'package:gis_helper/domain/add_transformer_usecase.dart';
 import 'package:gis_helper/domain/get_all_feeders_usecase.dart';
 import 'package:gis_helper/domain/get_all_transformers_locally.dart';
@@ -20,9 +22,11 @@ import '../domain/feeders_repository.dart';
 import '../domain/get_Number_of_transformers_of_each_sector.dart';
 import '../domain/get_feeders_number_usecase.dart';
 import '../domain/search_for_transformers.dart';
+import '../domain/sign_in_usecase.dart';
 import '../domain/transformer_repository.dart';
 import '../presentation/cubit/feeders_number_cubit/feeders_number_cubit.dart';
 import '../presentation/cubit/search_for_transformer_cubit/search_for_transformer_cubit.dart';
+import '../presentation/cubit/sign_in_cubit/sign_in_cubit.dart';
 import '../presentation/cubit/transformer_details_cubit/transformer_details_cubit.dart';
 import '../presentation/cubit/transformer_number_cubit/transformer_number_cubit.dart';
 import '../presentation/cubit/transformer_number_of_each_sector_cubit/transformer_number_of_each_sector_cubit.dart';
@@ -50,6 +54,9 @@ Future<void> setUpLocator() async{
   locator.registerFactory(() => SearchForTransformerCubit(locator<SearchForTransformersUsecase>()));
   locator.registerFactory(() => GetTransformerDetailsUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
   locator.registerSingleton(TransformerDetailsCubit(locator<GetTransformerDetailsUsecase>()));
+  locator.registerSingleton(AccountRepositoryImp(apiService: locator<ApiServiceImp>()));
+  locator.registerSingleton(SignInUsecase(accountRepository: locator<AccountRepositoryImp>()));
+  locator.registerSingleton(SignInCubit(locator<SignInUsecase>()));
 /*  locator.registerFactory(() => SearchForMealByIdRepository(foodApiService: locator<FoodApiService>()));
   locator.registerFactory(() => SearchMealByIdCubit(locator<SearchForMealByIdRepository>()));*/
 }

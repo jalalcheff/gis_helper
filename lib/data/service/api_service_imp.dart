@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gis_helper/data/repository/api_srevice.dart';
 import 'package:gis_helper/data/resource/result_pattern.dart';
 import 'package:gis_helper/data/resource/transformer_resource.dart';
@@ -101,6 +102,17 @@ class ApiServiceImp implements ApiService {
     } catch (e) {
       print("add transformer : $e");
       return Result.error(e);
+    }
+  }
+
+  @override
+  Future<Result<String>> signIn(String email, String password) async {
+    try {
+      final auth = FirebaseAuth.instance;
+      await auth.signInWithEmailAndPassword(email: email, password: password);
+      return Result.ok("successful");
+    } catch (error) {
+      return Result.error(error.toString());
     }
   }
 }

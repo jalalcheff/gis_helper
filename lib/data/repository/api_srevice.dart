@@ -6,4 +6,7 @@ abstract class ApiService{
   Future<Result<List<Map<String,dynamic>>>> getAllTransformers();
   Future<Result<List<Map<String,dynamic>>>> getLatestChanges();
   Future<Result<dynamic>> addTransformer(TransformerResource transformer, String path);
+  //Future<Result<dynamic>> updateTransformer(TransformerResource transformer, String path);
+  //Future<Result<dynamic>> deleteTransformer(TransformerResource transformer, String path);
+Future<Result<String>> signIn(String email, String password);
 }

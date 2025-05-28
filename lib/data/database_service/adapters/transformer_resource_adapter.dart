@@ -17,7 +17,7 @@ class TransformerResourceAdapter extends TypeAdapter<TransformerResource> {
         xCoordinates: reader.read() ?? "",
         yCoordinates: reader.read() ?? "",
         zuqaqOrBlock: reader.read() ?? "");
-    // Removed debug print statement
+    print("inside read adapter get all transformers ${data.mahlaOrSector}");
     return data;
   }
 
@@ -26,7 +26,7 @@ class TransformerResourceAdapter extends TypeAdapter<TransformerResource> {
 
   @override
   void write(BinaryWriter writer, TransformerResource obj) {
-    // Removed debug print statement
+    print("inside adapter get transformers ${obj.mahlaOrSector}");
     writer.write(obj.feederName);
     writer.write(obj.isItOverhead);
     writer.write(obj.isItPrivate);

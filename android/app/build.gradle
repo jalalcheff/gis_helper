@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.example.gis_helper"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 34  // Change this to 34 instead of 35
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -27,7 +27,7 @@ android {
         applicationId = "com.example.gis_helper"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 23  // Keep this at 23 for firebase_auth compatibility
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

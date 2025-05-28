@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gis_helper/constants/general_constants.dart';
 import 'package:gis_helper/constants/style_constants.dart';
 import 'package:gis_helper/data/database_service/adapters/latest_transformer_adapter.dart';
 import 'package:gis_helper/data/database_service/adapters/transformer_resource_adapter.dart';
@@ -10,6 +12,7 @@ import 'package:gis_helper/data/repository/api_srevice.dart';
 import 'package:gis_helper/data/repository/database_service.dart';
 import 'package:gis_helper/data/repository/feeders_repository_imp.dart';
 import 'package:gis_helper/data/repository/transformer_repository_imp.dart';
+import 'package:gis_helper/data/resource/account_resource.dart';
 import 'package:gis_helper/data/resource/transformer_resource.dart';
 import 'package:gis_helper/data/service/api_service_imp.dart';
 import 'package:gis_helper/domain/feeders_repository.dart';
@@ -22,6 +25,7 @@ import 'package:gis_helper/presentation/cubit/feeders_number_cubit/feeders_numbe
 import 'package:gis_helper/presentation/screen/data_entry_screen/data_entry_screen.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen.dart';
 import 'package:gis_helper/presentation/screen/search_screen/search_screen.dart';
+import 'package:gis_helper/presentation/screen/sign_in_screen/sign_in_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'data/resource/result_pattern.dart';
@@ -65,15 +69,56 @@ void main() async {
           databaseService: DatabaseServiceImp(), apiService: ApiServiceImp())
       .getAllTransformers();*/
   await setUpLocator();
-  runApp(const MyApp());
+  runApp( MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+   MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  int _currentIndex = 0;
+  int signInType = GeneralConstants.USER_SIGNED_IN;
+
+  List<Widget> pages = [
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => locator<FeedersNumberCubit>()),
+        BlocProvider(create: (context) => locator<TransformerNumberCubit>()),
+        BlocProvider(create: (context) => locator<AllTransformersCubit>()),
+        BlocProvider(create: (context) => locator<TransformerNumberOfEachSectorCubit>()),
+      ],
+      child: HomeScreen(transformerNumberCubit: locator<TransformerNumberCubit>(), feedersNumberCubit: locator<FeedersNumberCubit>(),transformersCubit: locator<AllTransformersCubit>(), transformerNumberOfEachSectorCubit: locator<TransformerNumberOfEachSectorCubit>()),
+    ),
+    SearchScreen(),
+    DataEntryScreen(),
+  ];
+  @override
+  void initState() {
+    var myCurrentuserAuth ;
+    FirebaseAuth.instance.signInWithEmailAndPassword(email: "ahmed@gisuser.com", password: "123456").then((value){
+      final currentuserAuth = FirebaseAuth.instance.currentUser;
+      print("current user ${currentuserAuth}");
+    }).catchError((error){
+      myCurrentuserAuth = FirebaseAuth.instance.currentUser;
+      print("error is : ${error}");
+      });
+    super.initState();
+  }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    AccountResource accountResource = AccountResource(
+        email: "ahmed@gisuser.com",
+        password: "123456",
+        role: "user",
+        uid: "bU9gmrUwkGX7cpMKcZzvUI1BrhL2",
+        name: "ahmed ali"
+    );
     StyleConstants styleConstants = StyleConstants();
     GetNumberOfTransformersOfEachSector(transformerRepository: TransformerRepositoryImp(databaseService: DatabaseServiceImp(), apiService: ApiServiceImp())).getNumberOfTransformersOfEachSector();
     return MaterialApp(
@@ -112,17 +157,48 @@ class MyApp extends StatelessWidget {
           appBarTheme: AppBarTheme(
             backgroundColor: Color(styleConstants.colorWhite),
           )),
-      home: SearchScreen(),
+      home: switch(signInType) {
+        GeneralConstants.NOT_SIGNED_IN => SignInScreen(),
+        GeneralConstants.USER_SIGNED_IN => _userSignInScaffold(accountResource),
+        GeneralConstants.ADMIN_SIGNED_OUT => _userSignInScaffold(accountResource),
+        int() => throw UnimplementedError(),
+      }
+    );
+  }
 
-      /*MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (context) => locator<FeedersNumberCubit>()),
-          BlocProvider(create: (context) => locator<TransformerNumberCubit>()),
-          BlocProvider(create: (context) => locator<AllTransformersCubit>()),
-          BlocProvider(create: (context) => locator<TransformerNumberOfEachSectorCubit>()),
-        ],
-        child: HomeScreen(transformerNumberCubit: locator<TransformerNumberCubit>(), feedersNumberCubit: locator<FeedersNumberCubit>(),transformersCubit: locator<AllTransformersCubit>(), transformerNumberOfEachSectorCubit: locator<TransformerNumberOfEachSectorCubit>()),
-      )*/
+  Scaffold _userSignInScaffold(AccountResource accountResource) {
+    final List<BottomNavigationBarItem> navigationItems = [
+      BottomNavigationBarItem(
+        icon: Icon(Icons.home),
+        label: 'الرئيسيه',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.search),
+        label: 'بحث',
+      ),
+    ];
+
+    // Add admin item if user is admin
+    if (accountResource.role == "admin") {
+      navigationItems.add(
+        BottomNavigationBarItem(
+          icon: Icon(Icons.add),
+          label: 'إضافة',
+        ),
+      );
+    }
+
+    return Scaffold(
+      body: pages[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        items: navigationItems,
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
     );
   }
 }
