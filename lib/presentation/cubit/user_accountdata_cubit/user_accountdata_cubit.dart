@@ -10,13 +10,19 @@ part 'user_accountdata_state.dart';
 class UserAccountdataCubit extends Cubit<UserAccountdataState> {
   UserAccountdataCubit(this.getLogindataUsecase) : super(UserAccountdataInitial());
   final GetLogindataUsecase getLogindataUsecase;
-  void emitUserAccountdata(AccountResource userAccountdata) async{
+  void emitUserAccountdata() async{
     final userDataResult = await getLogindataUsecase.getLogindataUsecase();
     switch(userDataResult) {
       case Ok<AccountResource>():
-        emit(UserAccountdataSuccess(userAccountdata: userAccountdata));
+        {
+          print("emmit success for emitting");
+          emit(UserAccountdataSuccess(userAccountdata: userDataResult.value));
+        }
       case ErrorValue<AccountResource>():
-        emit(UserAccountdataError(message: userDataResult.e.toString()));
+        {
+          print("emmit error for emitting");
+          emit(UserAccountdataError(message: userDataResult.e.toString()));
+        }
     }
   }
 }

@@ -25,6 +25,7 @@ import 'package:gis_helper/domain/sign_in_usecase.dart';
 import 'package:gis_helper/domain/transformer_repository.dart';
 import 'package:gis_helper/presentation/cubit/all_transfomers_cubit/all_transformers_cubit.dart';
 import 'package:gis_helper/presentation/cubit/feeders_number_cubit/feeders_number_cubit.dart';
+import 'package:gis_helper/presentation/cubit/user_accountdata_cubit/user_accountdata_cubit.dart';
 import 'package:gis_helper/presentation/screen/data_entry_screen/data_entry_screen.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen.dart';
 import 'package:gis_helper/presentation/screen/search_screen/search_screen.dart';
@@ -72,7 +73,10 @@ void main() async {
           databaseService: DatabaseServiceImp(), apiService: ApiServiceImp())
       .getAllTransformers();*/
   await setUpLocator();
-  runApp( MyApp());
+  runApp( BlocProvider(
+  create: (context) => locator<UserAccountdataCubit>(),
+  child: MyApp(),
+));
 }
 
 class MyApp extends StatefulWidget {
@@ -84,7 +88,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
-  int signInType = GeneralConstants.USER_SIGNED_IN;
 
   List<Widget> pages = [
     MultiBlocProvider(
@@ -101,8 +104,9 @@ class _MyAppState extends State<MyApp> {
   ];
   @override
   void initState() {
-    FirebaseAuth.instance.signOut();
-    SignInUsecase(accountRepository: locator<AccountRepositoryImp>()).signIn("ahmed@gisuser.com", "123456").then((value){
+    //FirebaseAuth.instance.signOut();
+    UserAccountdataCubit(locator<GetLogindataUsecase>()).emitUserAccountdata();
+    /*SignInUsecase(accountRepository: locator<AccountRepositoryImp>()).signIn("ahmed@gisuser.com", "123456").then((value){
       {
         switch(value) {
           case Ok<String>():
@@ -119,22 +123,25 @@ class _MyAppState extends State<MyApp> {
             print("error in user account data is : ${userAccountData.e}");
         }
       });
-          });
+          });*/
+    GetLogindataUsecase(accountRepository: locator<AccountRepositoryImp>()).getLogindataUsecase().then((userAccountData){
+      switch(userAccountData) {
+        case Ok<AccountResource>():
+          print("user account data are : ${userAccountData.value.role} }");
+        case ErrorValue<AccountResource>():
+          print("error in user account data is : ${userAccountData.e}");
+      }
+    });
     super.initState();
   }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    AccountResource accountResource = AccountResource(
-        email: "ahmed@gisuser.com",
-        password: "123456",
-        role: "user",
-        uid: "bU9gmrUwkGX7cpMKcZzvUI1BrhL2",
-        name: "ahmed ali"
-    );
     StyleConstants styleConstants = StyleConstants();
     GetNumberOfTransformersOfEachSector(transformerRepository: TransformerRepositoryImp(databaseService: DatabaseServiceImp(), apiService: ApiServiceImp())).getNumberOfTransformersOfEachSector();
+    return BlocBuilder<UserAccountdataCubit, UserAccountdataState>(
+  builder: (context, state) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -171,20 +178,27 @@ class _MyAppState extends State<MyApp> {
           appBarTheme: AppBarTheme(
             backgroundColor: Color(styleConstants.colorWhite),
           )),
-      home: switch(signInType) {
+      home: switch(state) {
+        UserAccountdataInitial() => Center(child: CircularProgressIndicator()),
+        UserAccountdataSuccess() => _userSignInScaffold(state.userAccountdata),
+        UserAccountdataError() => SignInScreen(),
+      }
+      /*switch(state) {
         GeneralConstants.NOT_SIGNED_IN => SignInScreen(),
         GeneralConstants.USER_SIGNED_IN => _userSignInScaffold(accountResource),
         GeneralConstants.ADMIN_SIGNED_OUT => _userSignInScaffold(accountResource),
         int() => throw UnimplementedError(),
-      }
+      }*/
     );
+  },
+);
   }
 
   Scaffold _userSignInScaffold(AccountResource accountResource) {
     final List<BottomNavigationBarItem> navigationItems = [
       BottomNavigationBarItem(
         icon: Icon(Icons.home),
-        label: 'الرئيسيه',
+        label: '${accountResource.role}الرئيسيه ',
       ),
       BottomNavigationBarItem(
         icon: Icon(Icons.search),
