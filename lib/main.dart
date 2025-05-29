@@ -104,35 +104,18 @@ class _MyAppState extends State<MyApp> {
   ];
   @override
   void initState() {
-    //FirebaseAuth.instance.signOut();
-    UserAccountdataCubit(locator<GetLogindataUsecase>()).emitUserAccountdata();
-    /*SignInUsecase(accountRepository: locator<AccountRepositoryImp>()).signIn("ahmed@gisuser.com", "123456").then((value){
-      {
-        switch(value) {
-          case Ok<String>():
-            print("sign in state is : ${value.value}");
-          case ErrorValue<String>():
-            print("sign in state is : ${value.e}");
-        }
-      }
-      GetLogindataUsecase(accountRepository: locator<AccountRepositoryImp>()).getLogindataUsecase().then((userAccountData){
-        switch(userAccountData) {
-          case Ok<AccountResource>():
-            print("user account data are : ${userAccountData.value.email}");
-          case ErrorValue<AccountResource>():
-            print("error in user account data is : ${userAccountData.e}");
-        }
-      });
-          });*/
-    GetLogindataUsecase(accountRepository: locator<AccountRepositoryImp>()).getLogindataUsecase().then((userAccountData){
-      switch(userAccountData) {
-        case Ok<AccountResource>():
-          print("user account data are : ${userAccountData.value.role} }");
-        case ErrorValue<AccountResource>():
-          print("error in user account data is : ${userAccountData.e}");
-      }
-    });
     super.initState();
+    // Access the existing cubit instance from the context
+    context.read<UserAccountdataCubit>().emitUserAccountdata();
+    // Remove the redundant GetLogindataUsecase call
+    // GetLogindataUsecase(accountRepository: locator<AccountRepositoryImp>()).getLogindataUsecase().then((userAccountData){
+    //   switch(userAccountData) {
+    //     case Ok<AccountResource>():
+    //       print("user account data are : ${userAccountData.value.role} }");
+    //     case ErrorValue<AccountResource>():
+    //       print("error in user account data is : ${userAccountData.e}");
+    //   }
+    // });
   }
 
   // This widget is the root of your application.
@@ -198,7 +181,7 @@ class _MyAppState extends State<MyApp> {
     final List<BottomNavigationBarItem> navigationItems = [
       BottomNavigationBarItem(
         icon: Icon(Icons.home),
-        label: '${accountResource.role}الرئيسيه ',
+        label: 'الرئيسيه',
       ),
       BottomNavigationBarItem(
         icon: Icon(Icons.search),
@@ -215,7 +198,6 @@ class _MyAppState extends State<MyApp> {
         ),
       );
     }
-
     return Scaffold(
       body: pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
