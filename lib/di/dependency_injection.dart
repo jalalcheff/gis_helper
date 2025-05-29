@@ -21,6 +21,7 @@ import '../data/repository/transformer_repository_imp.dart';
 import '../domain/feeders_repository.dart';
 import '../domain/get_Number_of_transformers_of_each_sector.dart';
 import '../domain/get_feeders_number_usecase.dart';
+import '../domain/get_logindata_usecase.dart';
 import '../domain/search_for_transformers.dart';
 import '../domain/sign_in_usecase.dart';
 import '../domain/transformer_repository.dart';
@@ -30,6 +31,7 @@ import '../presentation/cubit/sign_in_cubit/sign_in_cubit.dart';
 import '../presentation/cubit/transformer_details_cubit/transformer_details_cubit.dart';
 import '../presentation/cubit/transformer_number_cubit/transformer_number_cubit.dart';
 import '../presentation/cubit/transformer_number_of_each_sector_cubit/transformer_number_of_each_sector_cubit.dart';
+import '../presentation/cubit/user_accountdata_cubit/user_accountdata_cubit.dart';
 
 final GetIt locator = GetIt.instance;
 Future<void> setUpLocator() async{
@@ -57,6 +59,8 @@ Future<void> setUpLocator() async{
   locator.registerSingleton(AccountRepositoryImp(apiService: locator<ApiServiceImp>()));
   locator.registerSingleton(SignInUsecase(accountRepository: locator<AccountRepositoryImp>()));
   locator.registerSingleton(SignInCubit(locator<SignInUsecase>()));
+  locator.registerSingleton(GetLogindataUsecase(accountRepository: locator<AccountRepositoryImp>()));
+  locator.registerSingleton(UserAccountdataCubit(locator<GetLogindataUsecase>()));
 /*  locator.registerFactory(() => SearchForMealByIdRepository(foodApiService: locator<FoodApiService>()));
   locator.registerFactory(() => SearchMealByIdCubit(locator<SearchForMealByIdRepository>()));*/
 }

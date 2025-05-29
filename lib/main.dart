@@ -8,6 +8,7 @@ import 'package:gis_helper/constants/style_constants.dart';
 import 'package:gis_helper/data/database_service/adapters/latest_transformer_adapter.dart';
 import 'package:gis_helper/data/database_service/adapters/transformer_resource_adapter.dart';
 import 'package:gis_helper/data/database_service/database_service_imp.dart';
+import 'package:gis_helper/data/repository/account_repository_imp.dart';
 import 'package:gis_helper/data/repository/api_srevice.dart';
 import 'package:gis_helper/data/repository/database_service.dart';
 import 'package:gis_helper/data/repository/feeders_repository_imp.dart';
@@ -19,6 +20,8 @@ import 'package:gis_helper/domain/feeders_repository.dart';
 import 'package:gis_helper/domain/get_all_feeders_usecase.dart';
 import 'package:gis_helper/domain/get_all_transformers_locally.dart';
 import 'package:gis_helper/domain/get_all_transformers_number_usecase.dart';
+import 'package:gis_helper/domain/get_logindata_usecase.dart';
+import 'package:gis_helper/domain/sign_in_usecase.dart';
 import 'package:gis_helper/domain/transformer_repository.dart';
 import 'package:gis_helper/presentation/cubit/all_transfomers_cubit/all_transformers_cubit.dart';
 import 'package:gis_helper/presentation/cubit/feeders_number_cubit/feeders_number_cubit.dart';
@@ -98,14 +101,25 @@ class _MyAppState extends State<MyApp> {
   ];
   @override
   void initState() {
-    var myCurrentuserAuth ;
-    FirebaseAuth.instance.signInWithEmailAndPassword(email: "ahmed@gisuser.com", password: "123456").then((value){
-      final currentuserAuth = FirebaseAuth.instance.currentUser;
-      print("current user ${currentuserAuth}");
-    }).catchError((error){
-      myCurrentuserAuth = FirebaseAuth.instance.currentUser;
-      print("error is : ${error}");
+    FirebaseAuth.instance.signOut();
+    SignInUsecase(accountRepository: locator<AccountRepositoryImp>()).signIn("ahmed@gisuser.com", "123456").then((value){
+      {
+        switch(value) {
+          case Ok<String>():
+            print("sign in state is : ${value.value}");
+          case ErrorValue<String>():
+            print("sign in state is : ${value.e}");
+        }
+      }
+      GetLogindataUsecase(accountRepository: locator<AccountRepositoryImp>()).getLogindataUsecase().then((userAccountData){
+        switch(userAccountData) {
+          case Ok<AccountResource>():
+            print("user account data are : ${userAccountData.value.email}");
+          case ErrorValue<AccountResource>():
+            print("error in user account data is : ${userAccountData.e}");
+        }
       });
+          });
     super.initState();
   }
 

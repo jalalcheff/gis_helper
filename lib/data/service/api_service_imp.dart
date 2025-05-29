@@ -4,6 +4,8 @@ import 'package:gis_helper/data/repository/api_srevice.dart';
 import 'package:gis_helper/data/resource/result_pattern.dart';
 import 'package:gis_helper/data/resource/transformer_resource.dart';
 
+import '../database_service/shared_prefs.dart';
+
 class ApiServiceImp implements ApiService {
   @override
   Future<Result<List<Map<String, dynamic>>>> getAllTransformers() async {
@@ -25,14 +27,15 @@ class ApiServiceImp implements ApiService {
   }
 
   @override
-  Future<Result<List<Map<String,dynamic>>>> getLatestChanges() async {
+  Future<Result<List<Map<String, dynamic>>>> getLatestChanges() async {
     try {
       final firebaseData = await FirebaseFirestore.instance
           .collection("sader three")
           .doc("sader three transformers")
           .collection("last changes")
           .get();
-      final List<Map<String,dynamic>> lastChanges = (firebaseData.docs.map((element){
+      final List<Map<String, dynamic>> lastChanges =
+          (firebaseData.docs.map((element) {
         return element.data();
       })).toList();
       lastChanges.forEach((element) {
@@ -46,8 +49,8 @@ class ApiServiceImp implements ApiService {
   }
 
   @override
-  Future<Result<dynamic>> addTransformer(TransformerResource transformer, String path) async {
-
+  Future<Result<dynamic>> addTransformer(
+      TransformerResource transformer, String path) async {
     try {
       await FirebaseFirestore.instance
           .collection("sader three")
@@ -89,13 +92,13 @@ class ApiServiceImp implements ApiService {
           'zuqaqOrBlock': transformer.zuqaqOrBlock,
           'created_at': DateTime.now().toIso8601String(),
         });
-      }
-      catch(e){
+      } catch (e) {
         await FirebaseFirestore.instance
             .collection("sader three")
             .doc("sader three transformers")
             .collection("transformers")
-            .doc(path).delete();
+            .doc(path)
+            .delete();
         return Result.error(e);
       }
       return Result.ok("added correctly");
@@ -106,12 +109,38 @@ class ApiServiceImp implements ApiService {
   }
 
   @override
-  Future<Result<String>> signIn(String email, String password) async {
+  Future<Result<String>> signIn(
+      String email, String password) async {
     try {
       final auth = FirebaseAuth.instance;
       await auth.signInWithEmailAndPassword(email: email, password: password);
-      return Result.ok("successful");
+      Result<Map<String,dynamic>> userData = await _getLoginaData(auth.currentUser!.uid);
+      switch(userData) {
+        case Ok<Map<String, dynamic>>():
+          {
+            await SharedPrefs().saveDataToSharedPrefs(userData.value);
+            return Result.ok("successful");
+          }
+        case ErrorValue<Map<String, dynamic>>():
+          return Result.error(userData.e);
+      }
     } catch (error) {
+      return Result.error(error.toString());
+    }
+  }
+
+  Future<Result<Map<String, dynamic>>> _getLoginaData(String uid) async {
+    try{
+      final result = await FirebaseFirestore.instance
+          .collection("sader three")
+          .doc("sader three accounts")
+          .collection("accounts")
+          .doc(uid)
+          .get();
+      print("to ensure : ${result.data()} and uid : $uid");
+      return Result.ok(result.data()!);
+    }
+    catch(error){
       return Result.error(error.toString());
     }
   }

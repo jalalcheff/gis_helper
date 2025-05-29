@@ -44,6 +44,7 @@ dependencies:
   equatable: ^2.0.5
   fl_chart: ^0.69.0
   get_it: ^8.0.3
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:
