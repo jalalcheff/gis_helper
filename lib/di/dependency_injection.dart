@@ -60,7 +60,7 @@ Future<void> setUpLocator() async{
   locator.registerSingleton(TransformerDetailsCubit(locator<GetTransformerDetailsUsecase>()));
   locator.registerSingleton(AccountRepositoryImp(apiService: locator<ApiServiceImp>()));
   locator.registerSingleton(SignInUsecase(accountRepository: locator<AccountRepositoryImp>()));
-  locator.registerSingleton(SignInCubit(locator<SignInUsecase>()));
+  locator.registerFactory(() => SignInCubit(locator<SignInUsecase>()));
   locator.registerSingleton(GetLogindataUsecase(accountRepository: locator<AccountRepositoryImp>()));
   locator.registerSingleton(UserAccountdataCubit(locator<GetLogindataUsecase>()));
   locator.registerSingleton(SignoutUsecase(accountRepository: locator<AccountRepositoryImp>()));
