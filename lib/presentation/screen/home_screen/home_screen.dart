@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,8 +11,11 @@ import 'package:gis_helper/presentation/cubit/all_transfomers_cubit/all_transfor
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_ads_widget.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_latest_changes_widget.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_transformer_statistics_card_widget.dart';
+import 'package:gis_helper/presentation/screen/sign_in_screen/sign_in_screen.dart';
 
+import '../../../data/repository/account_repository_imp.dart';
 import '../../../di/dependency_injection.dart';
+import '../../../domain/signout_usecase.dart';
 import '../../cubit/feeders_number_cubit/feeders_number_cubit.dart';
 import '../../cubit/latest_changes_cubit/latest_changes_cubit.dart';
 import '../../cubit/transformer_number_cubit/transformer_number_cubit.dart';
@@ -42,6 +46,18 @@ class _HomeScreenState extends State<HomeScreen> {
     MediaQueryData mediaQuery = MediaQuery.of(context);
     return Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut().then((value) {
+                  SignoutUsecase(
+                          accountRepository: locator<AccountRepositoryImp>())
+                      .signOut();
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignInScreen()));
+                  print(
+                      "current user ${FirebaseAuth.instance.currentUser?.uid.toString()}");
+                });
+              },
+              icon: Icon(Icons.logout)),
           title: Text("الصفحة الرئيسية",
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: Colors.black, fontSize: styleConstants.headLine3)),
@@ -53,7 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
           transformerNumberCubit: widget.transformerNumberCubit,
           feedersNumberCubit: widget.feedersNumberCubit,
           transformersCubit: widget.transformersCubit,
-                transformerNumberOfEachSectorCubit: widget.transformerNumberOfEachSectorCubit,
+          transformerNumberOfEachSectorCubit:
+              widget.transformerNumberOfEachSectorCubit,
         )));
   }
 }
@@ -64,7 +81,8 @@ class HomeBody extends StatefulWidget {
       required this.mediaQuery,
       required this.transformerNumberCubit,
       required this.feedersNumberCubit,
-      required this.transformersCubit, required this.transformerNumberOfEachSectorCubit});
+      required this.transformersCubit,
+      required this.transformerNumberOfEachSectorCubit});
 
   final TransformerNumberCubit transformerNumberCubit;
   final FeedersNumberCubit feedersNumberCubit;
@@ -92,7 +110,8 @@ class _HomeBodyState extends State<HomeBody> {
     widget.transformersCubit.loadAllTransformers([]);
     widget.feedersNumberCubit.emitFeedersNumber();
     widget.transformerNumberCubit.emitTransformerNumber();
-    widget.transformerNumberOfEachSectorCubit.emitTransformerNumberOfEachSector();
+    widget.transformerNumberOfEachSectorCubit
+        .emitTransformerNumberOfEachSector();
     super.initState();
   }
 
@@ -195,38 +214,36 @@ class _HomeBodyState extends State<HomeBody> {
                 SizedBox(
                   height: 300,
                   width: mediaQuery.size.width,
-                  child:
-                      BlocBuilder<TransformerNumberOfEachSectorCubit, TransformerNumberOfEachSectorState>(
+                  child: BlocBuilder<TransformerNumberOfEachSectorCubit,
+                      TransformerNumberOfEachSectorState>(
                     builder: (context, state) {
                       if (state is TransformerNumberOfEachSectorLoaded) {
                         return PieChart(
                           PieChartData(
-                              sectionsSpace: 0,
-                              sections: getPieChartSections(
-                                  isTouched,
-                                  toucnedIndex,
-                                  context,
-                                  _getPieChart(state.transformers),
-                                state.transformers
-                              ),
-                              pieTouchData: PieTouchData(
-                                enabled: true,
-                                touchCallback: (p0, p1) {
-                                  setState(() {
-                                    isTouched = !isTouched;
-                                    toucnedIndex =
-                                        p1?.touchedSection?.touchedSectionIndex;
-                                    //      print("is touch $isTouched");
-                                    getPieChartSections(
-                                        isTouched,
-                                        toucnedIndex,
-                                        context,
-                                        _getPieChart(state.transformers),
-                                      state.transformers
-                                    );
-                                  });
-                                },
-                              ),
+                            sectionsSpace: 0,
+                            sections: getPieChartSections(
+                                isTouched,
+                                toucnedIndex,
+                                context,
+                                _getPieChart(state.transformers),
+                                state.transformers),
+                            pieTouchData: PieTouchData(
+                              enabled: true,
+                              touchCallback: (p0, p1) {
+                                setState(() {
+                                  isTouched = !isTouched;
+                                  toucnedIndex =
+                                      p1?.touchedSection?.touchedSectionIndex;
+                                  //      print("is touch $isTouched");
+                                  getPieChartSections(
+                                      isTouched,
+                                      toucnedIndex,
+                                      context,
+                                      _getPieChart(state.transformers),
+                                      state.transformers);
+                                });
+                              },
+                            ),
                           ),
                         );
                       } else if (state is AllTransformersInitial) {
@@ -249,8 +266,12 @@ class _HomeBodyState extends State<HomeBody> {
   }
 }
 
-List<PieChartSectionData> getPieChartSections(bool isTouched, int? toucnedIndex,
-    BuildContext context, List<SinglePieChartData> pieChartData, List<Map<String, dynamic>> transformersNumber)  {
+List<PieChartSectionData> getPieChartSections(
+    bool isTouched,
+    int? toucnedIndex,
+    BuildContext context,
+    List<SinglePieChartData> pieChartData,
+    List<Map<String, dynamic>> transformersNumber) {
 //  final List<SinglePieChartData> pieChartData = _getPieChart();
   if (toucnedIndex != null &&
       toucnedIndex >= 0 &&
