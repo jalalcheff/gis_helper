@@ -27,43 +27,57 @@ class _SignInScreenState extends State<SignInScreen> {
   bool signInClicked = false;
 
   @override
+  void initState() {
+    super.initState();
+    context.read<SignInCubit>().emitSignInInitial();
+    emailController.addListener(_updateFieldsValidity);
+    passwordController.addListener(_updateFieldsValidity);
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  void _updateFieldsValidity() {
+    final isValid = emailController.text.isNotEmpty && passwordController.text.isNotEmpty;
+    if (areAllFieldsValid != isValid) {
+      setState(() {
+        areAllFieldsValid = isValid;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-      setState(() {
-        areAllFieldsValid = true;
-      });
-    }
-    else {
-      setState(() {
-        areAllFieldsValid = false;
-      });
-    }
     return Scaffold(
         appBar: AppBar(),
         body: BlocBuilder<SignInCubit, SignInState>(
             builder: (context, state) {
               switch (state) {
                 case SignInInitial() :
-                  _build_sign_in_screen();
+                  // No need to call _build_sign_in_screen() here, it's returned below
                   break;
                 case SignInLoading() :
-                  const Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
-                  break;
                 case SignInSuccess():
                   {
-                    Center(
-                      child: CircularProgressIndicator(),
-                    );
-                    Navigator.pushReplacement(context, MaterialPageRoute(
+                    // Use addPostFrameCallback to navigate after the build is complete
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                       Navigator.pushReplacement(context, MaterialPageRoute(
                         builder: (context) =>
                             BlocProvider(
                               create: (context) => locator<UserAccountdataCubit>(),
                               child: CollectionScreen(),
                             )));
+                    });
                     print("success in sign in ${state.message}");
-                    break;
+                    // Return a placeholder or loading indicator while navigating
+                    return const Center(child: CircularProgressIndicator());
                   }
                 case SignInError():
                   {
@@ -72,17 +86,18 @@ class _SignInScreenState extends State<SignInScreen> {
                           SnackBar(content: Text("خطا في تسجيل الدخول"))
                       );
                     });
-                    print("error in sign in ${state.message}");
-                    return _build_sign_in_screen();
+                    // Return the sign in screen after showing the error
+                    return _buildSignInScreen();
                   }
               }
-              return _build_sign_in_screen();
+              // Default case for SignInInitial or other states that should show the form
+              return _buildSignInScreen();
             }
         )
     );
   }
 
-  SingleChildScrollView _build_sign_in_screen() {
+  SingleChildScrollView _buildSignInScreen() {
     return SingleChildScrollView(
       child: Container(
         padding: EdgeInsetsDirectional.all(styleConstants.extraLargeDp),

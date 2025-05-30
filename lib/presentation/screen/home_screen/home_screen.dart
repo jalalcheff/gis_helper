@@ -8,6 +8,7 @@ import 'package:gis_helper/constants/list_and_maps.dart';
 import 'package:gis_helper/constants/style_constants.dart';
 import 'package:gis_helper/domain/model/transformer_model.dart';
 import 'package:gis_helper/presentation/cubit/all_transfomers_cubit/all_transformers_cubit.dart';
+import 'package:gis_helper/presentation/cubit/sign_in_cubit/sign_in_cubit.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_ads_widget.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_latest_changes_widget.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_transformer_statistics_card_widget.dart';
@@ -52,7 +53,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   SignoutUsecase(
                           accountRepository: locator<AccountRepositoryImp>())
                       .signOut();
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignInScreen()));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BlocProvider(
+  create: (context) => locator<SignInCubit>(),
+  child: SignInScreen(),
+)));
                   print(
                       "current user ${FirebaseAuth.instance.currentUser?.uid.toString()}");
                 });

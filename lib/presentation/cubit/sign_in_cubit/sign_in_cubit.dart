@@ -21,4 +21,5 @@ class SignInCubit extends Cubit<SignInState> {
         }
     }
   }
+  void emitSignInInitial() => emit(SignInInitial());
 }
