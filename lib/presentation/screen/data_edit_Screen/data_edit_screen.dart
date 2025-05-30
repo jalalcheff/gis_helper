@@ -153,6 +153,7 @@ class _DataEditScreenState extends State<DataEditScreen> {
                             "${transformer.transformerName} ${transformer.transformerSerialNumber}");
                         print(
                             "data inside transformer capacity ${transformerDataController[2].text}");
+                        Navigator.pop(context);
                       },
                       color: areAllFieldsValid
                           ? Color(styleConstants.colorBlack)
@@ -164,7 +165,7 @@ class _DataEditScreenState extends State<DataEditScreen> {
                           borderRadius: BorderRadius.circular(
                               styleConstants.extraLargeDp)),
                       child: Text(
-                        "اضافة المحولة",
+                        "تم تعديل المحولة",
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge
