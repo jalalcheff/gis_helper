@@ -28,4 +28,10 @@ class AccountRepositoryImp implements AccountRepository{
         return Result.error(loginData.e);
     }
   }
+
+  @override
+  Future<Result<String>> clearSharedPrefs() async {
+    final data = await SharedPrefs().clearSharedPrefs();
+    return data;
+  }
 }

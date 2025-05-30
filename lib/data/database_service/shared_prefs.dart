@@ -21,4 +21,15 @@ class SharedPrefs {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('user_data', jsonEncode(account));
   }
+
+  Future<Result<String>> clearSharedPrefs() async {
+    try{
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      return Result.ok("success");
+    }
+    catch(e){
+      return Result.error(e.toString());
+    }
+  }
 }

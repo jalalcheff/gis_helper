@@ -25,6 +25,7 @@ import 'package:gis_helper/domain/sign_in_usecase.dart';
 import 'package:gis_helper/domain/transformer_repository.dart';
 import 'package:gis_helper/presentation/cubit/all_transfomers_cubit/all_transformers_cubit.dart';
 import 'package:gis_helper/presentation/cubit/feeders_number_cubit/feeders_number_cubit.dart';
+import 'package:gis_helper/presentation/cubit/sign_in_cubit/sign_in_cubit.dart';
 import 'package:gis_helper/presentation/cubit/user_accountdata_cubit/user_accountdata_cubit.dart';
 import 'package:gis_helper/presentation/screen/data_entry_screen/data_entry_screen.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen.dart';
@@ -36,6 +37,7 @@ import 'data/resource/result_pattern.dart';
 import 'di/dependency_injection.dart';
 import 'domain/get_Number_of_transformers_of_each_sector.dart';
 import 'domain/search_for_transformers.dart';
+import 'domain/signout_usecase.dart';
 import 'firebase_options.dart';
 import 'presentation/cubit/transformer_number_cubit/transformer_number_cubit.dart';
 import 'presentation/cubit/transformer_number_of_each_sector_cubit/transformer_number_of_each_sector_cubit.dart';
@@ -105,17 +107,12 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+ /*   FirebaseAuth.instance.signOut().then((value){
+      SignoutUsecase(accountRepository: locator<AccountRepositoryImp>()).signOut();
+      print("current user ${FirebaseAuth.instance.currentUser?.uid.toString()}");
+    });*/
     // Access the existing cubit instance from the context
     context.read<UserAccountdataCubit>().emitUserAccountdata();
-    // Remove the redundant GetLogindataUsecase call
-    // GetLogindataUsecase(accountRepository: locator<AccountRepositoryImp>()).getLogindataUsecase().then((userAccountData){
-    //   switch(userAccountData) {
-    //     case Ok<AccountResource>():
-    //       print("user account data are : ${userAccountData.value.role} }");
-    //     case ErrorValue<AccountResource>():
-    //       print("error in user account data is : ${userAccountData.e}");
-    //   }
-    // });
   }
 
   // This widget is the root of your application.
@@ -166,12 +163,6 @@ class _MyAppState extends State<MyApp> {
         UserAccountdataSuccess() => _userSignInScaffold(state.userAccountdata),
         UserAccountdataError() => SignInScreen(),
       }
-      /*switch(state) {
-        GeneralConstants.NOT_SIGNED_IN => SignInScreen(),
-        GeneralConstants.USER_SIGNED_IN => _userSignInScaffold(accountResource),
-        GeneralConstants.ADMIN_SIGNED_OUT => _userSignInScaffold(accountResource),
-        int() => throw UnimplementedError(),
-      }*/
     );
   },
 );

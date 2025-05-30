@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gis_helper/constants/style_constants.dart';
+
+import '../../../di/dependency_injection.dart';
+import '../../cubit/sign_in_cubit/sign_in_cubit.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -44,7 +48,10 @@ class _SignInScreenState extends State<SignInScreen> {
           SizedBox(height: styleConstants.extraLargeDp,),
           _textFormField("كلمة المرور", passwordController, "ادخل كلمة المرور"),
           Expanded(child: Container()),
-          _signInButton(),
+          BlocProvider(
+            create: (context) => locator<SignInCubit>(),
+            child:  _signInButton(),
+          ),
           SizedBox(height: styleConstants.extraLargeDp,),
         ],
       ),
@@ -93,9 +100,13 @@ class _SignInScreenState extends State<SignInScreen> {
   MaterialButton _signInButton(){
     return MaterialButton(
       onPressed: !areAllFieldsValid
-          ? () {}
+          ? () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("الرجاء ملء جميع الحقول"))
+        );
+      }
           : () {
-
+        context.read<SignInCubit>().emitSignIn(emailController.text, passwordController.text);
       },
       color: areAllFieldsValid
           ? Color(styleConstants.colorBlack)
