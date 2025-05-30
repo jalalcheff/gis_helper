@@ -17,7 +17,7 @@ class ApiServiceImp implements ApiService {
           .collection("transformers")
           .get();
       final List<Map<String, dynamic>> docList =
-          firebaseData.docs.map((element) => element.data()).toList();
+      firebaseData.docs.map((element) => element.data()).toList();
       print("data inside api service ${firebaseData.docs.toList()[0].data()}");
       return Result.ok(docList);
     } catch (e) {
@@ -35,7 +35,7 @@ class ApiServiceImp implements ApiService {
           .collection("last changes")
           .get();
       final List<Map<String, dynamic>> lastChanges =
-          (firebaseData.docs.map((element) {
+      (firebaseData.docs.map((element) {
         return element.data();
       })).toList();
       lastChanges.forEach((element) {
@@ -49,8 +49,8 @@ class ApiServiceImp implements ApiService {
   }
 
   @override
-  Future<Result<dynamic>> addTransformer(
-      TransformerResource transformer, String path) async {
+  Future<Result<dynamic>> addTransformer(TransformerResource transformer,
+      String path) async {
     try {
       await FirebaseFirestore.instance
           .collection("sader three")
@@ -109,13 +109,13 @@ class ApiServiceImp implements ApiService {
   }
 
   @override
-  Future<Result<String>> signIn(
-      String email, String password) async {
+  Future<Result<String>> signIn(String email, String password) async {
     try {
       final auth = FirebaseAuth.instance;
       await auth.signInWithEmailAndPassword(email: email, password: password);
-      Result<Map<String,dynamic>> userData = await _getLoginaData(auth.currentUser!.uid);
-      switch(userData) {
+      Result<Map<String, dynamic>> userData = await _getLoginaData(
+          auth.currentUser!.uid);
+      switch (userData) {
         case Ok<Map<String, dynamic>>():
           {
             await SharedPrefs().saveDataToSharedPrefs(userData.value);
@@ -130,7 +130,7 @@ class ApiServiceImp implements ApiService {
   }
 
   Future<Result<Map<String, dynamic>>> _getLoginaData(String uid) async {
-    try{
+    try {
       final result = await FirebaseFirestore.instance
           .collection("sader three")
           .doc("sader three accounts")
@@ -140,8 +140,23 @@ class ApiServiceImp implements ApiService {
       print("to ensure : ${result.data()} and uid : $uid");
       return Result.ok(result.data()!);
     }
-    catch(error){
+    catch (error) {
       return Result.error(error.toString());
+    }
+  }
+
+  @override
+  Future<Result<String>> deleteTransformer(TransformerResource transformer) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("sader three")
+          .doc("sader three transformers")
+          .collection("transformers").doc(
+          "${transformer.transformerName} ${transformer
+              .transformerSerialNumber}").delete();
+      return Result.ok("deleted correctly");
+    } catch (e) {
+      return Result.error(e);
     }
   }
 }

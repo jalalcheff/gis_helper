@@ -143,4 +143,10 @@ class TransformerRepositoryImp implements TransformerRepository {
       final data = await _apiService.addTransformer(transformerResource, path);
       return data;
     }
+
+  @override
+  Future<Result<String>> deleteTransformer(TransformerResource transformer) async{
+    final data = await _apiService.deleteTransformer(transformer);
+    return data;
+  }
   }

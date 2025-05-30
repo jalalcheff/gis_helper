@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gis_helper/di/dependency_injection.dart';
 import 'package:gis_helper/presentation/screen/data_edit_Screen/data_edit_screen.dart';
 import 'package:gis_helper/presentation/screen/data_entry_screen/data_entry_screen.dart';
+import 'package:gis_helper/presentation/screen/main_screen/collection_screen.dart';
 
 import '../../../constants/style_constants.dart';
 import '../../../data/resource/transformer_resource.dart';
+import '../../cubit/delete_transformer_cubit/delete_transformer_cubit.dart';
 
 class TransformerDetailsScreen extends StatefulWidget {
   const TransformerDetailsScreen(
@@ -31,8 +35,8 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
   Widget build(BuildContext context) {
     mediaQuery = MediaQuery.of(context);
     return Scaffold(
-      body: TransformerDetailsScreenBody(),
-    );
+        body: TransformerDetailsScreenBody(),
+      );
   }
 
   Padding TransformerDetailsScreenBody() {
@@ -105,7 +109,7 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
                              ),
                              padding: EdgeInsets.all(styleConstants.extraLargeDp),
                              onPressed: () {
-
+                               _showDeleteConfirmationDialog(context);
                              },
                              child: Row(
                                mainAxisAlignment: MainAxisAlignment.center,
@@ -367,5 +371,56 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
     } else {
       return mahlaOrSector;
     }
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('تأكيد الحذف'),
+          content: Text('هل أنت متأكد أنك تريد حذف هذا العنصر؟'),
+          actions: [
+            TextButton(
+              child: Text('لا'),
+              onPressed: () {
+                Navigator.of(context).pop(); // إغلاق النافذة بدون حذف
+              },
+            ),
+            BlocBuilder<DeleteTransformerCubit, DeleteTransformerState>(
+  builder: (context, state) {
+    switch(state) {
+      case DeleteTransformerInitial():
+        {}
+      case DeleteTransformerLoading():
+        {
+          return CircularProgressIndicator();
+        }
+      case DeleteTransformerSuccess():
+        {
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CollectionScreen()));
+        }
+      case DeleteTransformerError():
+        {
+          Navigator.of(context).pop(); // إغلاق النافذة بدون حذف
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+        }
+    }
+    return TextButton(
+              child: BlocProvider(
+  create: (context) => locator<DeleteTransformerCubit>(),
+  child: Text('نعم' , style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.red)),
+),
+              onPressed: () async {
+                await context.read<DeleteTransformerCubit>().emitDeleteTransformer(widget.transformerDetails);
+                // نفّذ عملية الحذف هنا
+              },
+            );
+  },
+),
+          ],
+        );
+      },
+    );
   }
 }

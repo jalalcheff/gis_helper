@@ -18,6 +18,7 @@ import 'package:gis_helper/presentation/cubit/latest_changes_cubit/latest_change
 import '../data/database_service/database_service_imp.dart';
 import '../data/repository/api_srevice.dart';
 import '../data/repository/transformer_repository_imp.dart';
+import '../domain/delete_transformer_usecase.dart';
 import '../domain/feeders_repository.dart';
 import '../domain/get_Number_of_transformers_of_each_sector.dart';
 import '../domain/get_feeders_number_usecase.dart';
@@ -26,6 +27,7 @@ import '../domain/search_for_transformers.dart';
 import '../domain/sign_in_usecase.dart';
 import '../domain/signout_usecase.dart';
 import '../domain/transformer_repository.dart';
+import '../presentation/cubit/delete_transformer_cubit/delete_transformer_cubit.dart';
 import '../presentation/cubit/feeders_number_cubit/feeders_number_cubit.dart';
 import '../presentation/cubit/search_for_transformer_cubit/search_for_transformer_cubit.dart';
 import '../presentation/cubit/sign_in_cubit/sign_in_cubit.dart';
@@ -65,6 +67,8 @@ Future<void> setUpLocator() async{
   locator.registerFactory(() => UserAccountdataCubit(locator<GetLogindataUsecase>()));
   locator.registerSingleton(SignoutUsecase(accountRepository: locator<AccountRepositoryImp>()));
   locator.registerSingleton(SignoutCubit(locator<SignoutUsecase>()));
+  locator.registerSingleton(DeleteTransformerUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
+  locator.registerSingleton(DeleteTransformerCubit(locator<DeleteTransformerUsecase>()));
 
 /*  locator.registerFactory(() => SearchForMealByIdRepository(foodApiService: locator<FoodApiService>()));
   locator.registerFactory(() => SearchMealByIdCubit(locator<SearchForMealByIdRepository>()));*/

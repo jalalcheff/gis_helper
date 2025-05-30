@@ -9,4 +9,5 @@ abstract class TransformerRepository {
 
   Future<Result<List<TransformerResource>>> getLastChangesTransformers();
   Future<Result<dynamic>> addTransformerData(TransformerModel transformer, String path);
+  Future<Result<String>> deleteTransformer(TransformerResource transformer);
 }
