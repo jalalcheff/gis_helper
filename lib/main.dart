@@ -91,20 +91,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
-
-  List<Widget> pages = [
-    MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => locator<FeedersNumberCubit>()),
-        BlocProvider(create: (context) => locator<TransformerNumberCubit>()),
-        BlocProvider(create: (context) => locator<AllTransformersCubit>()),
-        BlocProvider(create: (context) => locator<TransformerNumberOfEachSectorCubit>()),
-      ],
-      child: HomeScreen(transformerNumberCubit: locator<TransformerNumberCubit>(), feedersNumberCubit: locator<FeedersNumberCubit>(),transformersCubit: locator<AllTransformersCubit>(), transformerNumberOfEachSectorCubit: locator<TransformerNumberOfEachSectorCubit>()),
-    ),
-    SearchScreen(),
-    DataEntryScreen(),
-  ];
   @override
   void initState() {
     super.initState();
@@ -177,38 +163,4 @@ class _MyAppState extends State<MyApp> {
 );
   }
 
-  Scaffold _userSignInScaffold(AccountResource accountResource) {
-    final List<BottomNavigationBarItem> navigationItems = [
-      BottomNavigationBarItem(
-        icon: Icon(Icons.home),
-        label: 'الرئيسيه',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.search),
-        label: 'بحث',
-      ),
-    ];
-
-    // Add admin item if user is admin
-    if (accountResource.role == "admin") {
-      navigationItems.add(
-        BottomNavigationBarItem(
-          icon: Icon(Icons.add),
-          label: 'إضافة',
-        ),
-      );
-    }
-    return Scaffold(
-      body: pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: navigationItems,
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
-    );
-  }
 }

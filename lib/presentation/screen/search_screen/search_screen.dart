@@ -10,7 +10,8 @@ import '../../../constants/list_and_maps.dart';
 import '../../../di/dependency_injection.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({super.key, required this.userRole});
+  final String userRole;
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -24,13 +25,13 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: SearchScreenBody());
+    return Scaffold(body: SearchScreenBody(userRole: widget.userRole));
   }
 }
 
 class SearchScreenBody extends StatefulWidget {
-  const SearchScreenBody({super.key});
-
+  const SearchScreenBody({super.key, required this.userRole});
+  final String userRole;
   @override
   State<SearchScreenBody> createState() => _SearchScreenBodyState();
 }
@@ -120,7 +121,7 @@ class _SearchScreenBodyState extends State<SearchScreenBody> {
               InkWell(
                   child: _buildTransformerSearchCard(state.transformers[index]),
                 onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => TransformerDetailsScreen(transformerDetails: state.transformers[index])));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => TransformerDetailsScreen(transformerDetails: state.transformers[index], userRole: widget.userRole)));
                   //  transformerNumber.value = state.transformers.length;
                 },
               ),

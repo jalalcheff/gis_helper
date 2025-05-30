@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:gis_helper/presentation/screen/data_edit_Screen/data_edit_screen.dart';
+import 'package:gis_helper/presentation/screen/data_entry_screen/data_entry_screen.dart';
 
 import '../../../constants/style_constants.dart';
 import '../../../data/resource/transformer_resource.dart';
 
 class TransformerDetailsScreen extends StatefulWidget {
-  const TransformerDetailsScreen({super.key, required this.transformerDetails});
-final TransformerResource transformerDetails;
+  const TransformerDetailsScreen(
+      {super.key, required this.transformerDetails, required this.userRole});
+
+  final TransformerResource transformerDetails;
+  final String userRole;
+
   @override
   State<TransformerDetailsScreen> createState() =>
       _TransformerDetailsScreenState();
@@ -37,8 +43,9 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
           child: Column(
             children: [
               Image.asset(
-                (widget.transformerDetails.isItOverhead) ?
-                "images/overhead.png" : "images/kiosk.png",
+                (widget.transformerDetails.isItOverhead)
+                    ? "images/overhead.png"
+                    : "images/kiosk.png",
                 height: mediaQuery.size.height * 0.35,
               ),
               SizedBox(
@@ -70,6 +77,106 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
                 height: styleConstants.mediumDp,
               ),
               _buildTransformerInformationCards(),
+              SizedBox(
+                height: styleConstants.largeDp,
+              ),
+              if (widget.userRole == "admin")
+                Column(
+                  children: [
+                    Divider(
+                      color: Color(styleConstants.colorLightGrey),
+                      thickness: 1,
+                    ),
+                    SizedBox(
+                      height: styleConstants.largeDp,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          /*style: ButtonStyle(
+                            backgroundColor: WidgetStatePropertyAll(Colors.red),
+                            padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical : styleConstants.extraLargeDp))
+                          ),
+                            onPressed: () {},*/
+                            child: MaterialButton(
+                              color: Colors.red,
+                             shape: RoundedRectangleBorder(
+                               borderRadius: BorderRadius.circular(styleConstants.extraLargeDp)
+                             ),
+                             padding: EdgeInsets.all(styleConstants.extraLargeDp),
+                             onPressed: () {
+
+                             },
+                             child: Row(
+                               mainAxisAlignment: MainAxisAlignment.center,
+                               children: [
+                                 Text("حذف",
+                                     style: Theme.of(context)
+                                         .textTheme
+                                         .titleLarge
+                                         ?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)
+                                 ),
+                                 SizedBox(
+                                   width: styleConstants.largeDp,
+                                 ),
+                                 Icon(
+                                   Icons.delete,
+                                   color: Colors.white,
+                                 ),
+                               ],
+                             ),
+                            )
+                        ),
+                        SizedBox(
+                          width: styleConstants.largeDp,
+                        ),
+                        Expanded(
+                            child: MaterialButton(
+                              color: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(styleConstants.extraLargeDp)
+                              ),
+                              padding: EdgeInsets.all(styleConstants.extraLargeDp),
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => DataEditScreen(transformerResource : widget.transformerDetails)));
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text("تعديل",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge
+                                          ?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)
+                                  ),
+                                  SizedBox(
+                                    width: styleConstants.largeDp,
+                                  ),
+                                  Icon(
+                                    Icons.edit,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            )/*Row(
+                              children: [
+                                Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                ),
+                                Text("حذف",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(color: Colors.white)
+                                ),
+                              ],
+                            )*/),
+
+                      ],
+                    ),
+                  ],
+                ),
             ],
           ),
         ),
@@ -84,7 +191,8 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
         color: Colors.blue.withOpacity(0.17),
         borderRadius: BorderRadius.circular(styleConstants.extraLargeDp),
       ),
-      child: Text("${widget.transformerDetails.transformerSerialNumber} : رقم المحولة",
+      child: Text(
+          "${widget.transformerDetails.transformerSerialNumber} : رقم المحولة",
           style: Theme.of(context)
               .textTheme
               .titleMedium
@@ -93,8 +201,10 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
   }
 
   Container _buildTransformerInformationCards() {
-    String isItOverhead = widget.transformerDetails.isItOverhead ? "محولة هوائية" : "محولة ارضية";
-    String isItPrivate = widget.transformerDetails.isItPrivate ? "خاصة" : "حكومية";
+    String isItOverhead =
+        widget.transformerDetails.isItOverhead ? "محولة هوائية" : "محولة ارضية";
+    String isItPrivate =
+        widget.transformerDetails.isItPrivate ? "خاصة" : "حكومية";
 
     return Container(
       child: Column(
@@ -115,9 +225,13 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _buildSingleTransformerInformationCard(
-                  "سعة المحولة", widget.transformerDetails.transformerCapacity, Icons.electric_bolt_sharp),
+                  "سعة المحولة",
+                  widget.transformerDetails.transformerCapacity,
+                  Icons.electric_bolt_sharp),
               _buildSingleTransformerInformationCard(
-                  "اسم المغذي", widget.transformerDetails.feederName, Icons.electric_bolt_sharp),
+                  "اسم المغذي",
+                  widget.transformerDetails.feederName,
+                  Icons.electric_bolt_sharp),
             ],
           ),
           SizedBox(
@@ -136,22 +250,30 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
                   style: Theme.of(context).textTheme.titleLarge)),
           SizedBox(height: styleConstants.extraLargeDp),
           _buildSingleTransformerLocationInformationCard(
-              "اسم المحطة", widget.transformerDetails.substationName, Icons.electric_bolt_sharp),
+              "اسم المحطة",
+              widget.transformerDetails.substationName,
+              Icons.electric_bolt_sharp),
           SizedBox(
             height: styleConstants.largeDp,
           ),
           _buildSingleTransformerLocationInformationCard(
-              "الموقع", "${getSectorOrMahala(widget.transformerDetails.mahlaOrSector)} / ${getSectorOrMahala(widget.transformerDetails.zuqaqOrBlock)}", Icons.electric_bolt_sharp),
+              "الموقع",
+              "${getSectorOrMahala(widget.transformerDetails.mahlaOrSector)} / ${getSectorOrMahala(widget.transformerDetails.zuqaqOrBlock)}",
+              Icons.electric_bolt_sharp),
           SizedBox(
             height: styleConstants.largeDp,
           ),
           _buildSingleTransformerLocationInformationCard(
-              "(longitude) x الاحداثي", "${widget.transformerDetails.xCoordinates}", Icons.electric_bolt_sharp),
+              "(longitude) x الاحداثي",
+              "${widget.transformerDetails.xCoordinates}",
+              Icons.electric_bolt_sharp),
           SizedBox(
             height: styleConstants.largeDp,
           ),
           _buildSingleTransformerLocationInformationCard(
-              "(latiitude) y الاحداثي", "${widget.transformerDetails.yCoordinates}", Icons.electric_bolt_sharp),
+              "(latiitude) y الاحداثي",
+              "${widget.transformerDetails.yCoordinates}",
+              Icons.electric_bolt_sharp),
           SizedBox(
             height: styleConstants.largeDp,
           ),
@@ -198,30 +320,14 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
   Container _buildSingleTransformerLocationInformationCard(
       String title, String subtitle, IconData icon) {
     return Container(
-        padding: EdgeInsets.all(styleConstants.largeDp),
+        padding: EdgeInsets.all(styleConstants.extraLargeDp),
+        margin: EdgeInsets.symmetric(vertical: styleConstants.mediumDp),
         decoration: BoxDecoration(
+          color: Color(styleConstants.colorLightGrey).withOpacity(0.3),
             borderRadius: BorderRadius.circular(styleConstants.extraLargeDp)),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  title,
-                ),
-                SizedBox(
-                  width: styleConstants.largeDp,
-                ),
-                Text(
-                  subtitle,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold, color: Colors.blue),
-                  textDirection: TextDirection.rtl,
-                ),
-              ],
-            ),
-            SizedBox(width: styleConstants.largeDp),
             Container(
               padding: EdgeInsets.all(styleConstants.largeDp),
               child: Icon(
@@ -234,15 +340,32 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
                 color: Colors.blue.withOpacity(0.17),
               ),
             ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  title,
+                ),
+                SizedBox(
+                  width: styleConstants.largeDp,
+                ),
+                Text(
+                  subtitle,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold, color: Colors.black),
+                  textDirection: TextDirection.rtl,
+                ),
+              ],
+            ),
           ],
         ));
   }
 
   getSectorOrMahala(String mahlaOrSector) {
-      if(mahlaOrSector.contains("قطاع") || mahlaOrSector.contains("بلوك")) {
-        return mahlaOrSector.split(' ').reversed.join(' ');
-      } else {
-        return mahlaOrSector;
-      }
+    if (mahlaOrSector.contains("قطاع") || mahlaOrSector.contains("بلوك")) {
+      return mahlaOrSector.split(' ').reversed.join(' ');
+    } else {
+      return mahlaOrSector;
+    }
   }
 }

@@ -20,19 +20,6 @@ class CollectionScreen extends StatefulWidget {
 }
 
 class _CollectionScreenState extends State<CollectionScreen> {
-  List<Widget> pages = [
-    MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => locator<FeedersNumberCubit>()),
-        BlocProvider(create: (context) => locator<TransformerNumberCubit>()),
-        BlocProvider(create: (context) => locator<AllTransformersCubit>()),
-        BlocProvider(create: (context) => locator<TransformerNumberOfEachSectorCubit>()),
-      ],
-      child: HomeScreen(transformerNumberCubit: locator<TransformerNumberCubit>(), feedersNumberCubit: locator<FeedersNumberCubit>(),transformersCubit: locator<AllTransformersCubit>(), transformerNumberOfEachSectorCubit: locator<TransformerNumberOfEachSectorCubit>()),
-    ),
-    SearchScreen(),
-    DataEntryScreen(),
-  ];
   int _currentIndex = 0;
   @override
   void initState() {
@@ -64,6 +51,19 @@ class _CollectionScreenState extends State<CollectionScreen> {
   }
 
   Scaffold _userSignInScaffold(AccountResource accountResource) {
+    List<Widget> pages = [
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (context) => locator<FeedersNumberCubit>()),
+          BlocProvider(create: (context) => locator<TransformerNumberCubit>()),
+          BlocProvider(create: (context) => locator<AllTransformersCubit>()),
+          BlocProvider(create: (context) => locator<TransformerNumberOfEachSectorCubit>()),
+        ],
+        child: HomeScreen(transformerNumberCubit: locator<TransformerNumberCubit>(), feedersNumberCubit: locator<FeedersNumberCubit>(),transformersCubit: locator<AllTransformersCubit>(), transformerNumberOfEachSectorCubit: locator<TransformerNumberOfEachSectorCubit>()),
+      ),
+      SearchScreen(userRole: accountResource.role),
+      DataEntryScreen(),
+    ];
     final List<BottomNavigationBarItem> navigationItems = [
       BottomNavigationBarItem(
         icon: Icon(Icons.home),
