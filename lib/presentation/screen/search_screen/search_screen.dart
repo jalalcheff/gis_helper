@@ -38,13 +38,26 @@ class SearchScreenBody extends StatefulWidget {
 class _SearchScreenBodyState extends State<SearchScreenBody> {
   late StyleConstants styleConstants;
   late SearchForTransformerCubit _searchForTransformerCubit;
+ // ValueNotifier<int> transformerNumber = ValueNotifier<int>(0);
+  int transformerNumber = 0;
   int capacityFilter = GeneralConstants.SEARCH_FILTER_HIGHER_TO_LOWER;
   int typeFilter = GeneralConstants.SEARCH_WITHOUT_TYPE_FILTER_TRANSFORMER;
   @override
   void initState() {
     _searchForTransformerCubit = locator<SearchForTransformerCubit>();
     styleConstants = StyleConstants();
-    _searchForTransformerCubit.emitSearchForTransformers("مثنى", capacityFilter,typeFilter);
+    _searchForTransformerCubit.emitSearchForTransformers("", capacityFilter,typeFilter);
+
+    // Listen to Cubit state changes
+    _searchForTransformerCubit.stream.listen((newState) {
+      if(newState is SearchForTransformerLoaded) {
+        if(newState.transformers.length != transformerNumber) {
+          setState(() {
+        transformerNumber = newState.transformers.length;
+      });
+        }
+      }
+    });
     super.initState();
   }
 
@@ -75,7 +88,9 @@ class _SearchScreenBodyState extends State<SearchScreenBody> {
                     ],
                   )),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                 Text("   العدد : ${transformerNumber}"),
                   DropdownMenu(
                     dropdownMenuEntries: List.generate(
                         2,
@@ -90,12 +105,14 @@ class _SearchScreenBodyState extends State<SearchScreenBody> {
                       capacityFilter = value ?? GeneralConstants.SEARCH_FILTER_HIGHER_TO_LOWER;
                     }),
 
-                  )
+                  ),
                 ],
               ),
               BlocBuilder<SearchForTransformerCubit, SearchForTransformerState>(
   builder: (context, state) {
     if (state is SearchForTransformerLoaded) {
+     // transformerNumber.value = state.transformers.length;
+      print("transformer number is ${transformerNumber}");
       return Expanded(
         child: ListView.builder(
           itemCount: state.transformers.length,
@@ -104,6 +121,7 @@ class _SearchScreenBodyState extends State<SearchScreenBody> {
                   child: _buildTransformerSearchCard(state.transformers[index]),
                 onTap: (){
                     Navigator.push(context, MaterialPageRoute(builder: (context) => TransformerDetailsScreen(transformerDetails: state.transformers[index])));
+                  //  transformerNumber.value = state.transformers.length;
                 },
               ),
           scrollDirection: Axis.vertical,

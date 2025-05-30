@@ -15,9 +15,14 @@ class SearchForTransformersUsecase {
     switch (transformers) {
       case Ok<List<TransformerResource>>():
         {
-          filteredTransformers = transformers.value.where((transformer) {
-            return searchForAllData(query, transformer);
-          }).toList();
+          if (query.isEmpty) {
+            filteredTransformers = transformers.value;
+          }
+          else{
+            filteredTransformers = transformers.value.where((transformer) {
+              return searchForAllData(query, transformer);
+            }).toList();
+          }
           if (sortAccordingToCapacity ==
               GeneralConstants.SEARCH_FILTER_LOWER_TO_HIGHER) {
             filteredTransformers.sort((a, b) =>
