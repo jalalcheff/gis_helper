@@ -107,7 +107,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
- /*   FirebaseAuth.instance.signOut().then((value){
+   /* FirebaseAuth.instance.signOut().then((value){
       SignoutUsecase(accountRepository: locator<AccountRepositoryImp>()).signOut();
       print("current user ${FirebaseAuth.instance.currentUser?.uid.toString()}");
     });*/
@@ -161,7 +161,10 @@ class _MyAppState extends State<MyApp> {
       home: switch(state) {
         UserAccountdataInitial() => Center(child: CircularProgressIndicator()),
         UserAccountdataSuccess() => _userSignInScaffold(state.userAccountdata),
-        UserAccountdataError() => SignInScreen(),
+        UserAccountdataError() => BlocProvider(
+            create: (context) => locator<SignInCubit>(),
+            child: SignInScreen(),
+          ),
       }
     );
   },

@@ -15,7 +15,10 @@ class SignInCubit extends Cubit<SignInState> {
       case Ok<String>():
         emit(SignInSuccess(message: result.value));
       case ErrorValue<String>():
-        emit(SignInError(message: result.e.toString()));
+        {
+          emit(SignInError(message: result.e.toString()));
+          print("error in sign in cubit ${result.e}");
+        }
     }
   }
 }
