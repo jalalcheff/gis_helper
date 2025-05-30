@@ -29,6 +29,7 @@ import 'package:gis_helper/presentation/cubit/sign_in_cubit/sign_in_cubit.dart';
 import 'package:gis_helper/presentation/cubit/user_accountdata_cubit/user_accountdata_cubit.dart';
 import 'package:gis_helper/presentation/screen/data_entry_screen/data_entry_screen.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen.dart';
+import 'package:gis_helper/presentation/screen/main_screen/collection_screen.dart';
 import 'package:gis_helper/presentation/screen/search_screen/search_screen.dart';
 import 'package:gis_helper/presentation/screen/sign_in_screen/sign_in_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -160,7 +161,12 @@ class _MyAppState extends State<MyApp> {
           )),
       home: switch(state) {
         UserAccountdataInitial() => Center(child: CircularProgressIndicator()),
-        UserAccountdataSuccess() => _userSignInScaffold(state.userAccountdata),
+        UserAccountdataSuccess() => BlocProvider(
+  create: (context) => locator<UserAccountdataCubit>(),
+  child: CollectionScreen(),
+),
+            
+      //  _userSignInScaffold(state.userAccountdata),
         UserAccountdataError() => BlocProvider(
             create: (context) => locator<SignInCubit>(),
             child: SignInScreen(),

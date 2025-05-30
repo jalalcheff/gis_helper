@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gis_helper/constants/style_constants.dart';
 import 'package:gis_helper/presentation/cubit/transformer_number_cubit/transformer_number_cubit.dart';
+import 'package:gis_helper/presentation/cubit/user_accountdata_cubit/user_accountdata_cubit.dart';
+import 'package:gis_helper/presentation/screen/main_screen/collection_screen.dart';
 
 import '../../../di/dependency_injection.dart';
 import '../../cubit/all_transfomers_cubit/all_transformers_cubit.dart';
@@ -55,21 +57,17 @@ class _SignInScreenState extends State<SignInScreen> {
                       child: CircularProgressIndicator(),
                     );
                     Navigator.pushReplacement(context, MaterialPageRoute(
-                        builder: (context) => MultiBlocProvider(
-                          providers: [
-                            BlocProvider(create: (context) => locator<FeedersNumberCubit>()),
-                            BlocProvider(create: (context) => locator<TransformerNumberCubit>()),
-                            BlocProvider(create: (context) => locator<AllTransformersCubit>()),
-                            BlocProvider(create: (context) => locator<TransformerNumberOfEachSectorCubit>()),
-                          ],
-                          child: HomeScreen(transformerNumberCubit: locator<TransformerNumberCubit>(), feedersNumberCubit: locator<FeedersNumberCubit>(),transformersCubit: locator<AllTransformersCubit>(), transformerNumberOfEachSectorCubit: locator<TransformerNumberOfEachSectorCubit>()),
-                        ),));
+                        builder: (context) =>
+                            BlocProvider(
+                              create: (context) => locator<UserAccountdataCubit>(),
+                              child: CollectionScreen(),
+                            )));
                     print("success in sign in ${state.message}");
                     break;
                   }
                 case SignInError():
                   {
-                    WidgetsBinding.instance.addPostFrameCallback((_){
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("خطا في تسجيل الدخول"))
                       );
