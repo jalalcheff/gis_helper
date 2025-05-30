@@ -257,7 +257,7 @@ class _DataEditScreenState extends State<DataEditScreen> {
                     width: styleConstants.smallDp),
               ),
             ),
-            initialSelection: data.values.first,
+            initialSelection: controller.text,
             dropdownMenuEntries: data
                 .map((key, value) =>
                 MapEntry(key, DropdownMenuEntry(value: value, label: key)))
