@@ -40,7 +40,32 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     MediaQueryData mediaQuery = MediaQuery.of(context);
-    return Scaffold(
+    return BlocListener<SignoutCubit, SignoutState>(
+      listener: (context, state) {
+        switch (state) {
+          case SignoutInitial():
+            {}
+          case SignoutSuccess():
+            {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BlocProvider(
+                    create: (context) => locator<SignInCubit>(),
+                    child: SignInScreen(),
+                  ),
+                ),
+              );
+            }
+          case SignoutError():
+            {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("حدث خطأ أثناء تسجيل الخروج")),
+              );
+            }
+        }
+      },
+      child: Scaffold(
         appBar: AppBar(
           leading: BlocBuilder<UserAccountdataCubit, UserAccountdataState>(
               builder: (context, state) {
@@ -66,7 +91,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 onSelected: ((value){
                   if(value == "logout"){
                       context.read<SignoutCubit>().emitSignOut();
-                      BlocListener<SignoutCubit,SignoutState>(
+                      // The BlocListener is now outside, so remove it from here
+                      /*BlocListener<SignoutCubit,SignoutState>(
                         listener: (context, state){
                           switch(state) {
                             case SignoutInitial():
@@ -88,10 +114,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               }
                           }
                         },
-                      );
+                      );*/
                    /* FirebaseAuth.instance.signOut().then((value) {
                       *//*SignoutUsecase(
-                          accountRepository: locator<AccountRepositoryImp>())
+                          accountRepository: locator<AccountRepositoryImp>())*
                           .signOut();*//*
                       Navigator.pushReplacement(
                           context,
@@ -135,7 +161,9 @@ class _HomeScreenState extends State<HomeScreen> {
         body: SingleChildScrollView(
             child: HomeBody(
           mediaQuery: mediaQuery,
-        )));
+        )),
+      ),
+    );
   }
 }
 
