@@ -9,7 +9,9 @@ import 'package:gis_helper/constants/style_constants.dart';
 import 'package:gis_helper/domain/model/transformer_model.dart';
 import 'package:gis_helper/presentation/cubit/all_transfomers_cubit/all_transformers_cubit.dart';
 import 'package:gis_helper/presentation/cubit/sign_in_cubit/sign_in_cubit.dart';
+import 'package:gis_helper/presentation/cubit/signout_cubit/signout_cubit.dart';
 import 'package:gis_helper/presentation/cubit/update_all_transformers_cubit/update_all_transformers_cubit.dart';
+import 'package:gis_helper/presentation/cubit/user_accountdata_cubit/user_accountdata_cubit.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_ads_widget.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_latest_changes_widget.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_transformer_statistics_card_widget.dart';
@@ -24,9 +26,9 @@ import '../../cubit/transformer_number_cubit/transformer_number_cubit.dart';
 import '../../cubit/transformer_number_of_each_sector_cubit/transformer_number_of_each_sector_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen(
-      {super.key,});
-
+  HomeScreen({
+    super.key,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -40,24 +42,91 @@ class _HomeScreenState extends State<HomeScreen> {
     MediaQueryData mediaQuery = MediaQuery.of(context);
     return Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut().then((value) {
+          leading: BlocBuilder<UserAccountdataCubit, UserAccountdataState>(
+              builder: (context, state) {
+            /*FirebaseAuth.instance.signOut().then((value) {
                   SignoutUsecase(
-                          accountRepository: locator<AccountRepositoryImp>())
+                      accountRepository: locator<AccountRepositoryImp>())
                       .signOut();
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => BlocProvider(
+                          builder: (context) =>
+                              BlocProvider(
                                 create: (context) => locator<SignInCubit>(),
                                 child: SignInScreen(),
                               )));
                   print(
-                      "current user ${FirebaseAuth.instance.currentUser?.uid.toString()}");
-                });
-              },
-              icon: Icon(Icons.logout)),
+                      "current user ${FirebaseAuth.instance.currentUser?.uid
+                          .toString()}");
+                });*/ //sign out comment code
+            return switch (state) {
+              UserAccountdataInitial() => Icon(Icons.logout),
+              UserAccountdataSuccess() => PopupMenuButton(
+                onSelected: ((value){
+                  if(value == "logout"){
+                      context.read<SignoutCubit>().emitSignOut();
+                      BlocListener<SignoutCubit,SignoutState>(
+                        listener: (context, state){
+                          switch(state) {
+                            case SignoutInitial():
+                              {}
+                            case SignoutSuccess():
+                              {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            BlocProvider(
+                                              create: (context) => locator<SignInCubit>(),
+                                              child: SignInScreen(),
+                                            )));
+                              }
+                            case SignoutError():
+                              {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("حدث خطأ أثناء تسجيل الخروج")));
+                              }
+                          }
+                        },
+                      );
+                   /* FirebaseAuth.instance.signOut().then((value) {
+                      *//*SignoutUsecase(
+                          accountRepository: locator<AccountRepositoryImp>())
+                          .signOut();*//*
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  BlocProvider(
+                                    create: (context) => locator<SignInCubit>(),
+                                    child: SignInScreen(),
+                                  )));
+                      print(
+                          "current user ${FirebaseAuth.instance.currentUser?.uid
+                              .toString()}");
+                    });*/
+                  }
+                  else if(value == "add"){
+                  }
+                  else if(value == "delete"){
+                    context.read<UpdateAllTransformersCubit>().loadAllTransformers();
+                  }
+                }),
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                        child: Text("تحديث البيانات"), value: "logout"),
+                    if (state.userAccountdata.role == "admin")
+                      PopupMenuItem(child: Text("انشاء حساب"), value: "add"),
+                    PopupMenuItem(
+                        child: Text("تسجيل الخروج",
+                            style: TextStyle(color: Colors.red)),
+                        value: "logout"),
+                  ],
+                  icon: Icon(Icons.more_vert),
+                ),
+              UserAccountdataError() => Container(),
+            };
+          }),
           title: Text("الصفحة الرئيسية",
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: Colors.black, fontSize: styleConstants.headLine3)),
@@ -66,16 +135,16 @@ class _HomeScreenState extends State<HomeScreen> {
         body: SingleChildScrollView(
             child: HomeBody(
           mediaQuery: mediaQuery,
-                )));
+        )));
   }
 }
 
 class HomeBody extends StatefulWidget {
+  const HomeBody({
+    super.key,
+    required this.mediaQuery,
+  });
 
-  const HomeBody(
-      {super.key,
-      required this.mediaQuery,
-        });
   final MediaQueryData mediaQuery;
 
   /*final TransformerNumberCubit transformerNumberCubit;
@@ -98,13 +167,13 @@ class _HomeBodyState extends State<HomeBody> {
 
   _HomeBodyState(this.mediaQuery);
 
-
   @override
   void initState() {
-      context.read<AllTransformersCubit>().loadAllTransformers([]);
-      context.read<FeedersNumberCubit>().emitFeedersNumber();
+    context.read<AllTransformersCubit>().loadAllTransformers([]);
+    context.read<FeedersNumberCubit>().emitFeedersNumber();
     context.read<TransformerNumberCubit>().emitTransformerNumber();
-    context.read<TransformerNumberOfEachSectorCubit>()
+    context
+        .read<TransformerNumberOfEachSectorCubit>()
         .emitTransformerNumberOfEachSector();
     super.initState();
   }
@@ -120,7 +189,7 @@ class _HomeBodyState extends State<HomeBody> {
         SizedBox(
           height: styleConstants.mediumDp,
         ),
-         HomeScreenLatestChangesWidget(),
+        HomeScreenLatestChangesWidget(),
         SizedBox(
           height: styleConstants.extraLargeDp,
         ),

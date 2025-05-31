@@ -56,8 +56,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
 
   Scaffold _userSignInScaffold(AccountResource accountResource) {
     List<Widget> pages = [
-         HomeScreen(
-        ),
+         HomeScreen(),
       SearchScreen(userRole: accountResource.role),
       DataEntryScreen(),
     ];
