@@ -5,7 +5,7 @@ import 'package:gis_helper/domain/model/transformer_model.dart';
 abstract class TransformerRepository {
   Future<Result<List<TransformerResource>>> getAllTransformers();
 
-  Future<Result<List<TransformerResource>>> getAllTransformersLocally();
+  Future<Result<List<TransformerResource>>> updateAllTransformersReomtely();
 
   Future<Result<List<TransformerResource>>> getLastChangesTransformers();
   Future<Result<dynamic>> addTransformerData(TransformerModel transformer, String path);

@@ -9,6 +9,7 @@ import 'package:gis_helper/constants/style_constants.dart';
 import 'package:gis_helper/domain/model/transformer_model.dart';
 import 'package:gis_helper/presentation/cubit/all_transfomers_cubit/all_transformers_cubit.dart';
 import 'package:gis_helper/presentation/cubit/sign_in_cubit/sign_in_cubit.dart';
+import 'package:gis_helper/presentation/cubit/update_all_transformers_cubit/update_all_transformers_cubit.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_ads_widget.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_latest_changes_widget.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_transformer_statistics_card_widget.dart';
@@ -24,16 +25,8 @@ import '../../cubit/transformer_number_of_each_sector_cubit/transformer_number_o
 
 class HomeScreen extends StatefulWidget {
   HomeScreen(
-      {super.key,
-      required this.transformerNumberCubit,
-      required this.feedersNumberCubit,
-      required this.transformersCubit,
-      required this.transformerNumberOfEachSectorCubit});
+      {super.key,});
 
-  final TransformerNumberCubit transformerNumberCubit;
-  final FeedersNumberCubit feedersNumberCubit;
-  final AllTransformersCubit transformersCubit;
-  final TransformerNumberOfEachSectorCubit transformerNumberOfEachSectorCubit;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -53,10 +46,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   SignoutUsecase(
                           accountRepository: locator<AccountRepositoryImp>())
                       .signOut();
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BlocProvider(
-  create: (context) => locator<SignInCubit>(),
-  child: SignInScreen(),
-)));
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => BlocProvider(
+                                create: (context) => locator<SignInCubit>(),
+                                child: SignInScreen(),
+                              )));
                   print(
                       "current user ${FirebaseAuth.instance.currentUser?.uid.toString()}");
                 });
@@ -70,29 +66,25 @@ class _HomeScreenState extends State<HomeScreen> {
         body: SingleChildScrollView(
             child: HomeBody(
           mediaQuery: mediaQuery,
-          transformerNumberCubit: widget.transformerNumberCubit,
-          feedersNumberCubit: widget.feedersNumberCubit,
-          transformersCubit: widget.transformersCubit,
-          transformerNumberOfEachSectorCubit:
-              widget.transformerNumberOfEachSectorCubit,
-        )));
+                )));
   }
 }
 
 class HomeBody extends StatefulWidget {
+
   const HomeBody(
       {super.key,
       required this.mediaQuery,
-      required this.transformerNumberCubit,
-      required this.feedersNumberCubit,
-      required this.transformersCubit,
-      required this.transformerNumberOfEachSectorCubit});
+        });
+  final MediaQueryData mediaQuery;
 
-  final TransformerNumberCubit transformerNumberCubit;
+  /*final TransformerNumberCubit transformerNumberCubit;
   final FeedersNumberCubit feedersNumberCubit;
   final AllTransformersCubit transformersCubit;
   final MediaQueryData mediaQuery;
   final TransformerNumberOfEachSectorCubit transformerNumberOfEachSectorCubit;
+  final bool isDeleteOrUpdate;
+  final UpdateAllTransformersCubit updateAllTransformerCubit;*/
 
   @override
   State<HomeBody> createState() => _HomeBodyState(mediaQuery);
@@ -106,15 +98,13 @@ class _HomeBodyState extends State<HomeBody> {
 
   _HomeBodyState(this.mediaQuery);
 
-  late LatestChangesCubit _latestChangesTransformerCubit;
 
   @override
   void initState() {
-    _latestChangesTransformerCubit = locator<LatestChangesCubit>();
-    widget.transformersCubit.loadAllTransformers([]);
-    widget.feedersNumberCubit.emitFeedersNumber();
-    widget.transformerNumberCubit.emitTransformerNumber();
-    widget.transformerNumberOfEachSectorCubit
+      context.read<AllTransformersCubit>().loadAllTransformers([]);
+      context.read<FeedersNumberCubit>().emitFeedersNumber();
+    context.read<TransformerNumberCubit>().emitTransformerNumber();
+    context.read<TransformerNumberOfEachSectorCubit>()
         .emitTransformerNumberOfEachSector();
     super.initState();
   }
@@ -130,11 +120,7 @@ class _HomeBodyState extends State<HomeBody> {
         SizedBox(
           height: styleConstants.mediumDp,
         ),
-        BlocProvider(
-          create: (context) => _latestChangesTransformerCubit,
-          child: HomeScreenLatestChangesWidget(
-              latestChangesTransformerCubit: _latestChangesTransformerCubit),
-        ),
+         HomeScreenLatestChangesWidget(),
         SizedBox(
           height: styleConstants.extraLargeDp,
         ),

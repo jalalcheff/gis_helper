@@ -7,6 +7,7 @@ import 'package:gis_helper/presentation/cubit/add_transformer_cubit/add_transfor
 
 
 import '../../../domain/model/transformer_model.dart';
+import '../../cubit/update_all_transformers_cubit/update_all_transformers_cubit.dart';
 
 class DataEntryScreen extends StatefulWidget {
   const DataEntryScreen({super.key});
@@ -17,7 +18,6 @@ class DataEntryScreen extends StatefulWidget {
 
 class _DataEntryScreenState extends State<DataEntryScreen> {
   StyleConstants styleConstants = StyleConstants();
-  late AddTransformerCubit _addTransformerCubit;
   Map<String, dynamic> transformerData = {
     "ارضية": "option1",
     "هوائية": "option2",
@@ -46,8 +46,6 @@ class _DataEntryScreenState extends State<DataEntryScreen> {
 
   @override
   void initState() {
-    _addTransformerCubit = locator<AddTransformerCubit>();
-    //   _addTransformerCubit = AddTransformerCubit(AddTransformerUsecase(transformerRepository: TransformerRepositoryImp(apiService: ApiServiceImp(), databaseService: DatabaseServiceImp())));
     super.initState();
   }
 
@@ -62,105 +60,103 @@ class _DataEntryScreenState extends State<DataEntryScreen> {
                     color: Colors.black, fontSize: styleConstants.headLine3))),
       ),
       body: SingleChildScrollView(
-        child: BlocProvider(
-          create: (context) => _addTransformerCubit,
-          child: Container(
-            padding: EdgeInsets.all(styleConstants.extraLargeDp),
-            child: Column(
-              children: [
-                _textFormField(
-                    "اسم المحولة", transformerDataController[0], "T155"),
-                SizedBox(height: styleConstants.mediumDp),
-                _textFormField(
-                    "رقم المحولة", transformerDataController[1], "1221"),
-                SizedBox(height: styleConstants.mediumDp),
-                _transformerDataDropdownMenu(
-                    "سعة المحولة",
-                    transformersDataMaps.transformerCapacity,
-                    transformerDataController[2]), //drop down
-                SizedBox(height: styleConstants.mediumDp),
-                _transformerDataDropdownMenu(
-                    "هل هي محولة هوائية ؟",
-                    transformersDataMaps.transformerYesOrNo,
-                    transformerDataController[3]), //drop down
-                SizedBox(height: styleConstants.mediumDp),
-                _transformerDataDropdownMenu(
-                    "هل هي محولة خاصة ؟",
-                    transformersDataMaps.transformerYesOrNo,
-                    transformerDataController[4]), //drop down),  //drop down
-                SizedBox(height: styleConstants.mediumDp),
-                _transformerDataDropdownMenu(
-                    "اسم المغذي",
-                    transformersDataMaps.feedersName,
-                    transformerDataController[5]), //drop down
-                SizedBox(height: styleConstants.mediumDp),
-                _transformerDataDropdownMenu(
-                    "اسم المحطة",
-                    transformersDataMaps.substationName,
-                    transformerDataController[6]), //drop down
-                SizedBox(height: styleConstants.extraLargeDp),
-                _transformerDataDropdownMenu(
-                    "محلة او قطاع",
-                    transformersDataMaps.transformerMahalaOrSector,
-                    transformerDataController[7]), //drop down
-                SizedBox(height: styleConstants.mediumDp),
-                _transformerDataDropdownMenu(
-                    "زقاق او بلوك",
-                    transformersDataMaps.transformerZuqaqOrBlock,
-                    transformerDataController[8]), //drop down
-                SizedBox(height: styleConstants.mediumDp),
-                _textFormField(
-                    "X الاحداثي", transformerDataController[9], "44.4421"),
-                SizedBox(height: styleConstants.mediumDp),
-                _textFormField(
-                    "Y الاحداثي", transformerDataController[10], "33.33212"),
-                // Expanded(child: Container()),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  margin: EdgeInsets.symmetric(
-                      vertical: styleConstants.extraLargeDp),
-                  alignment: Alignment.bottomCenter,
-                  child: BlocListener<AddTransformerCubit, AddTransformerState>(
-                    listener: (context, state) {
-                      if (state is AddTransformerLoaded) {
-                        _clearAllFields();
-                        _showSnackBar(context, "تم إضافة المحولة بنجاح");
-                      } else if (state is AddTransformerError) {
-                        _showSnackBar(context, "حدث خطأ أثناء إضافة المحولة");
-                      }
-                    },
-                    child: MaterialButton(
-                      onPressed: !areAllFieldsValid
-                          ? () {}
-                          : () {
-                              final TransformerModel transformer =
-                                  _getTransformerData();
-                              _addTransformerCubit.addTransformer(transformer,
-                                  "${transformer.transformerName} ${transformer.transformerSerialNumber}");
-                              print(
-                                  "data inside transformer capacity ${transformerDataController[2].text}");
-                            },
-                      color: areAllFieldsValid
-                          ? Color(styleConstants.colorBlack)
-                          : Colors.grey[600],
-                      minWidth: MediaQuery.of(context).size.width,
-                      padding: EdgeInsets.symmetric(
-                          vertical: styleConstants.extraLargeDp),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              styleConstants.extraLargeDp)),
-                      child: Text(
-                        "اضافة المحولة",
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(color: Color(styleConstants.colorWhite)),
-                      ),
+        child: Container(
+          padding: EdgeInsets.all(styleConstants.extraLargeDp),
+          child: Column(
+            children: [
+              _textFormField(
+                  "اسم المحولة", transformerDataController[0], "T155"),
+              SizedBox(height: styleConstants.mediumDp),
+              _textFormField(
+                  "رقم المحولة", transformerDataController[1], "1221"),
+              SizedBox(height: styleConstants.mediumDp),
+              _transformerDataDropdownMenu(
+                  "سعة المحولة",
+                  transformersDataMaps.transformerCapacity,
+                  transformerDataController[2]), //drop down
+              SizedBox(height: styleConstants.mediumDp),
+              _transformerDataDropdownMenu(
+                  "هل هي محولة هوائية ؟",
+                  transformersDataMaps.transformerYesOrNo,
+                  transformerDataController[3]), //drop down
+              SizedBox(height: styleConstants.mediumDp),
+              _transformerDataDropdownMenu(
+                  "هل هي محولة خاصة ؟",
+                  transformersDataMaps.transformerYesOrNo,
+                  transformerDataController[4]), //drop down),  //drop down
+              SizedBox(height: styleConstants.mediumDp),
+              _transformerDataDropdownMenu(
+                  "اسم المغذي",
+                  transformersDataMaps.feedersName,
+                  transformerDataController[5]), //drop down
+              SizedBox(height: styleConstants.mediumDp),
+              _transformerDataDropdownMenu(
+                  "اسم المحطة",
+                  transformersDataMaps.substationName,
+                  transformerDataController[6]), //drop down
+              SizedBox(height: styleConstants.extraLargeDp),
+              _transformerDataDropdownMenu(
+                  "محلة او قطاع",
+                  transformersDataMaps.transformerMahalaOrSector,
+                  transformerDataController[7]), //drop down
+              SizedBox(height: styleConstants.mediumDp),
+              _transformerDataDropdownMenu(
+                  "زقاق او بلوك",
+                  transformersDataMaps.transformerZuqaqOrBlock,
+                  transformerDataController[8]), //drop down
+              SizedBox(height: styleConstants.mediumDp),
+              _textFormField(
+                  "X الاحداثي", transformerDataController[9], "44.4421"),
+              SizedBox(height: styleConstants.mediumDp),
+              _textFormField(
+                  "Y الاحداثي", transformerDataController[10], "33.33212"),
+              // Expanded(child: Container()),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                margin: EdgeInsets.symmetric(
+                    vertical: styleConstants.extraLargeDp),
+                alignment: Alignment.bottomCenter,
+                child: BlocListener<AddTransformerCubit, AddTransformerState>(
+                  listener: (context, state) {
+                    if (state is AddTransformerLoaded) {
+                      _clearAllFields();
+                      _showSnackBar(context, "تم إضافة المحولة بنجاح");
+                      context.read<UpdateAllTransformersCubit>().loadAllTransformers();
+                    } else if (state is AddTransformerError) {
+                      _showSnackBar(context, "حدث خطأ أثناء إضافة المحولة");
+                    }
+                  },
+                  child: MaterialButton(
+                    onPressed: !areAllFieldsValid
+                        ? () {}
+                        : () {
+                            final TransformerModel transformer =
+                                _getTransformerData();
+                            context.read<AddTransformerCubit>().addTransformer(transformer,
+                                "${transformer.transformerName} ${transformer.transformerSerialNumber}");
+                            print(
+                                "data inside transformer capacity ${transformerDataController[2].text}");
+                          },
+                    color: areAllFieldsValid
+                        ? Color(styleConstants.colorBlack)
+                        : Colors.grey[600],
+                    minWidth: MediaQuery.of(context).size.width,
+                    padding: EdgeInsets.symmetric(
+                        vertical: styleConstants.extraLargeDp),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                            styleConstants.extraLargeDp)),
+                    child: Text(
+                      "اضافة المحولة",
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(color: Color(styleConstants.colorWhite)),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

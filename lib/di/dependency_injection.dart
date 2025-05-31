@@ -11,9 +11,11 @@ import 'package:gis_helper/domain/get_all_transformers_locally.dart';
 import 'package:gis_helper/domain/get_all_transformers_number_usecase.dart';
 import 'package:gis_helper/domain/get_latest_changes_usecase.dart';
 import 'package:gis_helper/domain/get_transformer_details_usecase.dart';
+import 'package:gis_helper/domain/update_all_transformers_remotely.dart';
 import 'package:gis_helper/presentation/cubit/add_transformer_cubit/add_transformer_cubit.dart';
 import 'package:gis_helper/presentation/cubit/all_transfomers_cubit/all_transformers_cubit.dart';
 import 'package:gis_helper/presentation/cubit/latest_changes_cubit/latest_changes_cubit.dart';
+import 'package:gis_helper/presentation/cubit/update_all_transformers_cubit/update_all_transformers_cubit.dart';
 
 import '../data/database_service/database_service_imp.dart';
 import '../data/repository/api_srevice.dart';
@@ -69,6 +71,8 @@ Future<void> setUpLocator() async{
   locator.registerSingleton(SignoutCubit(locator<SignoutUsecase>()));
   locator.registerSingleton(DeleteTransformerUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
   locator.registerSingleton(DeleteTransformerCubit(locator<DeleteTransformerUsecase>()));
+  locator.registerSingleton(UpdateAllTransformersRemotely(transformerRepository: locator<TransformerRepositoryImp>()));
+  locator.registerSingleton(UpdateAllTransformersCubit(locator<UpdateAllTransformersRemotely>()));
 
 /*  locator.registerFactory(() => SearchForMealByIdRepository(foodApiService: locator<FoodApiService>()));
   locator.registerFactory(() => SearchMealByIdCubit(locator<SearchForMealByIdRepository>()));*/

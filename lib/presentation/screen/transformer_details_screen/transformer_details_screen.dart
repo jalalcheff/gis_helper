@@ -8,6 +8,7 @@ import 'package:gis_helper/presentation/screen/main_screen/collection_screen.dar
 import '../../../constants/style_constants.dart';
 import '../../../data/resource/transformer_resource.dart';
 import '../../cubit/delete_transformer_cubit/delete_transformer_cubit.dart';
+import '../../cubit/update_all_transformers_cubit/update_all_transformers_cubit.dart';
 
 class TransformerDetailsScreen extends StatefulWidget {
   const TransformerDetailsScreen(
@@ -385,6 +386,7 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
           child: BlocListener<DeleteTransformerCubit, DeleteTransformerState>(
             listener: (context, state) {
               if (state is DeleteTransformerSuccess) {
+                context.read<UpdateAllTransformersCubit>().loadAllTransformers();
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CollectionScreen()));
               } else if (state is DeleteTransformerError) {
                 Navigator.of(context).pop(); // إغلاق النافذة بدون حذف

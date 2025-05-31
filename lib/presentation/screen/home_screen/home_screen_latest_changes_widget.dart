@@ -7,10 +7,9 @@ import '../../../domain/model/transformer_model.dart';
 import '../../cubit/latest_changes_cubit/latest_changes_cubit.dart';
 
 class HomeScreenLatestChangesWidget extends StatefulWidget {
-  final LatestChangesCubit latestChangesTransformerCubit;
 
 
-  const HomeScreenLatestChangesWidget({super.key, required this.latestChangesTransformerCubit});
+  const HomeScreenLatestChangesWidget({super.key});
 
   @override
   State<HomeScreenLatestChangesWidget> createState() => _HomeScreenLatestChangesWidgetState();
@@ -20,7 +19,7 @@ class _HomeScreenLatestChangesWidgetState extends State<HomeScreenLatestChangesW
 
   @override
   void initState() {
-    widget.latestChangesTransformerCubit.loadLatestChanges();
+    context.read<LatestChangesCubit>().loadLatestChanges();
     super.initState();
   }
   @override

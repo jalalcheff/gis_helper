@@ -9,7 +9,7 @@ class GetTransformerDetailsUsecase {
 
   Future<Result<TransformerResource>> getTransformerDetails(String transformerSerialNumber) async {
     final transformerResult = await _transformerRepository
-        .getAllTransformersLocally();
+        .getAllTransformers();
     switch (transformerResult) {
       case Ok<List<TransformerResource>>():
         {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gis_helper/domain/update_all_transformers_remotely.dart';
+import 'package:gis_helper/presentation/cubit/update_all_transformers_cubit/update_all_transformers_cubit.dart';
 
 import '../../../data/resource/account_resource.dart';
 import '../../../di/dependency_injection.dart';
@@ -15,12 +17,14 @@ import '../search_screen/search_screen.dart';
 class CollectionScreen extends StatefulWidget {
   const CollectionScreen({super.key});
 
+
   @override
   State<CollectionScreen> createState() => _CollectionScreenState();
 }
 
 class _CollectionScreenState extends State<CollectionScreen> {
   int _currentIndex = 0;
+
   @override
   void initState() {
     context.read<UserAccountdataCubit>().emitUserAccountdata();
@@ -31,10 +35,10 @@ class _CollectionScreenState extends State<CollectionScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<UserAccountdataCubit, UserAccountdataState>(
       builder: (context, state) {
-        switch(state) {
+        switch (state) {
           case UserAccountdataInitial():
             {
-             return Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator());
             }
           case UserAccountdataSuccess():
             {
@@ -52,15 +56,8 @@ class _CollectionScreenState extends State<CollectionScreen> {
 
   Scaffold _userSignInScaffold(AccountResource accountResource) {
     List<Widget> pages = [
-      MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (context) => locator<FeedersNumberCubit>()),
-          BlocProvider(create: (context) => locator<TransformerNumberCubit>()),
-          BlocProvider(create: (context) => locator<AllTransformersCubit>()),
-          BlocProvider(create: (context) => locator<TransformerNumberOfEachSectorCubit>()),
-        ],
-        child: HomeScreen(transformerNumberCubit: locator<TransformerNumberCubit>(), feedersNumberCubit: locator<FeedersNumberCubit>(),transformersCubit: locator<AllTransformersCubit>(), transformerNumberOfEachSectorCubit: locator<TransformerNumberOfEachSectorCubit>()),
-      ),
+         HomeScreen(
+        ),
       SearchScreen(userRole: accountResource.role),
       DataEntryScreen(),
     ];
@@ -97,5 +94,4 @@ class _CollectionScreenState extends State<CollectionScreen> {
       ),
     );
   }
-
 }

@@ -41,10 +41,20 @@ class TransformerRepositoryImp implements TransformerRepository {
   }
 
   @override
-  Future<Result<List<TransformerResource>>> getAllTransformersLocally() async {
-    final databaseData = await _databaseService.getAllTransformers();
-    return databaseData;
-  }
+  Future<Result<List<TransformerResource>>> updateAllTransformersReomtely() async {
+    final Result<List<TransformerResource>> finalResult;
+    final transformers = await _apiService.getAllTransformers();
+    switch (transformers) {
+      case Ok<List<Map<String, dynamic>>>():
+        {
+          final result = _databaseService.saveDataIntoDatabase(transformers);
+          print("inside transformer repo update ${result.runtimeType}");
+          return result;
+        }
+      case ErrorValue<List<Map<String, dynamic>>>():
+        return ErrorValue(transformers.e);
+    }
+    }
 
   @override
   Future<Result<List<TransformerResource>>> getLastChangesTransformers() async {

@@ -23,9 +23,13 @@ import 'package:gis_helper/domain/get_all_transformers_number_usecase.dart';
 import 'package:gis_helper/domain/get_logindata_usecase.dart';
 import 'package:gis_helper/domain/sign_in_usecase.dart';
 import 'package:gis_helper/domain/transformer_repository.dart';
+import 'package:gis_helper/presentation/cubit/add_transformer_cubit/add_transformer_cubit.dart';
 import 'package:gis_helper/presentation/cubit/all_transfomers_cubit/all_transformers_cubit.dart';
+import 'package:gis_helper/presentation/cubit/delete_transformer_cubit/delete_transformer_cubit.dart';
 import 'package:gis_helper/presentation/cubit/feeders_number_cubit/feeders_number_cubit.dart';
+import 'package:gis_helper/presentation/cubit/latest_changes_cubit/latest_changes_cubit.dart';
 import 'package:gis_helper/presentation/cubit/sign_in_cubit/sign_in_cubit.dart';
+import 'package:gis_helper/presentation/cubit/update_all_transformers_cubit/update_all_transformers_cubit.dart';
 import 'package:gis_helper/presentation/cubit/user_accountdata_cubit/user_accountdata_cubit.dart';
 import 'package:gis_helper/presentation/screen/data_entry_screen/data_entry_screen.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen.dart';
@@ -76,8 +80,25 @@ void main() async {
           databaseService: DatabaseServiceImp(), apiService: ApiServiceImp())
       .getAllTransformers();*/
   await setUpLocator();
-  runApp( BlocProvider(
+  runApp( 
+      MultiBlocProvider(
+  providers: [
+    BlocProvider(
   create: (context) => locator<UserAccountdataCubit>(),
+),
+    BlocProvider(create: (context) => locator<FeedersNumberCubit>()),
+    BlocProvider(create: (context) => locator<TransformerNumberCubit>()),
+    BlocProvider(create: (context) => locator<AllTransformersCubit>()),
+    BlocProvider(
+        create: (context) =>
+            locator<TransformerNumberOfEachSectorCubit>()),
+    BlocProvider(
+        create: (context) => locator<UpdateAllTransformersCubit>()),
+    BlocProvider(
+        create: (context) => locator<DeleteTransformerCubit>()),
+    BlocProvider(create: (context) => locator<LatestChangesCubit>()),
+    BlocProvider(create: (context) => locator<AddTransformerCubit>()),
+  ],
   child: MyApp(),
 ));
 }
