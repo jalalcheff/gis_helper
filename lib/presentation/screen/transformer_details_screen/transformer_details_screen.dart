@@ -34,9 +34,12 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     mediaQuery = MediaQuery.of(context);
-    return Scaffold(
-        body: TransformerDetailsScreenBody(),
-      );
+    return BlocProvider(
+      create: (context) => locator<DeleteTransformerCubit>(),
+      child: Scaffold(
+          body: TransformerDetailsScreenBody(),
+        ),
+    );
   }
 
   Padding TransformerDetailsScreenBody() {
@@ -376,49 +379,45 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
   void _showDeleteConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('تأكيد الحذف'),
-          content: Text('هل أنت متأكد أنك تريد حذف هذا العنصر؟'),
-          actions: [
-            TextButton(
-              child: Text('لا'),
-              onPressed: () {
+      builder: (BuildContext dialogContext) {
+        return BlocProvider(
+          create: (context) => locator<DeleteTransformerCubit>(),
+          child: BlocListener<DeleteTransformerCubit, DeleteTransformerState>(
+            listener: (context, state) {
+              if (state is DeleteTransformerSuccess) {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CollectionScreen()));
+              } else if (state is DeleteTransformerError) {
                 Navigator.of(context).pop(); // إغلاق النافذة بدون حذف
-              },
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+              }
+            },
+            child: AlertDialog(
+              title: Text('تأكيد الحذف'),
+              content: Text('هل أنت متأكد أنك تريد حذف هذا العنصر؟'),
+              actions: [
+                TextButton(
+                  child: Text('لا'),
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop(); // إغلاق النافذة بدون حذف
+                  },
+                ),
+                BlocBuilder<DeleteTransformerCubit, DeleteTransformerState>(
+                  builder: (context, state) {
+                    if (state is DeleteTransformerLoading) {
+                      return CircularProgressIndicator();
+                    }
+                    return TextButton(
+                      child: Text('نعم' , style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.red)),
+                      onPressed: () async {
+                        await context.read<DeleteTransformerCubit>().emitDeleteTransformer(widget.transformerDetails);
+                        // نفّذ عملية الحذف هنا
+                      },
+                    );
+                  },
+                ),
+              ],
             ),
-            BlocBuilder<DeleteTransformerCubit, DeleteTransformerState>(
-  builder: (context, state) {
-    switch(state) {
-      case DeleteTransformerInitial():
-        {}
-      case DeleteTransformerLoading():
-        {
-          return CircularProgressIndicator();
-        }
-      case DeleteTransformerSuccess():
-        {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CollectionScreen()));
-        }
-      case DeleteTransformerError():
-        {
-          Navigator.of(context).pop(); // إغلاق النافذة بدون حذف
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
-        }
-    }
-    return TextButton(
-              child: BlocProvider(
-  create: (context) => locator<DeleteTransformerCubit>(),
-  child: Text('نعم' , style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.red)),
-),
-              onPressed: () async {
-                await context.read<DeleteTransformerCubit>().emitDeleteTransformer(widget.transformerDetails);
-                // نفّذ عملية الحذف هنا
-              },
-            );
-  },
-),
-          ],
+          ),
         );
       },
     );
