@@ -37,7 +37,9 @@ import 'package:gis_helper/presentation/screen/home_screen/home_screen.dart';
 import 'package:gis_helper/presentation/screen/main_screen/collection_screen.dart';
 import 'package:gis_helper/presentation/screen/search_screen/search_screen.dart';
 import 'package:gis_helper/presentation/screen/sign_in_screen/sign_in_screen.dart';
+import 'package:gis_helper/presentation/screen/splash_screen/splash_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:lottie/lottie.dart';
 
 import 'data/resource/result_pattern.dart';
 import 'di/dependency_injection.dart';
@@ -100,6 +102,7 @@ void main() async {
     BlocProvider(create: (context) => locator<LatestChangesCubit>()),
     BlocProvider(create: (context) => locator<AddTransformerCubit>()),
     BlocProvider(create: (context) => locator<SignoutCubit>()),
+    BlocProvider(create: (context) => locator<SignInCubit>()),
 
   ],
   child: MyApp(),
@@ -123,14 +126,14 @@ class _MyAppState extends State<MyApp> {
       print("current user ${FirebaseAuth.instance.currentUser?.uid.toString()}");
     });*/
     // Access the existing cubit instance from the context
-    context.read<UserAccountdataCubit>().emitUserAccountdata();
+    //context.read<UserAccountdataCubit>().emitUserAccountdata();
   }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     StyleConstants styleConstants = StyleConstants();
-    GetNumberOfTransformersOfEachSector(transformerRepository: TransformerRepositoryImp(databaseService: DatabaseServiceImp(), apiService: ApiServiceImp())).getNumberOfTransformersOfEachSector();
+//    GetNumberOfTransformersOfEachSector(transformerRepository: TransformerRepositoryImp(databaseService: DatabaseServiceImp(), apiService: ApiServiceImp())).getNumberOfTransformersOfEachSector();
     return BlocBuilder<UserAccountdataCubit, UserAccountdataState>(
   builder: (context, state) {
     return MaterialApp(
@@ -169,19 +172,20 @@ class _MyAppState extends State<MyApp> {
           appBarTheme: AppBarTheme(
             backgroundColor: Color(styleConstants.colorWhite),
           )),
-      home: switch(state) {
-        UserAccountdataInitial() => Center(child: CircularProgressIndicator()),
+      home: SplashScreen()
+      /*switch(state) {
+        UserAccountdataInitial() => Center(child: Lottie.asset("images/lottie.json")),
         UserAccountdataSuccess() => BlocProvider(
   create: (context) => locator<UserAccountdataCubit>(),
   child: CollectionScreen(),
 ),
-            
+
       //  _userSignInScaffold(state.userAccountdata),
         UserAccountdataError() => BlocProvider(
             create: (context) => locator<SignInCubit>(),
             child: SignInScreen(),
           ),
-      }
+      }*/
     );
   },
 );

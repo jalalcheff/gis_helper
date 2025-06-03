@@ -4,6 +4,7 @@ import 'package:gis_helper/constants/style_constants.dart';
 import 'package:gis_helper/presentation/cubit/transformer_number_cubit/transformer_number_cubit.dart';
 import 'package:gis_helper/presentation/cubit/user_accountdata_cubit/user_accountdata_cubit.dart';
 import 'package:gis_helper/presentation/screen/main_screen/collection_screen.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../../di/dependency_injection.dart';
 import '../../cubit/all_transfomers_cubit/all_transformers_cubit.dart';
@@ -29,7 +30,7 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<SignInCubit>().emitSignInInitial();
+    //context.read<SignInCubit>().emitSignInInitial();
     emailController.addListener(_updateFieldsValidity);
     passwordController.addListener(_updateFieldsValidity);
   }
@@ -58,11 +59,11 @@ class _SignInScreenState extends State<SignInScreen> {
             builder: (context, state) {
               switch (state) {
                 case SignInInitial() :
-                  // No need to call _build_sign_in_screen() here, it's returned below
+              // No need to call _build_sign_in_screen() here, it's returned below
                   break;
                 case SignInLoading() :
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                  return  Center(
+                    child: Center(child: Lottie.asset("images/lottie.json")),
                   );
                 case SignInSuccess():
                   {
@@ -77,7 +78,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     });
                     print("success in sign in ${state.message}");
                     // Return a placeholder or loading indicator while navigating
-                    return const Center(child: CircularProgressIndicator());
+                    return _buildSignInScreen();;
                   }
                 case SignInError():
                   {

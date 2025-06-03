@@ -43,152 +43,169 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
     );
   }
 
-  Padding TransformerDetailsScreenBody() {
-    return Padding(
-      padding: EdgeInsets.all(styleConstants.extraLargeDp),
-      child: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            children: [
-              Image.asset(
-                (widget.transformerDetails.isItOverhead)
-                    ? "images/overhead.png"
-                    : "images/kiosk.png",
-                height: mediaQuery.size.height * 0.35,
-              ),
-              SizedBox(
-                height: styleConstants.extraLargeDp,
-              ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  "${widget.transformerDetails.transformerName} محولة كهربائية",
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: Colors.black,
-                      fontSize: styleConstants.headLineLess2),
+  Stack TransformerDetailsScreenBody() {
+    return Stack(
+      children: [
+        Padding(
+        padding: EdgeInsets.all(styleConstants.extraLargeDp),
+        child: SingleChildScrollView(
+          child: Container(
+            child: Column(
+              children: [
+                Image.asset(
+                  (widget.transformerDetails.isItOverhead)
+                      ? "images/overhead.png"
+                      : "images/kiosk.png",
+                  height: mediaQuery.size.height * 0.35,
                 ),
-              ),
-              SizedBox(
-                height: styleConstants.mediumDp,
-              ),
-              Align(
+                SizedBox(
+                  height: styleConstants.extraLargeDp,
+                ),
+                Align(
                   alignment: Alignment.centerRight,
-                  child: _buildTransformerSerialNumberCard()),
-              SizedBox(
-                height: styleConstants.mediumDp,
-              ),
-              Divider(
-                color: Color(styleConstants.colorLightGrey),
-                thickness: 1,
-              ),
-              SizedBox(
-                height: styleConstants.mediumDp,
-              ),
-              _buildTransformerInformationCards(),
-              SizedBox(
-                height: styleConstants.largeDp,
-              ),
-              if (widget.userRole == "admin")
-                Column(
-                  children: [
-                    Divider(
-                      color: Color(styleConstants.colorLightGrey),
-                      thickness: 1,
-                    ),
-                    SizedBox(
-                      height: styleConstants.largeDp,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          /*style: ButtonStyle(
-                            backgroundColor: WidgetStatePropertyAll(Colors.red),
-                            padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical : styleConstants.extraLargeDp))
+                  child: Text(
+                    "${widget.transformerDetails.transformerName} محولة كهربائية",
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: Colors.black,
+                        fontSize: styleConstants.headLineLess2),
+                  ),
+                ),
+                SizedBox(
+                  height: styleConstants.mediumDp,
+                ),
+                Align(
+                    alignment: Alignment.centerRight,
+                    child: _buildTransformerSerialNumberCard()),
+                SizedBox(
+                  height: styleConstants.mediumDp,
+                ),
+                Divider(
+                  color: Color(styleConstants.colorLightGrey),
+                  thickness: 1,
+                ),
+                SizedBox(
+                  height: styleConstants.mediumDp,
+                ),
+                _buildTransformerInformationCards(),
+                SizedBox(
+                  height: styleConstants.largeDp,
+                ),
+                if (widget.userRole == "admin")
+                  Column(
+                    children: [
+                      Divider(
+                        color: Color(styleConstants.colorLightGrey),
+                        thickness: 1,
+                      ),
+                      SizedBox(
+                        height: styleConstants.largeDp,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            /*style: ButtonStyle(
+                              backgroundColor: WidgetStatePropertyAll(Colors.red),
+                              padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical : styleConstants.extraLargeDp))
+                            ),
+                              onPressed: () {},*/
+                              child: MaterialButton(
+                                color: Colors.red,
+                               shape: RoundedRectangleBorder(
+                                 borderRadius: BorderRadius.circular(styleConstants.extraLargeDp)
+                               ),
+                               padding: EdgeInsets.all(styleConstants.extraLargeDp),
+                               onPressed: () {
+                                 _showDeleteConfirmationDialog(context);
+                               },
+                               child: Row(
+                                 mainAxisAlignment: MainAxisAlignment.center,
+                                 children: [
+                                   Text("حذف",
+                                       style: Theme.of(context)
+                                           .textTheme
+                                           .titleLarge
+                                           ?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)
+                                   ),
+                                   SizedBox(
+                                     width: styleConstants.largeDp,
+                                   ),
+                                   Icon(
+                                     Icons.delete,
+                                     color: Colors.white,
+                                   ),
+                                 ],
+                               ),
+                              )
                           ),
-                            onPressed: () {},*/
-                            child: MaterialButton(
-                              color: Colors.red,
-                             shape: RoundedRectangleBorder(
-                               borderRadius: BorderRadius.circular(styleConstants.extraLargeDp)
-                             ),
-                             padding: EdgeInsets.all(styleConstants.extraLargeDp),
-                             onPressed: () {
-                               _showDeleteConfirmationDialog(context);
-                             },
-                             child: Row(
-                               mainAxisAlignment: MainAxisAlignment.center,
-                               children: [
-                                 Text("حذف",
-                                     style: Theme.of(context)
-                                         .textTheme
-                                         .titleLarge
-                                         ?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)
-                                 ),
-                                 SizedBox(
-                                   width: styleConstants.largeDp,
-                                 ),
-                                 Icon(
-                                   Icons.delete,
-                                   color: Colors.white,
-                                 ),
-                               ],
-                             ),
-                            )
-                        ),
-                        SizedBox(
-                          width: styleConstants.largeDp,
-                        ),
-                        Expanded(
-                            child: MaterialButton(
-                              color: Colors.blue,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(styleConstants.extraLargeDp)
-                              ),
-                              padding: EdgeInsets.all(styleConstants.extraLargeDp),
-                              onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => DataEditScreen(transformerResource : widget.transformerDetails)));
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                          SizedBox(
+                            width: styleConstants.largeDp,
+                          ),
+                          Expanded(
+                              child: MaterialButton(
+                                color: Colors.blue,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(styleConstants.extraLargeDp)
+                                ),
+                                padding: EdgeInsets.all(styleConstants.extraLargeDp),
+                                onPressed: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => DataEditScreen(transformerResource : widget.transformerDetails)));
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text("تعديل",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge
+                                            ?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)
+                                    ),
+                                    SizedBox(
+                                      width: styleConstants.largeDp,
+                                    ),
+                                    Icon(
+                                      Icons.edit,
+                                      color: Colors.white,
+                                    ),
+                                  ],
+                                ),
+                              )/*Row(
                                 children: [
-                                  Text("تعديل",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge
-                                          ?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)
-                                  ),
-                                  SizedBox(
-                                    width: styleConstants.largeDp,
-                                  ),
                                   Icon(
-                                    Icons.edit,
+                                    Icons.delete,
                                     color: Colors.white,
                                   ),
+                                  Text("حذف",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(color: Colors.white)
+                                  ),
                                 ],
-                              ),
-                            )/*Row(
-                              children: [
-                                Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
-                                ),
-                                Text("حذف",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(color: Colors.white)
-                                ),
-                              ],
-                            )*/),
+                              )*/),
 
-                      ],
-                    ),
-                  ],
-                ),
-            ],
+                        ],
+                      ),
+                    ],
+                  ),
+              ],
+            ),
           ),
         ),
       ),
+        Positioned(
+          top: 40, // المسافة من الأعلى (يمكن تعديلها حسب وضع AppBar أو SafeArea)
+          left: 16, // المسافة من اليسار
+          child: CircleAvatar(
+            backgroundColor: Colors.black.withOpacity(0.5),
+            child: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        ),
+      ]
     );
   }
 
@@ -408,12 +425,18 @@ class _TransformerDetailsScreenState extends State<TransformerDetailsScreen> {
                     if (state is DeleteTransformerLoading) {
                       return CircularProgressIndicator();
                     }
-                    return TextButton(
-                      child: Text('نعم' , style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.red)),
-                      onPressed: () async {
-                        await context.read<DeleteTransformerCubit>().emitDeleteTransformer(widget.transformerDetails);
-                        // نفّذ عملية الحذف هنا
-                      },
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(styleConstants.largeDp),
+                        color: Colors.red,
+                      ),
+                      child: TextButton(
+                        child: Text('نعم' , style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white)),
+                        onPressed: () async {
+                          await context.read<DeleteTransformerCubit>().emitDeleteTransformer(widget.transformerDetails);
+                          // نفّذ عملية الحذف هنا
+                        },
+                      ),
                     );
                   },
                 ),
