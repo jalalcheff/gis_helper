@@ -3,7 +3,9 @@ import 'package:get_it/get_it.dart';
 import 'package:gis_helper/data/repository/account_repository_imp.dart';
 import 'package:gis_helper/data/repository/database_service.dart';
 import 'package:gis_helper/data/repository/feeders_repository_imp.dart';
+import 'package:gis_helper/data/repository/image_document_repository_imp.dart';
 import 'package:gis_helper/data/service/api_service_imp.dart';
+import 'package:gis_helper/data/service/image_document_service_imp.dart';
 import 'package:gis_helper/domain/account_repository.dart';
 import 'package:gis_helper/domain/add_transformer_usecase.dart';
 import 'package:gis_helper/domain/get_all_feeders_usecase.dart';
@@ -11,15 +13,19 @@ import 'package:gis_helper/domain/get_all_transformers_locally.dart';
 import 'package:gis_helper/domain/get_all_transformers_number_usecase.dart';
 import 'package:gis_helper/domain/get_latest_changes_usecase.dart';
 import 'package:gis_helper/domain/get_transformer_details_usecase.dart';
+import 'package:gis_helper/domain/repository/image_document_repository.dart';
 import 'package:gis_helper/domain/update_all_transformers_remotely.dart';
+import 'package:gis_helper/domain/usecase/add_image_document_usecase.dart';
 import 'package:gis_helper/presentation/cubit/add_transformer_cubit/add_transformer_cubit.dart';
 import 'package:gis_helper/presentation/cubit/all_transfomers_cubit/all_transformers_cubit.dart';
+import 'package:gis_helper/presentation/cubit/image_document_cubit.dart';
 import 'package:gis_helper/presentation/cubit/latest_changes_cubit/latest_changes_cubit.dart';
 import 'package:gis_helper/presentation/cubit/update_all_transformers_cubit/update_all_transformers_cubit.dart';
 
 import '../data/database_service/database_service_imp.dart';
 import '../data/repository/api_srevice.dart';
 import '../data/repository/transformer_repository_imp.dart';
+import '../data/service/image_document_service.dart';
 import '../domain/delete_transformer_usecase.dart';
 import '../domain/feeders_repository.dart';
 import '../domain/get_Number_of_transformers_of_each_sector.dart';
@@ -73,7 +79,10 @@ Future<void> setUpLocator() async{
   locator.registerSingleton(DeleteTransformerCubit(locator<DeleteTransformerUsecase>()));
   locator.registerSingleton(UpdateAllTransformersRemotely(transformerRepository: locator<TransformerRepositoryImp>()));
   locator.registerSingleton(UpdateAllTransformersCubit(locator<UpdateAllTransformersRemotely>()));
-
+  locator.registerFactory<ImageDocumentServiceImp>(() => ImageDocumentServiceImp());
+  locator.registerSingleton(ImageDocumentRepositoryImp(locator<ImageDocumentServiceImp>()));
+  locator.registerSingleton(AddImageDocumentUseCase(locator<ImageDocumentRepositoryImp>()));
+  locator.registerSingleton(ImageDocumentCubit(addImageDocumentUseCase: locator<AddImageDocumentUseCase>()));
 /*  locator.registerFactory(() => SearchForMealByIdRepository(foodApiService: locator<FoodApiService>()));
   locator.registerFactory(() => SearchMealByIdCubit(locator<SearchForMealByIdRepository>()));*/
 }

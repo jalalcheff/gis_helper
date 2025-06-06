@@ -12,6 +12,7 @@ import 'package:gis_helper/presentation/cubit/sign_in_cubit/sign_in_cubit.dart';
 import 'package:gis_helper/presentation/cubit/signout_cubit/signout_cubit.dart';
 import 'package:gis_helper/presentation/cubit/update_all_transformers_cubit/update_all_transformers_cubit.dart';
 import 'package:gis_helper/presentation/cubit/user_accountdata_cubit/user_accountdata_cubit.dart';
+import 'package:gis_helper/presentation/screen/add_image_screen/add_image_document_screen.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_ads_widget.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_latest_changes_widget.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_transformer_statistics_card_widget.dart';
@@ -216,7 +217,11 @@ class _HomeBodyState extends State<HomeBody> {
         padding: EdgeInsets.all(styleConstants.largeDp),
         width: double.infinity,
         child: Column(children: [
-          HomeScreenAdsWidget().addsCard(mediaQuery, context, styleConstants),
+          InkWell(
+              onTap: (){
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AddImageDocumentScreen()));
+              },
+              child: HomeScreenAdsWidget().addsCard(mediaQuery, context, styleConstants)),
           SizedBox(
             height: styleConstants.mediumDp,
           ),

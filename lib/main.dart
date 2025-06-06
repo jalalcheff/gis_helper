@@ -27,6 +27,7 @@ import 'package:gis_helper/presentation/cubit/add_transformer_cubit/add_transfor
 import 'package:gis_helper/presentation/cubit/all_transfomers_cubit/all_transformers_cubit.dart';
 import 'package:gis_helper/presentation/cubit/delete_transformer_cubit/delete_transformer_cubit.dart';
 import 'package:gis_helper/presentation/cubit/feeders_number_cubit/feeders_number_cubit.dart';
+import 'package:gis_helper/presentation/cubit/image_document_cubit.dart';
 import 'package:gis_helper/presentation/cubit/latest_changes_cubit/latest_changes_cubit.dart';
 import 'package:gis_helper/presentation/cubit/sign_in_cubit/sign_in_cubit.dart';
 import 'package:gis_helper/presentation/cubit/signout_cubit/signout_cubit.dart';
@@ -103,7 +104,7 @@ void main() async {
     BlocProvider(create: (context) => locator<AddTransformerCubit>()),
     BlocProvider(create: (context) => locator<SignoutCubit>()),
     BlocProvider(create: (context) => locator<SignInCubit>()),
-
+    BlocProvider(create: (context) => locator<ImageDocumentCubit>())
   ],
   child: MyApp(),
 ));
