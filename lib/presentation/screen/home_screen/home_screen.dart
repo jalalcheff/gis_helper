@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -16,12 +17,14 @@ import 'package:gis_helper/presentation/screen/add_image_screen/add_image_docume
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_ads_widget.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_latest_changes_widget.dart';
 import 'package:gis_helper/presentation/screen/home_screen/home_screen_transformer_statistics_card_widget.dart';
+import 'package:gis_helper/presentation/screen/show_news_screen/news_details_screen.dart';
 import 'package:gis_helper/presentation/screen/sign_in_screen/sign_in_screen.dart';
 
 import '../../../data/repository/account_repository_imp.dart';
 import '../../../di/dependency_injection.dart';
 import '../../../domain/signout_usecase.dart';
 import '../../cubit/feeders_number_cubit/feeders_number_cubit.dart';
+import '../../cubit/get_image_documents_cubit.dart';
 import '../../cubit/latest_changes_cubit/latest_changes_cubit.dart';
 import '../../cubit/transformer_number_cubit/transformer_number_cubit.dart';
 import '../../cubit/transformer_number_of_each_sector_cubit/transformer_number_of_each_sector_cubit.dart';
@@ -186,6 +189,7 @@ class _HomeBodyState extends State<HomeBody> {
     context
         .read<TransformerNumberOfEachSectorCubit>()
         .emitTransformerNumberOfEachSector();
+    context.read<GetImageDocumentsCubit>().getImages();
     super.initState();
   }
 
@@ -219,7 +223,7 @@ class _HomeBodyState extends State<HomeBody> {
         child: Column(children: [
           InkWell(
               onTap: (){
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AddImageDocumentScreen()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => NewsDetailScreen()));
               },
               child: HomeScreenAdsWidget().addsCard(mediaQuery, context, styleConstants)),
           SizedBox(
@@ -367,6 +371,7 @@ class _HomeBodyState extends State<HomeBody> {
       ),
     );
   }
+
 }
 
 List<PieChartSectionData> getPieChartSections(

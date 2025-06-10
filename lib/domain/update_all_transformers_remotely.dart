@@ -1,12 +1,14 @@
 import 'package:gis_helper/data/resource/result_pattern.dart';
 import 'package:gis_helper/data/resource/transformer_resource.dart';
+import 'package:gis_helper/domain/model/image_document_model.dart';
 import 'package:gis_helper/domain/model/transformer_model.dart';
+import 'package:gis_helper/domain/repository/image_document_repository.dart';
 import 'package:gis_helper/domain/transformer_repository.dart';
 
 class UpdateAllTransformersRemotely {
   final TransformerRepository transformerRepository;
-
-  UpdateAllTransformersRemotely({required this.transformerRepository});
+  final ImageDocumentRepository imageDocumentRepository;
+  UpdateAllTransformersRemotely({required this.transformerRepository, required this.imageDocumentRepository});
 
   Future<Result<List<TransformerModel>>> getAllTransformers() async {
     final transformers = await transformerRepository
@@ -30,6 +32,7 @@ class UpdateAllTransformersRemotely {
                     zuqaqOrBlock: element.zuqaqOrBlock)
             );
           });
+          await imageDocumentRepository.updateAllImagesReomtely();
           return Result.ok(transformersModelList);
         }
       case ErrorValue<List<TransformerResource>>():

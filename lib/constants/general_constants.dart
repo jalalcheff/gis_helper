@@ -9,4 +9,6 @@ class GeneralConstants {
   static const int NOT_SIGNED_IN = 1;
   static const int USER_SIGNED_IN = 2;
   static const int ADMIN_SIGNED_OUT = 3;
+  static const String USER_DATA = 'user_data';
+  static const String IMAGE_DATA = 'image_data';
 }

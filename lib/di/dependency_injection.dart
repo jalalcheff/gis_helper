@@ -1,5 +1,7 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
+import 'package:gis_helper/data/database_service/image_document_database_service_imp.dart';
 import 'package:gis_helper/data/repository/account_repository_imp.dart';
 import 'package:gis_helper/data/repository/database_service.dart';
 import 'package:gis_helper/data/repository/feeders_repository_imp.dart';
@@ -35,8 +37,10 @@ import '../domain/search_for_transformers.dart';
 import '../domain/sign_in_usecase.dart';
 import '../domain/signout_usecase.dart';
 import '../domain/transformer_repository.dart';
+import '../domain/usecase/get_image_documents_usecase.dart';
 import '../presentation/cubit/delete_transformer_cubit/delete_transformer_cubit.dart';
 import '../presentation/cubit/feeders_number_cubit/feeders_number_cubit.dart';
+import '../presentation/cubit/get_image_documents_cubit.dart';
 import '../presentation/cubit/search_for_transformer_cubit/search_for_transformer_cubit.dart';
 import '../presentation/cubit/sign_in_cubit/sign_in_cubit.dart';
 import '../presentation/cubit/signout_cubit/signout_cubit.dart';
@@ -48,9 +52,13 @@ import '../presentation/cubit/user_accountdata_cubit/user_accountdata_cubit.dart
 final GetIt locator = GetIt.instance;
 Future<void> setUpLocator() async{
   locator.registerSingleton<DatabaseServiceImp>(DatabaseServiceImp());
+  locator.registerFactory<ImageDocumentDatabaseServiceImp>(() => ImageDocumentDatabaseServiceImp());
+  locator.registerFactory<ImageDocumentServiceImp>(() => ImageDocumentServiceImp(FirebaseFirestore.instance));
   locator.registerSingleton<ApiServiceImp>(ApiServiceImp());
   locator.registerSingleton<TransformerRepositoryImp>(TransformerRepositoryImp(apiService: locator<ApiServiceImp>(), databaseService: locator<DatabaseServiceImp>()));
   locator.registerSingleton(FeedersRepositoryImp(localDatabaseTransformers: locator<DatabaseServiceImp>(), apiService: locator<ApiServiceImp>()));
+  locator.registerSingleton(AccountRepositoryImp(apiService: locator<ApiServiceImp>()));
+  locator.registerSingleton(ImageDocumentRepositoryImp(locator<ImageDocumentServiceImp>(), locator<ImageDocumentDatabaseServiceImp>()));
   locator.registerSingleton<AddTransformerUsecase>(AddTransformerUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
   locator.registerSingleton(GetAllFeedersUsecase(feedersRepository: locator<FeedersRepositoryImp>()));
   locator.registerSingleton(GetAllTransformersLocallyUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
@@ -58,31 +66,31 @@ Future<void> setUpLocator() async{
   locator.registerSingleton(GetFeedersNumberUsecase(feedersRepository: locator<FeedersRepositoryImp>()));
   locator.registerSingleton(GetLatestChangesUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
   locator.registerFactory(() => SearchForTransformersUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
+  locator.registerSingleton(GetNumberOfTransformersOfEachSector(transformerRepository: locator<TransformerRepositoryImp>()));
+  locator.registerFactory(() => GetTransformerDetailsUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
+  locator.registerSingleton(GetLogindataUsecase(accountRepository: locator<AccountRepositoryImp>()));
+  locator.registerSingleton(SignoutUsecase(accountRepository: locator<AccountRepositoryImp>()));
+  locator.registerSingleton(UpdateAllTransformersRemotely(transformerRepository: locator<TransformerRepositoryImp>(), imageDocumentRepository: locator<ImageDocumentRepositoryImp>()));
+  locator.registerSingleton(DeleteTransformerUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
+  locator.registerSingleton(AddImageDocumentUseCase(locator<ImageDocumentRepositoryImp>()));
+  locator.registerSingleton(GetImageDocumentsUseCase(locator<ImageDocumentRepositoryImp>()));
   locator.registerSingleton(AllTransformersCubit(locator<GetAllTransformersLocallyUsecase>()));
   locator.registerSingleton<AddTransformerCubit>(AddTransformerCubit(locator<AddTransformerUsecase>()));
   locator.registerSingleton(LatestChangesCubit(locator<GetLatestChangesUsecase>()));
   locator.registerSingleton(FeedersNumberCubit(locator<GetFeedersNumberUsecase>()));
   locator.registerSingleton(TransformerNumberCubit(locator<GetAllTransformersNumberUsecase>()));
-  locator.registerSingleton(GetNumberOfTransformersOfEachSector(transformerRepository: locator<TransformerRepositoryImp>()));
+  locator.registerSingleton(TransformerDetailsCubit(locator<GetTransformerDetailsUsecase>()));
   locator.registerSingleton(TransformerNumberOfEachSectorCubit(locator<GetNumberOfTransformersOfEachSector>()));
   locator.registerFactory(() => SearchForTransformerCubit(locator<SearchForTransformersUsecase>()));
-  locator.registerFactory(() => GetTransformerDetailsUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
-  locator.registerSingleton(TransformerDetailsCubit(locator<GetTransformerDetailsUsecase>()));
-  locator.registerSingleton(AccountRepositoryImp(apiService: locator<ApiServiceImp>()));
-  locator.registerSingleton(SignInUsecase(accountRepository: locator<AccountRepositoryImp>()));
   locator.registerFactory(() => SignInCubit(locator<SignInUsecase>()));
-  locator.registerSingleton(GetLogindataUsecase(accountRepository: locator<AccountRepositoryImp>()));
-  locator.registerFactory(() => UserAccountdataCubit(locator<GetLogindataUsecase>()));
-  locator.registerSingleton(SignoutUsecase(accountRepository: locator<AccountRepositoryImp>()));
   locator.registerSingleton(SignoutCubit(locator<SignoutUsecase>()));
-  locator.registerSingleton(DeleteTransformerUsecase(transformerRepository: locator<TransformerRepositoryImp>()));
+  locator.registerSingleton(SignInUsecase(accountRepository: locator<AccountRepositoryImp>()));
+  locator.registerFactory(() => UserAccountdataCubit(locator<GetLogindataUsecase>()));
   locator.registerSingleton(DeleteTransformerCubit(locator<DeleteTransformerUsecase>()));
-  locator.registerSingleton(UpdateAllTransformersRemotely(transformerRepository: locator<TransformerRepositoryImp>()));
-  locator.registerSingleton(UpdateAllTransformersCubit(locator<UpdateAllTransformersRemotely>()));
-  locator.registerFactory<ImageDocumentServiceImp>(() => ImageDocumentServiceImp());
-  locator.registerSingleton(ImageDocumentRepositoryImp(locator<ImageDocumentServiceImp>()));
-  locator.registerSingleton(AddImageDocumentUseCase(locator<ImageDocumentRepositoryImp>()));
   locator.registerSingleton(ImageDocumentCubit(addImageDocumentUseCase: locator<AddImageDocumentUseCase>()));
+  locator.registerFactory(() => GetImageDocumentsCubit(locator<GetImageDocumentsUseCase>()));
+  locator.registerSingleton(UpdateAllTransformersCubit(locator<UpdateAllTransformersRemotely>()));
+
 /*  locator.registerFactory(() => SearchForMealByIdRepository(foodApiService: locator<FoodApiService>()));
   locator.registerFactory(() => SearchMealByIdCubit(locator<SearchForMealByIdRepository>()));*/
 }

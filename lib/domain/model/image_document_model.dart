@@ -2,28 +2,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 class ImageDocumentModel extends Equatable {
-  final String? id;
   final String imageUrl;
   final String title;
-  final String subtitle;
+  final String descriptions;
 
   const ImageDocumentModel({
-    this.id,
     required this.imageUrl,
     required this.title,
-    required this.subtitle,
+    required this.descriptions,
   });
 
   factory ImageDocumentModel.fromFirestore(
-      DocumentSnapshot<Map<String, dynamic>> snapshot,
-      SnapshotOptions? options,
+      Map<String, dynamic> snapshot,
       ) {
-    final data = snapshot.data();
+    final data = snapshot;
     return ImageDocumentModel(
-      id: snapshot.id,
-      imageUrl: data?['imageUrl'] as String,
-      title: data?['title'] as String,
-      subtitle: data?['subtitle'] as String,
+      imageUrl: data['imageUrl'] as String,
+      title: data['title'] as String,
+      descriptions: data['descriptions'] as String,
     );
   }
 
@@ -31,10 +27,10 @@ class ImageDocumentModel extends Equatable {
     return {
       "imageUrl": imageUrl,
       "title": title,
-      "subtitle": subtitle,
+      "descriptions": descriptions,
     };
   }
 
   @override
-  List<Object?> get props => [id, imageUrl, title, subtitle];
+  List<Object?> get props => [imageUrl, title, descriptions];
 }

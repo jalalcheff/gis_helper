@@ -124,7 +124,7 @@ class _AddImageDocumentScreenState extends State<AddImageDocumentScreen> {
                                 title.isNotEmpty &&
                                 subtitle.isNotEmpty) {
                               context.read<ImageDocumentCubit>().addImageDocument(
-                                    ImageDocumentModel(title: title, imageUrl: imageUrl, subtitle: subtitle, id: imageUrl)
+                                    ImageDocumentModel(title: title, imageUrl: imageUrl, descriptions: subtitle)
                                   );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(

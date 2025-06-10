@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gis_helper/constants/general_constants.dart';
 import 'package:gis_helper/constants/style_constants.dart';
 import 'package:gis_helper/data/database_service/adapters/latest_transformer_adapter.dart';
+import 'package:gis_helper/data/database_service/adapters/news_adapter.dart';
 import 'package:gis_helper/data/database_service/adapters/transformer_resource_adapter.dart';
 import 'package:gis_helper/data/database_service/database_service_imp.dart';
 import 'package:gis_helper/data/repository/account_repository_imp.dart';
@@ -27,6 +28,7 @@ import 'package:gis_helper/presentation/cubit/add_transformer_cubit/add_transfor
 import 'package:gis_helper/presentation/cubit/all_transfomers_cubit/all_transformers_cubit.dart';
 import 'package:gis_helper/presentation/cubit/delete_transformer_cubit/delete_transformer_cubit.dart';
 import 'package:gis_helper/presentation/cubit/feeders_number_cubit/feeders_number_cubit.dart';
+import 'package:gis_helper/presentation/cubit/get_image_documents_cubit.dart';
 import 'package:gis_helper/presentation/cubit/image_document_cubit.dart';
 import 'package:gis_helper/presentation/cubit/latest_changes_cubit/latest_changes_cubit.dart';
 import 'package:gis_helper/presentation/cubit/sign_in_cubit/sign_in_cubit.dart';
@@ -39,7 +41,8 @@ import 'package:gis_helper/presentation/screen/main_screen/collection_screen.dar
 import 'package:gis_helper/presentation/screen/search_screen/search_screen.dart';
 import 'package:gis_helper/presentation/screen/sign_in_screen/sign_in_screen.dart';
 import 'package:gis_helper/presentation/screen/splash_screen/splash_screen.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:lottie/lottie.dart';
 
 import 'data/resource/result_pattern.dart';
@@ -58,10 +61,13 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(TransformerResourceAdapter());
   Hive.registerAdapter(LatestTransformerAdapter());
+  Hive.registerAdapter(NewsAdapter());
   // Open any boxes you need (e.g., a box to store users)
   //await Hive.deleteBoxFromDisk('transformers');
   await Hive.openBox("transformer");
   await Hive.openBox("latest transformers");
+  await Hive.openBox("images");
+
   //((box.values.last as List)[0] as TransformerResource).printAllData();
   /* GetAllFeedersUsecase(
           feedersRepository: FeedersRepositoryImp(
@@ -71,6 +77,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await initializeDateFormatting('ar_SA', null); // Initialize Arabic locale
+
   /*TransformerRepositoryImp(
           databaseService: DatabaseServiceImp(), apiService: ApiServiceImp())
       .getLastChangesTransformers();
@@ -104,7 +112,8 @@ void main() async {
     BlocProvider(create: (context) => locator<AddTransformerCubit>()),
     BlocProvider(create: (context) => locator<SignoutCubit>()),
     BlocProvider(create: (context) => locator<SignInCubit>()),
-    BlocProvider(create: (context) => locator<ImageDocumentCubit>())
+    BlocProvider(create: (context) => locator<ImageDocumentCubit>()),
+    BlocProvider(create: (context) => locator<GetImageDocumentsCubit>())
   ],
   child: MyApp(),
 ));
