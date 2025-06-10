@@ -53,6 +53,18 @@ class ApiServiceImp implements ApiService {
       String path) async {
      String updateOrDelete = "";
     try {
+      final document = await FirebaseFirestore.instance
+          .collection("sader three")
+          .doc("sader three transformers")
+          .collection("transformers")
+          .doc(path).get();
+      print("is it exisit ${document.exists}");
+      if(document.exists){
+        updateOrDelete = "update";
+      }
+      else{
+        updateOrDelete = "add";
+      }
       await FirebaseFirestore.instance
           .collection("sader three")
           .doc("sader three transformers")
@@ -72,17 +84,6 @@ class ApiServiceImp implements ApiService {
         'zuqaqOrBlock': transformer.zuqaqOrBlock,
         'created_at': DateTime.now().toIso8601String(),
       });
-      final document = await FirebaseFirestore.instance
-          .collection("sader three")
-          .doc("sader three transformers")
-          .collection("transformers")
-          .doc(path).get();
-      if(document.exists){
-        updateOrDelete = "update";
-      }
-      else{
-        updateOrDelete = "add";
-      }
       try {
         await FirebaseFirestore.instance
             .collection("sader three")

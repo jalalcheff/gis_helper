@@ -79,7 +79,7 @@ class _HomeScreenLatestChangesWidgetState extends State<HomeScreenLatestChangesW
                Colors.green,
                Icons.add,
                "${result[0].transformerName} اضافة المحولة ",
-               'رقم المحولة ${result[0].transformerSerialNumber} في ${result[0].mahlaOrSector}',
+               '${result[0].transformerSerialNumber} في ${getSectorOrMahala(result[0].mahlaOrSector) } رقم المحولة ',
                'Recent',
              ),
             _itemLatestChanges(
@@ -92,7 +92,7 @@ class _HomeScreenLatestChangesWidgetState extends State<HomeScreenLatestChangesW
               Colors.blue,
               Icons.edit_note,
               "${result[2].transformerName} تحديث المحولة ",
-              'رقم المحولة ${result[2].transformerSerialNumber} في ${result[2].mahlaOrSector}',
+              '${result[2].transformerSerialNumber} في ${getSectorOrMahala(result[2].mahlaOrSector)}رقم المحولة ',
               'Recent',
             ),
             _itemLatestChanges(
@@ -105,12 +105,19 @@ class _HomeScreenLatestChangesWidgetState extends State<HomeScreenLatestChangesW
               Colors.red,
               Icons.delete,
               "${result[1].transformerName} حذف المحولة ",
-              'رقم المحولة ${result[1].transformerSerialNumber} في ${result[1].mahlaOrSector}',
+              '${result[1].transformerSerialNumber} في ${getSectorOrMahala(result[1].mahlaOrSector)}رقم المحولة ',
               'Recent',
             ),
           ]
         );
       }
+  getSectorOrMahala(String mahlaOrSector) {
+    if (mahlaOrSector.contains("قطاع") || mahlaOrSector.contains("بلوك")) {
+      return mahlaOrSector.split(' ').reversed.join(' ');
+    } else {
+      return mahlaOrSector;
+    }
+  }
   }
 
  /* extension ResultExtension<T> on Result<T> {
@@ -160,7 +167,7 @@ class _HomeScreenLatestChangesWidgetState extends State<HomeScreenLatestChangesW
                 Column(
                   children: [
                     Text(
-                      title,
+                      title.trimRight(),
                       style: Theme.of(context)
                           .textTheme
                           .titleLarge
@@ -172,6 +179,9 @@ class _HomeScreenLatestChangesWidgetState extends State<HomeScreenLatestChangesW
                           .textTheme
                           .titleMedium
                           ?.copyWith(color: Colors.grey),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.end,
                     )
                   ],
                 ),
