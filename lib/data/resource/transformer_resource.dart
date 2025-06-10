@@ -1,28 +1,39 @@
 class TransformerResource {
-   String feederName;
+  String feederName;
+  bool isItOverhead;
+  bool isItPrivate;
+  String mahlaOrSector;
+  String substationName;
+  String transformerCapacity;
+  String transformerName;
+  String transformerSerialNumber;
+  String xCoordinates;
+  String yCoordinates;
+  String zuqaqOrBlock;
+  DateTime created_at;
 
-   bool isItOverhead;
+  // Constructor
+  TransformerResource({
+    DateTime? created_at,
+    required this.feederName,
+    required this.isItOverhead,
+    required this.isItPrivate,
+    required this.mahlaOrSector,
+    required this.substationName,
+    required this.transformerCapacity,
+    required this.transformerName,
+    required this.transformerSerialNumber,
+    required this.xCoordinates,
+    required this.yCoordinates,
+    required this.zuqaqOrBlock,
+  }) : created_at = created_at ?? DateTime.now();
 
-   bool isItPrivate;
-
-   String mahlaOrSector;
-
-   String substationName;
-
-   String transformerCapacity;
-
-   String transformerName;
-
-   String transformerSerialNumber;
-
-   String xCoordinates;
-
-   String yCoordinates;
-
-   String zuqaqOrBlock;
-
+  // Factory constructor from JSON
   factory TransformerResource.fromJson(Map<String, dynamic> data) {
     return TransformerResource(
+      created_at: data['created_at'] != null
+          ? DateTime.parse(data['created_at'])
+          : null,
       feederName: data['feederName'],
       isItOverhead: data['isItOverhead'],
       isItPrivate: data['isItPrivate'],
@@ -37,20 +48,22 @@ class TransformerResource {
     );
   }
 
-  TransformerResource(
-      {required this.feederName,
-      required this.isItOverhead,
-      required this.isItPrivate,
-      required this.mahlaOrSector,
-      required this.substationName,
-      required this.transformerCapacity,
-      required this.transformerName,
-      required this.transformerSerialNumber,
-      required this.xCoordinates,
-      required this.yCoordinates,
-      required this.zuqaqOrBlock});
-
-  printAllData() {
+  // Optional: print all data
+  void printAllData() {
+    print("""
+feederName: $feederName
+isItOverhead: $isItOverhead
+isItPrivate: $isItPrivate
+mahlaOrSector: $mahlaOrSector
+substationName: $substationName
+transformerCapacity: $transformerCapacity
+transformerName: $transformerName
+transformerSerialNumber: $transformerSerialNumber
+xCoordinates: $xCoordinates
+yCoordinates: $yCoordinates
+zuqaqOrBlock: $zuqaqOrBlock
+created_at: $created_at
+""");
   }
-  //    print("all data are : \n feederName : ${feederName}\n isItOverhead : ${isItOverhead}\n isItPrivate : ${isItPrivate}\n mahlaOrSector : ${mahlaOrSector}\n substationName : ${substationName}\n transformerCapacity : ${transformerCapacity}\n transformerName : ${transformerName}\n transformerSerialNumber : ${transformerSerialNumber}\n xCoordinates : ${xCoordinates}\n yCoordinates : ${yCoordinates}\n zuqaqOrBlock : ${zuqaqOrBlock}");
 }
+

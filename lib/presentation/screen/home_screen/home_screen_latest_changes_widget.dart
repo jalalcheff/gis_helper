@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gis_helper/data/resource/result_pattern.dart';
+import 'package:intl/intl.dart';
 import '../../../constants/style_constants.dart';
 import '../../../di/dependency_injection.dart';
 import '../../../domain/model/transformer_model.dart';
@@ -80,7 +81,7 @@ class _HomeScreenLatestChangesWidgetState extends State<HomeScreenLatestChangesW
                Icons.add,
                "${result[0].transformerName} اضافة المحولة ",
                '${result[0].transformerSerialNumber} في ${getSectorOrMahala(result[0].mahlaOrSector) } رقم المحولة ',
-               'Recent',
+               result[0].created_at,
              ),
             _itemLatestChanges(
               mediaQuery,
@@ -93,7 +94,7 @@ class _HomeScreenLatestChangesWidgetState extends State<HomeScreenLatestChangesW
               Icons.edit_note,
               "${result[2].transformerName} تحديث المحولة ",
               '${result[2].transformerSerialNumber} في ${getSectorOrMahala(result[2].mahlaOrSector)}رقم المحولة ',
-              'Recent',
+              result[2].created_at,
             ),
             _itemLatestChanges(
               mediaQuery,
@@ -106,7 +107,7 @@ class _HomeScreenLatestChangesWidgetState extends State<HomeScreenLatestChangesW
               Icons.delete,
               "${result[1].transformerName} حذف المحولة ",
               '${result[1].transformerSerialNumber} في ${getSectorOrMahala(result[1].mahlaOrSector)}رقم المحولة ',
-              'Recent',
+              result[1].created_at,
             ),
           ]
         );
@@ -144,7 +145,7 @@ class _HomeScreenLatestChangesWidgetState extends State<HomeScreenLatestChangesW
       IconData icon,
       String title,
       String subtitle,
-      String time) {
+      DateTime time) {
     return Container(
         width: mediaQuery.size.width,
         decoration: BoxDecoration(
@@ -158,8 +159,10 @@ class _HomeScreenLatestChangesWidgetState extends State<HomeScreenLatestChangesW
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              time,
+              DateFormat('MM/dd/yyyy').format(time),
               style: Theme.of(context).textTheme.titleSmall,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -172,16 +175,21 @@ class _HomeScreenLatestChangesWidgetState extends State<HomeScreenLatestChangesW
                           .textTheme
                           .titleLarge
                           ?.copyWith(color: Colors.black, fontSize: styleConstants.headLine3),
-                    ),
-                    Text(
-                      subtitle,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(color: Colors.grey),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.end,
+                    ),
+                    SizedBox(
+                      width: mediaQuery.size.width * 0.59,
+                      child: Text(
+                        subtitle,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(color: Colors.grey),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.end,
+                      ),
                     )
                   ],
                 ),
@@ -196,7 +204,7 @@ class _HomeScreenLatestChangesWidgetState extends State<HomeScreenLatestChangesW
                     ),
                     child: Icon(
                       icon,
-                      color: iconColor,
+                       color: iconColor,
                     ))
               ],
             )

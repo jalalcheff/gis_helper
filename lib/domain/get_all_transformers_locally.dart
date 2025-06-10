@@ -17,7 +17,8 @@ class GetAllTransformersLocallyUsecase {
         {
           transformers.value.forEach((element) {
             transformersModelList.add(
-                TransformerModel(feederName: element.feederName,
+                TransformerModel(
+                    feederName: element.feederName,
                     isItOverhead: element.isItOverhead,
                     isItPrivate: element.isItPrivate,
                     mahlaOrSector: element.mahlaOrSector,
