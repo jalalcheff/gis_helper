@@ -6,7 +6,10 @@ import 'package:gis_helper/presentation/cubit/get_image_documents_cubit.dart';
 import 'package:intl/intl.dart' as intl;
 
 class NewsDetailScreen extends StatefulWidget {
-  const NewsDetailScreen({super.key});
+  const NewsDetailScreen({super.key, required this.imageUrl, required this.title, required this.descriptions});
+  final String imageUrl;
+  final String title;
+  final String descriptions;
 
   static const String imgeId = "1";
 
@@ -64,46 +67,22 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                       const SizedBox(height: 12),
 
                       // News Image
-                      ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: CarouselSlider(
-                            options: CarouselOptions(
-                              height: 200.0,
-                              autoPlay: true,         // تشغيل تلقائي
-                              enlargeCenterPage: true, // تكبير الصورة في المنتصف
-                              autoPlayInterval: Duration(seconds: 7), // المدة بين الصور
-                              autoPlayAnimationDuration: Duration(milliseconds: 400), // مدة الحركة
-                              viewportFraction: 0.8, // نسبة عرض كل صورة
+                      CachedNetworkImage(
+                        height: 180,
+                        width: double.infinity,
+                        imageUrl: widget.imageUrl,
+                        placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                        errorWidget: (context, url, error) => Image.asset("images/noimage.png", height: 180, width: double.infinity,),
+                        imageBuilder: (context, imageProvider) => Container(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: imageProvider,
+                              fit: BoxFit.cover,
                             ),
-                            items: state.images.map((url) {
-                              return Builder(
-                                builder: (BuildContext context) {
-                                  return ClipRRect(
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: _createCachedNetwork(url.imageUrl)
-                                  );
-                                },
-                              );
-                            }).toList(),
-                          )
-
-
-                        /*CachedNetworkImage(
-                            height: 180,
-                            width: double.infinity,
-                            imageUrl: "${state.images[0].imageUrl}",
-                            placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                            errorWidget: (context, url, error) => Image.asset("images/noimage.png", height: 180, width: double.infinity,),
-                            imageBuilder: (context, imageProvider) => Container(
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: imageProvider,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          )*/
+                            borderRadius: BorderRadius.circular(30)
                           ),
+                        ),
+                      ),
 
                       const SizedBox(height: 12),
 
@@ -111,7 +90,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Text(
-                          "${state.images[0].title}",
+                          widget.title,
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -144,7 +123,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                         child: SingleChildScrollView(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
-                            "${state.images[0].descriptions}",
+                            widget.descriptions,
                             style: TextStyle(fontSize: 15, height: 1.8),
                             textAlign: TextAlign.justify,
                           ),

@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gis_helper/presentation/cubit/image_document_cubit.dart';
+import 'package:gis_helper/presentation/screen/show_news_screen/news_details_screen.dart';
 
 import '../../../constants/style_constants.dart';
 import '../../cubit/get_image_documents_cubit.dart';
@@ -38,7 +39,7 @@ class HomeScreenAdsWidget {
                 items: state.images.map((url) {
                   return Builder(
                     builder: (BuildContext context) {
-                      return _createCachedNetwork(url.imageUrl, context,url.title);
+                      return _createCachedNetwork(url.imageUrl, context,url.title, url.descriptions);
                     },
                   );
                 }).toList(),
@@ -96,25 +97,30 @@ class HomeScreenAdsWidget {
           },
         ));
   }
-  Stack _createCachedNetwork(String imageUrl, BuildContext context, String title) {
+  Stack _createCachedNetwork(String imageUrl, BuildContext context, String title, String descriptions) {
     final styleConstants = StyleConstants();
     return Stack(
         children: [
-      CachedNetworkImage(
-        height: double.infinity,
-        width: double.infinity,
-        imageUrl: imageUrl,
-        placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-        errorWidget: (context, url, error) => Image.asset("images/noimage.png", height: 180, width: double.infinity,),
-        imageBuilder: (context, imageProvider) => Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: imageProvider,
-              fit: BoxFit.cover,
-              colorFilter: ColorFilter.mode(
-                  Colors.black.withOpacity(0.50), BlendMode.darken),
+      InkWell(
+        onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => NewsDetailScreen(descriptions: descriptions, imageUrl: imageUrl,title: title)));
+    },
+        child: CachedNetworkImage(
+          height: double.infinity,
+          width: double.infinity,
+          imageUrl: imageUrl,
+          placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+          errorWidget: (context, url, error) => Image.asset("images/noimage.png", height: 180, width: double.infinity,),
+          imageBuilder: (context, imageProvider) => Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: imageProvider,
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                    Colors.black.withOpacity(0.50), BlendMode.darken),
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(30))
             ),
-            borderRadius: BorderRadius.all(Radius.circular(30))
           ),
         ),
       ),

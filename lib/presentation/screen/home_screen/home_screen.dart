@@ -221,11 +221,7 @@ class _HomeBodyState extends State<HomeBody> {
         padding: EdgeInsets.all(styleConstants.largeDp),
         width: double.infinity,
         child: Column(children: [
-          InkWell(
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => NewsDetailScreen()));
-              },
-              child: HomeScreenAdsWidget().addsCard(mediaQuery, context, styleConstants)),
+          HomeScreenAdsWidget().addsCard(mediaQuery, context, styleConstants),
           SizedBox(
             height: styleConstants.mediumDp,
           ),
