@@ -16,6 +16,7 @@ class GetLatestChangesUsecase {
     switch (latestChanges) {
       case Ok<List<TransformerResource>>():
         {
+          print("inside latest changes usecase ${latestChanges.value.length}");
           for (var element in latestChanges.value) {
             latestChangesModel.add(
                 TransformerModel(

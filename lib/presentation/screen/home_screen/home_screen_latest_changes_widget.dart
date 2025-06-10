@@ -66,27 +66,49 @@ class _HomeScreenLatestChangesWidgetState extends State<HomeScreenLatestChangesW
   }
 
   Widget _buildLatestChanges(List<TransformerModel> result, MediaQueryData mediaQuery, BuildContext context, StyleConstants styleConstants) {
+    print("result of latest : ${result.length} , ${result[0].transformerName}");
     return  Column(
-          children: result.map((transformer) {
-            return Column(
-              children: [
-                _itemLatestChanges(
-                  mediaQuery,
-                  context,
-                  styleConstants,
-                  Color(styleConstants.colorGreenBackgroundTernary),
-                  Color(styleConstants.colorSecondaryNormal),
-                  Color(styleConstants.colorGreenBackgroundNormal),
-                  Colors.green,
-                  Icons.add,
-                  "${transformer.transformerName} اضافة المحولة ",
-                  'رقم المحولة ${transformer.transformerSerialNumber} في ${transformer.mahlaOrSector}',
-                  'Recent',
-                ),
-                SizedBox(height: styleConstants.smallDp),
-              ],
-            );
-          }).toList(),
+          children:[
+             _itemLatestChanges(
+               mediaQuery,
+               context,
+               styleConstants,
+               Color(styleConstants.colorGreenBackgroundTernary),
+               Color(styleConstants.colorSecondaryNormal),
+               Color(styleConstants.colorGreenBackgroundNormal),
+               Colors.green,
+               Icons.add,
+               "${result[0].transformerName} اضافة المحولة ",
+               'رقم المحولة ${result[0].transformerSerialNumber} في ${result[0].mahlaOrSector}',
+               'Recent',
+             ),
+            _itemLatestChanges(
+              mediaQuery,
+              context,
+              styleConstants,
+              Color(styleConstants.colorBlueBackgroundTernary),
+              Color(styleConstants.colorSecondaryNormal),
+              Color(styleConstants.colorBlueBackgroundNormal),
+              Colors.blue,
+              Icons.edit_note,
+              "${result[2].transformerName} تحديث المحولة ",
+              'رقم المحولة ${result[2].transformerSerialNumber} في ${result[2].mahlaOrSector}',
+              'Recent',
+            ),
+            _itemLatestChanges(
+              mediaQuery,
+              context,
+              styleConstants,
+              Color(styleConstants.colorRedBackgroundTernary),
+              Color(styleConstants.colorSecondaryNormal),
+              Color(styleConstants.colorRedBackgroundNormal),
+              Colors.red,
+              Icons.delete,
+              "${result[1].transformerName} حذف المحولة ",
+              'رقم المحولة ${result[1].transformerSerialNumber} في ${result[1].mahlaOrSector}',
+              'Recent',
+            ),
+          ]
         );
       }
   }
@@ -124,7 +146,7 @@ class _HomeScreenLatestChangesWidgetState extends State<HomeScreenLatestChangesW
           color: cardBackground,
         ),
         padding: EdgeInsets.all(styleConstants.largeDp),
-        margin: EdgeInsets.all(styleConstants.largeDp),
+        margin: EdgeInsets.symmetric(vertical: styleConstants.mediumDp, horizontal: styleConstants.largeDp),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

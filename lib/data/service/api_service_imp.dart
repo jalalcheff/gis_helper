@@ -51,6 +51,7 @@ class ApiServiceImp implements ApiService {
   @override
   Future<Result<dynamic>> addTransformer(TransformerResource transformer,
       String path) async {
+     String updateOrDelete = "";
     try {
       await FirebaseFirestore.instance
           .collection("sader three")
@@ -71,13 +72,23 @@ class ApiServiceImp implements ApiService {
         'zuqaqOrBlock': transformer.zuqaqOrBlock,
         'created_at': DateTime.now().toIso8601String(),
       });
-
+      final document = await FirebaseFirestore.instance
+          .collection("sader three")
+          .doc("sader three transformers")
+          .collection("transformers")
+          .doc(path).get();
+      if(document.exists){
+        updateOrDelete = "update";
+      }
+      else{
+        updateOrDelete = "add";
+      }
       try {
         await FirebaseFirestore.instance
             .collection("sader three")
             .doc("sader three transformers")
             .collection("last changes")
-            .doc("add")
+            .doc(updateOrDelete)
             .set({
           'feederName': transformer.feederName,
           'isItOverhead': transformer.isItOverhead,
@@ -154,6 +165,25 @@ class ApiServiceImp implements ApiService {
           .collection("transformers").doc(
           "${transformer.transformerName} ${transformer
               .transformerSerialNumber}").delete();
+      await FirebaseFirestore.instance
+          .collection("sader three")
+          .doc("sader three transformers")
+          .collection("last changes")
+          .doc("delete")
+          .set({
+        'feederName': transformer.feederName,
+        'isItOverhead': transformer.isItOverhead,
+        'isItPrivate': transformer.isItPrivate,
+        'transformerSerialNumber': transformer.transformerSerialNumber,
+        'mahlaOrSector': transformer.mahlaOrSector,
+        'substationName': transformer.substationName,
+        'transformerCapacity': transformer.transformerCapacity,
+        'transformerName': transformer.transformerName,
+        'xCoordinates': transformer.xCoordinates,
+        'yCoordinates': transformer.yCoordinates,
+        'zuqaqOrBlock': transformer.zuqaqOrBlock,
+        'created_at': DateTime.now().toIso8601String(),
+      });
       return Result.ok("deleted correctly");
     } catch (e) {
       return Result.error(e);

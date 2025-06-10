@@ -50,6 +50,17 @@ class TransformerRepositoryImp implements TransformerRepository {
           {
             final result = _databaseService.saveDataIntoDatabase(transformers);
             print("inside transformer repo update ${result.runtimeType}");
+            final apiLatestChangesData = await _apiService.getLatestChanges();
+            switch(apiLatestChangesData) {
+              case Ok<List<Map<String, dynamic>>>():
+                {
+                  print("inside transformer repo update latest changes : ${apiLatestChangesData.value.length}");
+                  await _databaseService.saveLatestTransformersDataIntoDatabase(
+                      apiLatestChangesData);
+                }
+              case ErrorValue<List<Map<String, dynamic>>>():
+                {}
+            }
             return result;
           }
         case ErrorValue<List<Map<String, dynamic>>>():
